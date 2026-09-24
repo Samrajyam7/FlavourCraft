@@ -1,10 +1,25 @@
-import axios from 'axios';
+// Base URL configuration for both local dev and production deployment
+const getBaseURL = () => {
+  const envUrl =
+    import.meta.env.VITE_API_URL ||
+    import.meta.env.VITE_BACKEND_URL ||
+    import.meta.env.VITE_API_BASE_URL;
+
+  if (envUrl && typeof envUrl === 'string') {
+    const trimmed = envUrl.trim().replace(/\/+$/, '');
+    return trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
+  }
+
+  // In local development with Vite proxy, use relative /api
+  return '/api';
+};
 
 const API = axios.create({
-  baseURL: '/api',
+  baseURL: getBaseURL(),
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 25000,
 });
 
 // Request interceptor to attach JWT token
@@ -24,9 +39,11 @@ API.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-      // If token expired or invalid, clear local storage token if desired
-      // Avoid auto redirection loop on login page
-      if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
+      if (
+        typeof window !== 'undefined' &&
+        window.location.pathname !== '/login' &&
+        window.location.pathname !== '/register'
+      ) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
       }

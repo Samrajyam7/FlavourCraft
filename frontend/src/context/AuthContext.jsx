@@ -16,15 +16,31 @@ export const AuthProvider = ({ children }) => {
 
       if (storedToken && storedUser) {
         try {
-          setUser(JSON.parse(storedUser));
-          // Fetch fresh user profile in background
-          const freshUser = await authService.getMe();
-          if (freshUser) {
-            setUser(freshUser);
-            localStorage.setItem('user', JSON.stringify(freshUser));
-          }
+          const parsed = JSON.parse(storedUser);
+          setUser(parsed);
+          setToken(storedToken);
+
+          // Refresh user profile asynchronously without freezing page
+          authService
+            .getMe()
+            .then((res) => {
+              const freshUser = res?.user || res;
+              if (freshUser && freshUser._id) {
+                setUser(freshUser);
+                localStorage.setItem('user', JSON.stringify(freshUser));
+              }
+            })
+            .catch((err) => {
+              // If token expired / invalid
+              if (err.response && err.response.status === 401) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                setToken(null);
+                setUser(null);
+              }
+            });
         } catch (err) {
-          console.error('Failed to restore session:', err);
+          console.error('Failed to parse cached session:', err);
           localStorage.removeItem('token');
           localStorage.removeItem('user');
           setToken(null);
