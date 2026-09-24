@@ -18,10 +18,10 @@ const router = express.Router();
 // IMPORTANT: specific routes must come before parameterized routes
 router.get('/search', searchRecipes);
 router.get('/recommendations', getRecommendations);
-router.post('/match', protect, matchRecipesHandler);
+router.post('/match', matchRecipesHandler);
 
 router.get('/', getRecipes);
-router.get('/:id', protect, getRecipeById);
+router.get('/:id', getRecipeById);
 
 // Admin routes
 router.post('/', protect, adminOnly, createRecipe);

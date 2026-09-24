@@ -1,6 +1,7 @@
 const express = require('express');
 const {
   getIngredients,
+  getCategories,
   getIngredientById,
   createIngredient,
   updateIngredient,
@@ -12,6 +13,7 @@ const { adminOnly } = require('../middleware/adminMiddleware');
 const router = express.Router();
 
 router.get('/', getIngredients);
+router.get('/categories', getCategories);
 router.get('/:id', getIngredientById);
 router.post('/', protect, adminOnly, createIngredient);
 router.put('/:id', protect, adminOnly, updateIngredient);

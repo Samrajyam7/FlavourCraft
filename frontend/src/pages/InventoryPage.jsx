@@ -48,7 +48,8 @@ export const InventoryPage = () => {
       ]);
       const list = invData.inventory || invData.items || (Array.isArray(invData) ? invData : []);
       setInventoryItems(list);
-      setAvailableIngredients(ingData.ingredients || ingData || []);
+      const allIngs = ingData.ingredients || (Array.isArray(ingData) ? ingData : []);
+      setAvailableIngredients(allIngs);
     } catch (err) {
       console.error('Failed to load inventory:', err);
       toastError('Failed to load your pantry');

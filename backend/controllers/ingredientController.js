@@ -36,6 +36,17 @@ const getIngredients = async (req, res) => {
   }
 };
 
+// @desc    Get all distinct categories
+// @route   GET /api/ingredients/categories
+const getCategories = async (req, res) => {
+  try {
+    const categories = await Ingredient.distinct('category');
+    res.json(categories);
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // @desc    Get ingredient by ID
 // @route   GET /api/ingredients/:id
 const getIngredientById = async (req, res) => {
@@ -92,4 +103,4 @@ const deleteIngredient = async (req, res) => {
   }
 };
 
-module.exports = { getIngredients, getIngredientById, createIngredient, updateIngredient, deleteIngredient };
+module.exports = { getIngredients, getCategories, getIngredientById, createIngredient, updateIngredient, deleteIngredient };

@@ -80,7 +80,7 @@ const recipeSchema = new mongoose.Schema(
     ],
     dietaryTags: {
       type: [String],
-      enum: ['vegetarian', 'vegan', 'gluten-free', 'dairy-free', 'nut-free', 'non-vegetarian', 'egg-free'],
+      enum: ['vegetarian', 'vegan', 'gluten-free', 'dairy-free', 'nut-free', 'non-vegetarian', 'egg-free', 'keto', 'low-carb'],
       default: [],
     },
     nutrition: {

@@ -12,7 +12,7 @@ const getGroceryList = async (req, res) => {
       list = { userId: req.user._id, items: [] };
     }
 
-    res.json({ success: true, list });
+    res.json({ success: true, list, items: list.items || [] });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -22,11 +22,15 @@ const getGroceryList = async (req, res) => {
 // @route   POST /api/grocery
 const addToGroceryList = async (req, res) => {
   try {
-    const { items } = req.body;
-
-    if (!items || !Array.isArray(items) || items.length === 0) {
-      return res.status(400).json({ success: false, message: 'No items provided.' });
+    let items = req.body.items;
+    if (!items) {
+      if (req.body.name) {
+        items = [req.body];
+      } else {
+        return res.status(400).json({ success: false, message: 'No items provided.' });
+      }
     }
+    if (!Array.isArray(items)) items = [items];
 
     let list = await GroceryList.findOne({ userId: req.user._id });
 
@@ -37,10 +41,9 @@ const addToGroceryList = async (req, res) => {
     // Add or update items (avoid duplicates by name)
     for (const newItem of items) {
       const existingIdx = list.items.findIndex(
-        (i) => i.name.toLowerCase() === newItem.name.toLowerCase()
+        (i) => i.name && newItem.name && i.name.toLowerCase() === newItem.name.toLowerCase()
       );
       if (existingIdx >= 0) {
-        // Update quantity (aggregate if both are numbers)
         const existingQty = parseFloat(list.items[existingIdx].quantity) || 0;
         const newQty = parseFloat(newItem.quantity) || 0;
         if (existingQty > 0 && newQty > 0) {
@@ -54,7 +57,7 @@ const addToGroceryList = async (req, res) => {
     await list.save();
     await list.populate('items.ingredientId', 'name icon unit');
 
-    res.json({ success: true, message: 'Grocery list updated!', list });
+    res.json({ success: true, message: 'Grocery list updated!', list, items: list.items });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

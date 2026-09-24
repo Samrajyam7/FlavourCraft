@@ -30,6 +30,11 @@ const getStats = async (req, res) => {
         totalReviews,
         totalFavorites,
       },
+      totalUsers,
+      totalRecipes,
+      totalIngredients,
+      totalReviews,
+      totalFavorites,
       recentUsers,
       topRecipes,
     });
