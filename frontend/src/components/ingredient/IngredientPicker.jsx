@@ -50,13 +50,13 @@ export const IngredientPicker = ({
     try {
       setSyncingPantry(true);
       const data = await inventoryService.getInventory();
-      const pantryList = data.items || data || [];
+      const pantryList = data.inventory || data.items || (Array.isArray(data) ? data : []);
       const pantryIngredients = pantryList
-        .map((item) => item.ingredient)
-        .filter(Boolean);
+        .map((item) => item.ingredientId || item.ingredient || item)
+        .filter((ing) => ing && (ing._id || ing.name));
 
       if (pantryIngredients.length === 0) {
-        warning('Your pantry is empty! Add ingredients in My Pantry first.');
+        warning('Your pantry is empty! Add ingredients in "My Pantry" first, then sync.');
         return;
       }
 
@@ -65,9 +65,10 @@ export const IngredientPicker = ({
       } else {
         pantryIngredients.forEach((ing) => onSelectIngredient(ing));
       }
-      success(`Imported ${pantryIngredients.length} ingredients from your pantry!`);
+      success(`Imported ${pantryIngredients.length} ingredients from your pantry! ✨`);
     } catch (err) {
-      toastError('Failed to sync pantry ingredients');
+      console.error('Pantry sync error:', err);
+      toastError(err.response?.data?.message || 'Failed to sync pantry ingredients');
     } finally {
       setSyncingPantry(false);
     }

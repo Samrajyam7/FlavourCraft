@@ -27,7 +27,7 @@ const getInventory = async (req, res) => {
       return { ...item, daysUntilExpiry, isExpiringSoon, isExpired };
     });
 
-    res.json({ success: true, count: inventory.length, inventory: enriched });
+    res.json({ success: true, count: inventory.length, inventory: enriched, items: enriched });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -37,17 +37,22 @@ const getInventory = async (req, res) => {
 // @route   POST /api/inventory
 const addToInventory = async (req, res) => {
   try {
-    const { ingredientId, quantity, unit, expiryDate, notes } = req.body;
+    const ingredientId = req.body.ingredientId || req.body.ingredient;
+    const { quantity, unit, expiryDate, notes } = req.body;
+
+    if (!ingredientId) {
+      return res.status(400).json({ success: false, message: 'Please select a valid ingredient.' });
+    }
 
     const ingredient = await Ingredient.findById(ingredientId);
     if (!ingredient) {
-      return res.status(404).json({ success: false, message: 'Ingredient not found.' });
+      return res.status(404).json({ success: false, message: 'Ingredient not found in catalog.' });
     }
 
     // Upsert inventory item
     const inventoryItem = await Inventory.findOneAndUpdate(
       { userId: req.user._id, ingredientId },
-      { quantity, unit: unit || ingredient.unit, expiryDate: expiryDate || null, notes },
+      { quantity: quantity || 1, unit: unit || ingredient.unit, expiryDate: expiryDate || null, notes },
       { new: true, upsert: true, runValidators: true }
     ).populate('ingredientId', 'name icon category unit');
 

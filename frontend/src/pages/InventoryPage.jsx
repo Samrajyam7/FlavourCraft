@@ -46,7 +46,8 @@ export const InventoryPage = () => {
         inventoryService.getInventory(),
         ingredientService.getIngredients({ limit: 300 }),
       ]);
-      setInventoryItems(invData.items || invData || []);
+      const list = invData.inventory || invData.items || (Array.isArray(invData) ? invData : []);
+      setInventoryItems(list);
       setAvailableIngredients(ingData.ingredients || ingData || []);
     } catch (err) {
       console.error('Failed to load inventory:', err);
@@ -67,7 +68,6 @@ export const InventoryPage = () => {
     try {
       await inventoryService.addInventoryItem({
         ingredientId: selectedIngredientId || undefined,
-        customName: !selectedIngredientId ? customName : undefined,
         quantity: Number(quantity) || 1,
         unit: unit || 'pcs',
         expiryDate: expiryDate || undefined,
@@ -116,7 +116,7 @@ export const InventoryPage = () => {
 
   const handleLaunchMatcherWithPantry = () => {
     const names = inventoryItems
-      .map((item) => item.ingredient?.name || item.customName)
+      .map((item) => (item.ingredientId?.name || item.ingredient?.name || item.customName))
       .filter(Boolean);
 
     if (names.length === 0) {
@@ -143,11 +143,12 @@ export const InventoryPage = () => {
     return { label: `Fresh (${diffDays}d left)`, color: 'badge-green', icon: CheckCircle2 };
   };
 
-  const categories = ['All', 'Produce', 'Dairy', 'Meat', 'Pantry', 'Grains & Pasta', 'Herbs & Spices', 'Condiments'];
+  const categories = ['All', 'Protein', 'Dairy', 'Vegetables', 'Grains', 'Spices', 'Fruits', 'Pantry'];
 
   const filteredItems = inventoryItems.filter((item) => {
-    const ingName = item.ingredient?.name || item.customName || '';
-    const cat = item.ingredient?.category || 'Pantry';
+    const ingObj = item.ingredientId || item.ingredient || {};
+    const ingName = ingObj.name || item.customName || '';
+    const cat = ingObj.category || 'Pantry';
     const matchesCat = activeCategory === 'All' || cat === activeCategory;
     const matchesSearch = ingName.toLowerCase().includes(searchFilter.toLowerCase().trim());
     return matchesCat && matchesSearch;
@@ -347,7 +348,8 @@ export const InventoryPage = () => {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {filteredItems.map((item) => {
-            const ingName = item.ingredient?.name || item.customName;
+            const ingObj = item.ingredientId || item.ingredient || {};
+            const ingName = ingObj.name || item.customName || 'Ingredient';
             const expStatus = getExpiryStatus(item.expiryDate);
 
             return (
@@ -361,7 +363,7 @@ export const InventoryPage = () => {
                       {ingName}
                     </h3>
                     <span className="text-[11px] text-text-muted">
-                      {item.ingredient?.category || 'Pantry'}
+                      {ingObj.category || 'Pantry'}
                     </span>
                   </div>
 
