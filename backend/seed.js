@@ -595,10 +595,10 @@ const seedDatabase = async () => {
     console.log(`✅ Created ${createdRecipes.length} recipes.`);
 
     // Create admin user if not exists
-    const adminExists = await User.findOne({ email: 'admin@flavorcraft.com' });
-    if (!adminExists) {
+    let admin = await User.findOne({ email: 'admin@flavorcraft.com' });
+    if (!admin) {
       await User.create({
-        name: 'Admin',
+        name: 'Admin Chef',
         email: 'admin@flavorcraft.com',
         password: 'admin123456',
         role: 'admin',
@@ -606,6 +606,18 @@ const seedDatabase = async () => {
       console.log('✅ Created admin user: admin@flavorcraft.com / admin123456');
     } else {
       console.log('ℹ️  Admin user already exists.');
+    }
+
+    // Create demo chef user if not exists
+    let chef = await User.findOne({ email: 'chef@flavorcraft.com' });
+    if (!chef) {
+      await User.create({
+        name: 'Gordon Demo',
+        email: 'chef@flavorcraft.com',
+        password: 'password123',
+        role: 'user',
+      });
+      console.log('✅ Created demo chef user: chef@flavorcraft.com / password123');
     }
 
     console.log('\n🎉 FlavorCraft database seeded successfully!\n');

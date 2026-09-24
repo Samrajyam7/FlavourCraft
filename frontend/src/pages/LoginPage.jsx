@@ -34,7 +34,7 @@ export const LoginPage = () => {
     setLoading(true);
     try {
       const demoEmail = role === 'admin' ? 'admin@flavorcraft.com' : 'chef@flavorcraft.com';
-      const demoPass = role === 'admin' ? 'admin123' : 'password123';
+      const demoPass = role === 'admin' ? 'admin123456' : 'password123';
       await login({ email: demoEmail, password: demoPass });
       success(`Signed in as ${role === 'admin' ? 'Admin' : 'Chef'}! 🍳`);
       navigate(from, { replace: true });
