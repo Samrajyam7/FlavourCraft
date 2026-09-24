@@ -78,7 +78,7 @@
    ```
 
 3. **Configure Environment Variables:**
-   - In `server/.env`:
+   - In `backend/.env`:
      ```env
      PORT=5000
      NODE_ENV=development
@@ -92,12 +92,12 @@
    npm run seed
    ```
 
-5. **Start Development Servers (Client + Backend):**
+5. **Start Development Servers (Frontend + Backend):**
    ```bash
    npm run dev
    ```
-   - Client will run on: `http://localhost:5173`
-   - Server API will run on: `http://localhost:5000`
+   - Frontend will run on: `http://localhost:5173`
+   - Backend API will run on: `http://localhost:5000`
 
 ---
 
@@ -116,7 +116,7 @@ For quick local testing, you can use the pre-seeded demo accounts:
 
 ```
 FlavourCraft/
-├── client/
+├── frontend/
 │   ├── src/
 │   │   ├── components/
 │   │   │   ├── common/        # ProtectedRoute, Toast
@@ -131,7 +131,7 @@ FlavourCraft/
 │   │   ├── main.jsx
 │   │   └── index.css          # Design system & Tailwind rules
 │   └── package.json
-├── server/
+├── backend/
 │   ├── config/                # MongoDB connection
 │   ├── controllers/           # Auth, Recipe, Inventory, MealPlan, Grocery, Admin
 │   ├── middleware/            # Auth & Error handling

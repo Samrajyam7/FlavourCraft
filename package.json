@@ -3,13 +3,13 @@
   "version": "1.0.0",
   "description": "FlavorCraft - Intelligent Ingredient-Based Recipe Discovery Platform",
   "scripts": {
-    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
-    "dev:server": "cd server && npm run dev",
-    "dev:client": "cd client && npm run dev",
-    "install:all": "npm install && cd server && npm install && cd ../client && npm install",
-    "seed": "cd server && node seed.js",
-    "start:server": "cd server && node server.js",
-    "start:client": "cd client && npm run build"
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "seed": "cd backend && node seed.js",
+    "start:backend": "cd backend && node server.js",
+    "start:frontend": "cd frontend && npm run build"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

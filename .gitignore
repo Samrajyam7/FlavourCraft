@@ -1,19 +1,19 @@
 # Dependencies
 node_modules/
 */node_modules/
-client/node_modules/
-server/node_modules/
+frontend/node_modules/
+backend/node_modules/
 
 # Environment Variables
 .env
 .env.local
 .env.*.local
-server/.env
-client/.env
+backend/.env
+frontend/.env
 
 # Production Build
 dist/
-client/dist/
+frontend/dist/
 build/
 
 # OS and IDE Files
