@@ -2,10 +2,11 @@ const Review = require('../models/Review');
 const Recipe = require('../models/Recipe');
 
 // @desc    Get reviews for a recipe
-// @route   GET /api/recipes/:recipeId/reviews
+// @route   GET /api/reviews/recipe/:recipeId or GET /api/reviews/:recipeId
 const getReviews = async (req, res) => {
   try {
-    const reviews = await Review.find({ recipeId: req.params.recipeId })
+    const recipeId = req.params.recipeId || req.params.id;
+    const reviews = await Review.find({ recipeId })
       .populate('userId', 'name avatar')
       .sort('-createdAt')
       .lean();
@@ -17,20 +18,25 @@ const getReviews = async (req, res) => {
 };
 
 // @desc    Create or update a review
-// @route   POST /api/recipes/:recipeId/reviews
+// @route   POST /api/reviews or POST /api/reviews/recipe/:recipeId
 const createReview = async (req, res) => {
   try {
     const { rating, comment } = req.body;
+    const recipeId = req.params.recipeId || req.body.recipeId;
 
-    const recipe = await Recipe.findById(req.params.recipeId);
+    if (!recipeId) {
+      return res.status(400).json({ success: false, message: 'Recipe ID is required.' });
+    }
+
+    const recipe = await Recipe.findById(recipeId);
     if (!recipe) {
       return res.status(404).json({ success: false, message: 'Recipe not found.' });
     }
 
     // Upsert review
     const review = await Review.findOneAndUpdate(
-      { userId: req.user._id, recipeId: req.params.recipeId },
-      { rating, comment },
+      { userId: req.user._id, recipeId },
+      { rating: Number(rating) || 5, comment: comment || '' },
       { new: true, upsert: true, runValidators: true }
     ).populate('userId', 'name avatar');
 
@@ -41,7 +47,7 @@ const createReview = async (req, res) => {
     ]);
 
     if (stats.length > 0) {
-      await Recipe.findByIdAndUpdate(req.params.recipeId, {
+      await Recipe.findByIdAndUpdate(recipeId, {
         rating: Math.round(stats[0].avgRating * 10) / 10,
         reviewCount: stats[0].count,
       });

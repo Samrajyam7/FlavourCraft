@@ -104,11 +104,17 @@ const getMe = async (req, res) => {
 // @route   PUT /api/auth/profile
 const updateProfile = async (req, res) => {
   try {
-    const { name, dietaryPreferences, allergies } = req.body;
+    const { name, dietaryPreferences, allergies, avatar } = req.body;
+    const updateData = {};
+    if (name !== undefined) updateData.name = name;
+    if (dietaryPreferences !== undefined) updateData.dietaryPreferences = dietaryPreferences;
+    if (allergies !== undefined) updateData.allergies = allergies;
+    if (avatar !== undefined) updateData.avatar = avatar;
+
     const user = await User.findByIdAndUpdate(
       req.user._id,
-      { name, dietaryPreferences, allergies },
-      { new: true, runValidators: true }
+      { $set: updateData },
+      { new: true, runValidators: false }
     );
     res.json({ success: true, message: 'Profile updated!', user });
   } catch (error) {
