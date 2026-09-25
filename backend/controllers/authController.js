@@ -3,7 +3,8 @@ const { validationResult } = require('express-validator');
 const User = require('../models/User');
 
 const generateToken = (userId, role) => {
-  return jwt.sign({ userId, role }, process.env.JWT_SECRET, { expiresIn: '30d' });
+  const jwtSecret = process.env.JWT_SECRET || 'flavorcraft_jwt_secret_key_2024_xK9mP2qR8nL5vW3jY7hT1';
+  return jwt.sign({ userId, role }, jwtSecret, { expiresIn: '30d' });
 };
 
 // @desc    Register new user

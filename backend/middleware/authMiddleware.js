@@ -12,7 +12,8 @@ const protect = async (req, res, next) => {
       return res.status(401).json({ success: false, message: 'Not authorized. No token provided.' });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const jwtSecret = process.env.JWT_SECRET || 'flavorcraft_jwt_secret_key_2024_xK9mP2qR8nL5vW3jY7hT1';
+    const decoded = jwt.verify(token, jwtSecret);
     const userId = decoded.userId || decoded.id || decoded._id;
 
     if (!userId) {

@@ -5,20 +5,17 @@ import {
   Search,
   ArrowRight,
   Flame,
-  Clock,
-  ShieldCheck,
-  CheckCircle2,
-  ChefHat,
-  Heart,
-  TrendingUp,
-  Award,
-  Zap,
   BookOpen,
   UtensilsCrossed,
+  Layers,
+  ChefHat,
+  Award,
 } from 'lucide-react';
+import { TextAnimationCollection, CharacterCarousel, LiquidMetalButton } from '@designcodeio/threeui';
+import '@designcodeio/threeui/style.css';
+
 import { recipeService } from '../services/recipeService';
 import { RecipeCard } from '../components/recipe/RecipeCard';
-import ThreeCookingScene from '../components/common/ThreeCookingScene';
 import CookingPotInteractive from '../components/ingredient/CookingPotInteractive';
 
 export const HomePage = () => {
@@ -86,22 +83,22 @@ export const HomePage = () => {
   };
 
   const cuisines = [
-    { name: 'Italian', icon: '🍝', count: 'Classic Pasta & Risottos', tag: 'Italian' },
+    { name: 'Italian', icon: '🍝', count: 'Classic Pasta, Risottos & Sauces', tag: 'Italian' },
     { name: 'Indian', icon: '🍛', count: 'Aromatic Curries & Biryanis', tag: 'Indian' },
-    { name: 'Asian', icon: '🥢', count: 'Stir-fries & Savory Woks', tag: 'Asian' },
+    { name: 'Asian', icon: '🥢', count: 'Savory Woks & Fried Rice', tag: 'Asian' },
     { name: 'American', icon: '🥞', count: 'Fluffy Pancakes & Sandwiches', tag: 'American' },
   ];
 
   return (
     <div className="space-y-24 pb-20">
       {/* ============================================================
-          HERO SECTION — EDITORIAL WITH 3D COOKING SCENE
+          HERO SECTION — THREEUI TEXT ANIMATION & EDITORIAL IDENTITY
           ============================================================ */}
-      <section className="relative overflow-hidden pt-8 pb-16 border-b border-dark-border/40">
+      <section className="relative overflow-hidden pt-6 pb-16 border-b border-dark-border/40 text-left">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            {/* Left Column: Editorial Headline & Search */}
-            <div className="lg:col-span-7 space-y-6 text-left">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            {/* Left Column: Editorial Headline & Actions */}
+            <div className="lg:col-span-7 space-y-6">
               {/* Badge */}
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sage/15 border border-sage/30 text-sage-300 text-xs font-bold uppercase tracking-widest animate-fade-in">
                 <Sparkles className="w-3.5 h-3.5 text-sage-400" />
@@ -110,26 +107,31 @@ export const HomePage = () => {
 
               {/* Main Headline */}
               <h1 className="text-4xl sm:text-6xl lg:text-7xl font-heading font-black tracking-tight text-white leading-[1.08]">
-                Turn the ingredients you have into <span className="text-transparent bg-clip-text bg-gradient-to-r from-sage-300 via-warm to-accent">meals you'll love</span>.
+                Turn What You Have Into{' '}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-sage-300 via-warm to-accent">
+                  What You Crave
+                </span>
+                .
               </h1>
 
               {/* Subtitle */}
               <p className="text-base sm:text-lg text-text-secondary max-w-xl leading-relaxed">
-                Discover culinary recipes based on what's already in your kitchen. No grocery stress. Exact percentage matching. Zero food waste.
+                Choose your ingredients and discover recipes you can actually make right now. Exact percentage matching. Zero grocery stress. Zero food waste.
               </p>
 
-              {/* CTA Action Buttons */}
-              <div className="flex flex-wrap items-center gap-3.5 pt-2">
-                <Link
-                  to="/matcher"
-                  className="btn-primary !py-3.5 !px-7 rounded-2xl text-sm font-bold uppercase tracking-wider flex items-center gap-2 shadow-glow-green"
-                >
-                  <Sparkles className="w-4 h-4" />
-                  <span>Start Cooking</span>
-                </Link>
+              {/* Hero Action Area featuring ThreeUI LiquidMetalButton */}
+              <div className="flex flex-wrap items-center gap-4 pt-2">
+                <div className="h-12 flex items-center min-w-[160px]">
+                  <LiquidMetalButton
+                    variant="pill"
+                    text="Start Cooking"
+                    onClick={() => navigate('/matcher')}
+                  />
+                </div>
+
                 <Link
                   to="/recipes"
-                  className="btn-outline !py-3.5 !px-6 rounded-2xl text-sm font-semibold uppercase tracking-wider flex items-center gap-2"
+                  className="btn-outline !py-3.5 !px-6 rounded-2xl text-xs font-bold uppercase tracking-wider flex items-center gap-2"
                 >
                   <BookOpen className="w-4 h-4" />
                   <span>Explore Recipes</span>
@@ -158,19 +160,26 @@ export const HomePage = () => {
               </form>
             </div>
 
-            {/* Right Column: 3D Interactive Cooking Canvas */}
+            {/* Right Column: ThreeUI TextAnimationCollection Canvas */}
             <div className="lg:col-span-5 relative flex items-center justify-center">
-              <div className="relative w-full aspect-square max-w-[440px] rounded-3xl bg-gradient-to-b from-dark-surface/60 to-dark-card/90 border border-dark-border p-2 shadow-2xl flex items-center justify-center overflow-hidden">
-                <ThreeCookingScene className="w-full h-full" />
-                
-                {/* Floating Dish Highlights */}
-                <div className="absolute top-4 left-4 p-2.5 rounded-2xl bg-dark-bg/85 backdrop-blur-md border border-white/10 shadow-lg text-left animate-float-gentle">
+              <div className="relative w-full aspect-square max-w-[460px] rounded-3xl bg-dark-card border border-dark-border shadow-2xl overflow-hidden flex items-center justify-center">
+                <TextAnimationCollection
+                  variant="threeui-intro"
+                  mode="dark"
+                  hue={0}
+                  saturation={1.0}
+                  brightness={1.0}
+                  className="w-full h-full"
+                />
+
+                {/* Floating Culinary Badges */}
+                <div className="absolute top-4 left-4 p-2.5 rounded-2xl bg-dark-bg/90 backdrop-blur-md border border-white/10 shadow-lg text-left pointer-events-none">
                   <p className="text-[10px] uppercase font-bold text-sage-400 tracking-wider">Live Matcher</p>
                   <p className="text-xs font-bold text-white">Classic Omelette</p>
                   <span className="text-[10px] font-bold text-emerald-400">100% Available</span>
                 </div>
 
-                <div className="absolute bottom-4 right-4 p-2.5 rounded-2xl bg-dark-bg/85 backdrop-blur-md border border-white/10 shadow-lg text-left animate-float-slow">
+                <div className="absolute bottom-4 right-4 p-2.5 rounded-2xl bg-dark-bg/90 backdrop-blur-md border border-white/10 shadow-lg text-left pointer-events-none">
                   <p className="text-[10px] uppercase font-bold text-warm tracking-wider">Chef's Special</p>
                   <p className="text-xs font-bold text-white">Butter Chicken</p>
                   <span className="text-[10px] font-medium text-text-secondary">⭐ 4.9 Rating</span>
@@ -240,52 +249,38 @@ export const HomePage = () => {
       </section>
 
       {/* ============================================================
-          HOW FLAVORCRAFT WORKS (3-STEP EDITORIAL)
+          CULINARY STORIES & FEATURED COLLECTION (THREEUI CHARACTER CAROUSEL)
           ============================================================ */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-12 space-y-2">
-          <span className="text-xs font-bold uppercase tracking-widest text-sage-400">Effortless Workflow</span>
-          <h2 className="text-3xl sm:text-4xl font-heading font-bold text-white">How FlavorCraft Works</h2>
-          <p className="text-sm text-text-secondary">
-            From fridge contents to gourmet dining in 3 simple steps.
-          </p>
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-left">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+          <div>
+            <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-sage-400 mb-1">
+              <Sparkles className="w-4 h-4 text-sage-400" />
+              <span>Culinary Stories & Studio</span>
+            </div>
+            <h2 className="text-3xl font-heading font-bold text-white">Discover New Flavors</h2>
+            <p className="text-xs text-text-secondary mt-1">
+              Explore dishes from different culinary traditions, master chef techniques, and artisanal recipes.
+            </p>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="card p-7 bg-dark-card border-dark-border hover:border-sage/40 transition-all text-left space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-sage/15 text-sage-300 flex items-center justify-center font-bold text-lg font-heading">
-              01
-            </div>
-            <h3 className="text-lg font-heading font-bold text-white">Pick Your Ingredients</h3>
-            <p className="text-xs text-text-secondary leading-relaxed">
-              Select items from your pantry or use our smart categories (Vegetables, Protein, Spices, Grains).
-            </p>
-          </div>
-
-          <div className="card p-7 bg-dark-card border-dark-border hover:border-primary/40 transition-all text-left space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-primary/20 text-primary-light flex items-center justify-center font-bold text-lg font-heading">
-              02
-            </div>
-            <h3 className="text-lg font-heading font-bold text-white">Deterministic Recipe Match</h3>
-            <p className="text-xs text-text-secondary leading-relaxed">
-              Our 3-tier algorithm ranks recipes by match percentage, missing items, and total cooking time.
-            </p>
-          </div>
-
-          <div className="card p-7 bg-dark-card border-dark-border hover:border-accent/40 transition-all text-left space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-accent/15 text-accent flex items-center justify-center font-bold text-lg font-heading">
-              03
-            </div>
-            <h3 className="text-lg font-heading font-bold text-white">Focused Cooking Mode</h3>
-            <p className="text-xs text-text-secondary leading-relaxed">
-              Step-by-step guidance with interactive voice timers, ingredient checklists, and grocery integration.
-            </p>
-          </div>
+        <div className="rounded-3xl border border-dark-border bg-dark-card overflow-hidden h-[340px] sm:h-[400px] shadow-2xl relative">
+          <CharacterCarousel
+            variant="filmstrip"
+            speed={1.0}
+            scale={1.0}
+            opacity={1.0}
+            hue={0}
+            saturation={1.0}
+            brightness={1.0}
+            className="w-full h-full"
+          />
         </div>
       </section>
 
       {/* ============================================================
-          FEATURED & TRENDING RECIPES
+          FEATURED & TRENDING RECIPES WITH AUTHENTIC FOOD IMAGERY
           ============================================================ */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 text-left">

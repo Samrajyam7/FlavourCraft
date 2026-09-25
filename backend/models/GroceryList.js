@@ -9,6 +9,11 @@ const groceryItemSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
+      trim: true,
+    },
+    amount: {
+      type: String,
+      default: '1',
     },
     quantity: {
       type: String,
@@ -17,6 +22,14 @@ const groceryItemSchema = new mongoose.Schema(
     unit: {
       type: String,
       default: 'piece',
+    },
+    category: {
+      type: String,
+      default: 'Pantry',
+    },
+    type: {
+      type: String,
+      default: 'Ingredient',
     },
     purchased: {
       type: Boolean,
@@ -27,7 +40,7 @@ const groceryItemSchema = new mongoose.Schema(
       default: '',
     },
   },
-  { _id: true }
+  { _id: true, timestamps: true }
 );
 
 const groceryListSchema = new mongoose.Schema(

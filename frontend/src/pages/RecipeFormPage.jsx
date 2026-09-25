@@ -45,14 +45,15 @@ export const RecipeFormPage = () => {
 
         if (isEditMode) {
           setLoading(true);
-          const rec = await recipeService.getRecipeById(id);
+          const recRes = await recipeService.getRecipeById(id);
+          const rec = recRes?.recipe || recRes;
           setTitle(rec.title || '');
           setDescription(rec.description || '');
           setCuisine(rec.cuisine || 'Italian');
           setMealType(rec.mealType || 'Dinner');
           setDifficulty(rec.difficulty || 'Medium');
-          setPrepTime(rec.prepTime || 15);
-          setCookTime(rec.cookTime || 20);
+          setPrepTime(rec.prepTimeMinutes || rec.prepTime || 15);
+          setCookTime(rec.cookTimeMinutes || rec.cookTime || 20);
           setServings(rec.servings || 4);
           setCaloriesPerServing(rec.caloriesPerServing || 400);
           setImageUrl(rec.imageUrl || '');
@@ -61,10 +62,10 @@ export const RecipeFormPage = () => {
           if (rec.ingredients?.length > 0) {
             setIngredientsList(
               rec.ingredients.map((item) => ({
-                ingredientId: item.ingredient?._id || item.ingredient || '',
-                name: item.ingredient?.name || item.name || '',
+                ingredientId: item.ingredientId?._id || item.ingredient?._id || item.ingredientId || item.ingredient || '',
+                name: item.ingredientId?.name || item.ingredient?.name || item.name || '',
                 amount: item.amount || 1,
-                unit: item.unit || 'unit',
+                unit: item.unit || item.ingredientId?.unit || 'unit',
                 notes: item.notes || '',
               }))
             );
@@ -73,9 +74,9 @@ export const RecipeFormPage = () => {
           if (rec.instructions?.length > 0) {
             setInstructionsList(
               rec.instructions.map((step, idx) => ({
-                stepNumber: idx + 1,
-                instruction: typeof step === 'string' ? step : step.instruction,
-                timerMinutes: step.timerMinutes || 0,
+                stepNumber: step.step || step.stepNumber || idx + 1,
+                instruction: typeof step === 'string' ? step : (step.description || step.instruction || ''),
+                timerMinutes: Number(step.timerMinutes) || 0,
               }))
             );
           }

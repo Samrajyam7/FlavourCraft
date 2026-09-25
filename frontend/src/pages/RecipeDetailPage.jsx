@@ -57,9 +57,10 @@ export const RecipeDetailPage = () => {
   const fetchRecipeData = async () => {
     try {
       setLoading(true);
-      const data = await recipeService.getRecipeById(id);
+      const res = await recipeService.getRecipeById(id);
+      const data = res?.recipe || res;
       setRecipe(data);
-      const servings = data.servings || 2;
+      const servings = data?.servings || 2;
       setBaseServings(servings);
       setServingMultiplier(1);
 
@@ -446,24 +447,28 @@ export const RecipeDetailPage = () => {
             </h2>
 
             <div className="space-y-6">
-              {recipe.instructions?.map((step, idx) => {
-                const stepText = typeof step === 'string' ? step : (step.description || step.instruction);
-                return (
-                  <div key={idx} className="flex gap-4 group text-left">
-                    <div className="w-9 h-9 rounded-xl bg-dark-surface border border-dark-border text-sage-300 font-bold font-heading flex items-center justify-center flex-shrink-0 group-hover:bg-primary group-hover:text-white transition-all text-sm">
-                      {step.step || idx + 1}
+              {(!recipe.instructions || recipe.instructions.length === 0) ? (
+                <p className="text-sm text-text-muted py-4">No cooking instructions are available for this recipe.</p>
+              ) : (
+                recipe.instructions.map((step, idx) => {
+                  const stepText = typeof step === 'string' ? step : (step.description || step.instruction || '');
+                  return (
+                    <div key={idx} className="flex gap-4 group text-left">
+                      <div className="w-9 h-9 rounded-xl bg-dark-surface border border-dark-border text-sage-300 font-bold font-heading flex items-center justify-center flex-shrink-0 group-hover:bg-primary group-hover:text-white transition-all text-sm">
+                        {step.step || step.stepNumber || idx + 1}
+                      </div>
+                      <div className="space-y-1.5 pt-1">
+                        <p className="text-sm sm:text-base text-text-primary leading-relaxed">{stepText}</p>
+                        {step.timerMinutes ? (
+                          <span className="inline-flex items-center gap-1.5 text-xs text-warm font-semibold mt-1">
+                            <Timer className="w-3.5 h-3.5" /> Step Timer: {step.timerMinutes} minutes
+                          </span>
+                        ) : null}
+                      </div>
                     </div>
-                    <div className="space-y-1.5 pt-1">
-                      <p className="text-sm sm:text-base text-text-primary leading-relaxed">{stepText}</p>
-                      {step.timerMinutes ? (
-                        <span className="inline-flex items-center gap-1.5 text-xs text-warm font-semibold mt-1">
-                          <Timer className="w-3.5 h-3.5" /> Step Timer: {step.timerMinutes} minutes
-                        </span>
-                      ) : null}
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              )}
             </div>
           </div>
 

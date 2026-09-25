@@ -9,7 +9,12 @@ import {
   Sparkles,
   Layers,
   RotateCcw,
+  Search,
+  Edit2,
   Check,
+  X,
+  AlertCircle,
+  RefreshCw,
 } from 'lucide-react';
 import { groceryService } from '../services/groceryService';
 import { useToast } from '../context/ToastContext';
@@ -18,14 +23,31 @@ export const GroceryListPage = () => {
   const { success, error: toastError } = useToast();
   const [groceryItems, setGroceryItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(false);
+
+  // Search & Filter
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
 
   // Manual Add Form
   const [showAddForm, setShowAddForm] = useState(false);
   const [name, setName] = useState('');
-  const [quantity, setQuantity] = useState(1);
-  const [unit, setUnit] = useState('unit');
+  const [quantity, setQuantity] = useState('1');
+  const [unit, setUnit] = useState('piece');
   const [category, setCategory] = useState('Produce');
+  const [type, setType] = useState('Ingredient');
   const [adding, setAdding] = useState(false);
+
+  // Edit Item Modal/State
+  const [editingItem, setEditingItem] = useState(null);
+  const [editName, setEditName] = useState('');
+  const [editQuantity, setEditQuantity] = useState('1');
+  const [editUnit, setEditUnit] = useState('');
+  const [editCategory, setEditCategory] = useState('Produce');
+  const [editType, setEditType] = useState('Ingredient');
+  const [savingEdit, setSavingEdit] = useState(false);
+
+  const categories = ['All', 'Produce', 'Dairy', 'Protein', 'Pantry', 'Grains', 'Spices', 'Other'];
 
   useEffect(() => {
     fetchGroceryList();
@@ -34,16 +56,20 @@ export const GroceryListPage = () => {
   const fetchGroceryList = async () => {
     try {
       setLoading(true);
+      setFetchError(false);
       const data = await groceryService.getGroceryList();
-      setGroceryItems(data.items || data || []);
+      const items = data?.items || data?.list?.items || data?.groceries || (Array.isArray(data) ? data : []);
+      setGroceryItems(items);
     } catch (err) {
       console.error('Failed to load grocery list:', err);
+      setFetchError(true);
     } finally {
       setLoading(false);
     }
   };
 
   const handleTogglePurchased = async (item) => {
+    if (!item || !item._id) return;
     const nextPurchased = !item.purchased;
     try {
       await groceryService.updateGroceryItem(item._id, { purchased: nextPurchased });
@@ -56,6 +82,7 @@ export const GroceryListPage = () => {
   };
 
   const handleDeleteItem = async (id) => {
+    if (!id) return;
     try {
       await groceryService.deleteGroceryItem(id);
       setGroceryItems((prev) => prev.filter((i) => i._id !== id));
@@ -81,17 +108,27 @@ export const GroceryListPage = () => {
 
     setAdding(true);
     try {
-      await groceryService.addGroceryItem({
+      const res = await groceryService.addGroceryItem({
         name: name.trim(),
-        quantity: Number(quantity) || 1,
-        unit: unit || 'unit',
-        category: category || 'Pantry',
+        amount: String(quantity).trim() || '1',
+        quantity: String(quantity).trim() || '1',
+        unit: unit.trim() || 'piece',
+        category: category || 'Produce',
+        type: type || 'Ingredient',
+        purchased: false,
       });
-      success(`Added "${name}" to shopping list!`);
+      success(`Added "${name.trim()}" to shopping list!`);
       setName('');
-      setQuantity(1);
+      setQuantity('1');
+      setUnit('piece');
       setShowAddForm(false);
-      fetchGroceryList();
+      
+      const updatedItems = res?.items || res?.list?.items || res?.groceries;
+      if (updatedItems) {
+        setGroceryItems(updatedItems);
+      } else {
+        fetchGroceryList();
+      }
     } catch (err) {
       toastError(err.response?.data?.message || 'Failed to add item');
     } finally {
@@ -99,21 +136,116 @@ export const GroceryListPage = () => {
     }
   };
 
+  const handleStartEdit = (item, e) => {
+    e.stopPropagation();
+    setEditingItem(item);
+    setEditName(item.name || item.ingredientId?.name || '');
+    setEditQuantity(String(item.amount || item.quantity || '1'));
+    setEditUnit(item.unit || item.ingredientId?.unit || '');
+    setEditCategory(item.category || item.ingredientId?.category || 'Produce');
+    setEditType(item.type || 'Ingredient');
+  };
+
+  const handleSaveEdit = async (e) => {
+    e.preventDefault();
+    if (!editingItem || !editingItem._id) return;
+
+    setSavingEdit(true);
+    try {
+      const updatedPayload = {
+        name: editName.trim() || editingItem.name,
+        amount: String(editQuantity).trim() || '1',
+        quantity: String(editQuantity).trim() || '1',
+        unit: editUnit.trim(),
+        category: editCategory,
+        type: editType,
+      };
+
+      const res = await groceryService.updateGroceryItem(editingItem._id, updatedPayload);
+      success('Item updated successfully!');
+      setEditingItem(null);
+
+      const updatedItems = res?.items || res?.list?.items;
+      if (updatedItems) {
+        setGroceryItems(updatedItems);
+      } else {
+        setGroceryItems((prev) =>
+          prev.map((i) => (i._id === editingItem._id ? { ...i, ...updatedPayload } : i))
+        );
+      }
+    } catch (err) {
+      toastError('Failed to update grocery item');
+    } finally {
+      setSavingEdit(false);
+    }
+  };
+
   const handlePrint = () => {
     window.print();
   };
 
-  // Group items by category
-  const groupedItems = groceryItems.reduce((acc, item) => {
-    const cat = item.category || item.ingredient?.category || 'General';
-    if (!acc[cat]) acc[cat] = [];
-    acc[cat].push(item);
+  // Safe category & search filtering
+  const filteredItems = groceryItems.filter((item) => {
+    const itemName = (item.name || item.ingredientId?.name || item.ingredient?.name || '').toLowerCase();
+    const itemCat = (item.category || item.ingredientId?.category || item.ingredient?.category || 'Other').toLowerCase();
+    
+    const matchesSearch = !searchQuery.trim() || itemName.includes(searchQuery.trim().toLowerCase());
+    const matchesCategory =
+      selectedCategory === 'All' ||
+      itemCat === selectedCategory.toLowerCase() ||
+      (selectedCategory === 'Other' && !['produce', 'dairy', 'protein', 'pantry', 'grains', 'spices'].includes(itemCat));
+
+    return matchesSearch && matchesCategory;
+  });
+
+  // Group filtered items by category with safe fallbacks
+  const groupedItems = filteredItems.reduce((acc, item) => {
+    let cat = (item.category || item.ingredientId?.category || item.ingredient?.category || 'Other').trim();
+    if (!cat) cat = 'Other';
+    // Capitalize first letter
+    const formattedCat = cat.charAt(0).toUpperCase() + cat.slice(1);
+    if (!acc[formattedCat]) acc[formattedCat] = [];
+    acc[formattedCat].push(item);
     return acc;
   }, {});
 
   const totalCount = groceryItems.length;
   const purchasedCount = groceryItems.filter((i) => i.purchased).length;
   const progressPercent = totalCount > 0 ? (purchasedCount / totalCount) * 100 : 0;
+
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center space-y-4">
+        <div className="flex items-center justify-center gap-3 text-sage-300">
+          <RefreshCw className="w-6 h-6 animate-spin" />
+          <span className="text-sm font-semibold">Loading grocery list...</span>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="h-32 skeleton rounded-2xl" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <div className="max-w-md mx-auto px-4 py-16 text-center space-y-4">
+        <div className="w-14 h-14 rounded-2xl bg-amber-950/40 text-warm flex items-center justify-center mx-auto border border-warm/30">
+          <AlertCircle className="w-7 h-7" />
+        </div>
+        <h3 className="text-lg font-bold text-white">Unable to load your grocery list</h3>
+        <p className="text-xs text-text-secondary">Please try again.</p>
+        <button
+          onClick={fetchGroceryList}
+          className="btn-primary text-xs !py-2 !px-4 shadow-glow-green"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 text-left">
@@ -129,7 +261,7 @@ export const GroceryListPage = () => {
               My Grocery Shopping Checklist
             </h1>
             <p className="text-xs sm:text-sm text-text-secondary max-w-xl">
-              Check off ingredients while at the market aisle by aisle. Items generated from missing recipe ingredients sync here automatically.
+              Check off ingredients while at the market aisle by aisle. Items generated from missing recipe ingredients sync here automatically with exact amounts preserved.
             </p>
           </div>
 
@@ -179,6 +311,46 @@ export const GroceryListPage = () => {
         )}
       </div>
 
+      {/* Search & Category Filter Bar */}
+      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+        {/* Search Bar */}
+        <div className="relative w-full sm:w-80">
+          <Search className="w-4 h-4 text-text-muted absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <input
+            type="text"
+            placeholder="Search shopping list (e.g. Tomato)..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="input !pl-10 text-xs w-full"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-white text-xs"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+
+        {/* Category Pills */}
+        <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
+                selectedCategory === cat
+                  ? 'bg-primary text-white shadow-glow-green'
+                  : 'bg-dark-surface text-text-muted hover:text-white border border-dark-border'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Manual Add Item Modal */}
       {showAddForm && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
@@ -193,7 +365,7 @@ export const GroceryListPage = () => {
                 <input
                   type="text"
                   required
-                  placeholder="e.g., Extra Virgin Olive Oil or Greek Yogurt"
+                  placeholder="e.g., Tomato, Cheese, Olive Oil"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="input text-xs"
@@ -202,21 +374,20 @@ export const GroceryListPage = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="input-label">Quantity</label>
+                  <label className="input-label">Quantity / Amount</label>
                   <input
-                    type="number"
-                    min="0.1"
-                    step="0.1"
+                    type="text"
                     value={quantity}
                     onChange={(e) => setQuantity(e.target.value)}
+                    placeholder="e.g. 2, 100g, 1 cup"
                     className="input text-xs"
                   />
                 </div>
                 <div>
-                  <label className="input-label">Unit</label>
+                  <label className="input-label">Unit (optional)</label>
                   <input
                     type="text"
-                    placeholder="pcs, bottle, g"
+                    placeholder="pcs, g, ml, tbsp"
                     value={unit}
                     onChange={(e) => setUnit(e.target.value)}
                     className="input text-xs"
@@ -224,21 +395,37 @@ export const GroceryListPage = () => {
                 </div>
               </div>
 
-              <div>
-                <label className="input-label">Aisle / Category</label>
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="select text-xs"
-                >
-                  <option value="Produce">Produce & Fresh Vegetables</option>
-                  <option value="Dairy">Dairy & Eggs</option>
-                  <option value="Protein">Protein, Meat & Seafood</option>
-                  <option value="Pantry">Pantry Staples</option>
-                  <option value="Grains">Grains & Pasta</option>
-                  <option value="Spices">Herbs & Spices</option>
-                  <option value="Other">Other</option>
-                </select>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="input-label">Aisle / Category</label>
+                  <select
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="select text-xs"
+                  >
+                    <option value="Produce">Produce</option>
+                    <option value="Dairy">Dairy</option>
+                    <option value="Protein">Protein</option>
+                    <option value="Pantry">Pantry</option>
+                    <option value="Grains">Grains</option>
+                    <option value="Spices">Spices</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="input-label">Food Type</label>
+                  <select
+                    value={type}
+                    onChange={(e) => setType(e.target.value)}
+                    className="select text-xs"
+                  >
+                    <option value="Ingredient">Ingredient</option>
+                    <option value="Staple">Staple</option>
+                    <option value="Fresh Food">Fresh Food</option>
+                    <option value="Packaged Food">Packaged Food</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-2">
@@ -262,14 +449,103 @@ export const GroceryListPage = () => {
         </div>
       )}
 
-      {/* Categorized List */}
-      {loading ? (
-        <div className="space-y-4">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-32 skeleton rounded-2xl" />
-          ))}
+      {/* Edit Item Modal */}
+      {editingItem && (
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
+          <div className="card max-w-md w-full p-6 bg-dark-card border-dark-border relative shadow-2xl animate-slide-up text-left">
+            <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
+              <Edit2 className="w-5 h-5 text-sage-400" /> Edit Grocery Item
+            </h3>
+
+            <form onSubmit={handleSaveEdit} className="space-y-4">
+              <div>
+                <label className="input-label">Item Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  className="input text-xs"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="input-label">Quantity / Amount</label>
+                  <input
+                    type="text"
+                    value={editQuantity}
+                    onChange={(e) => setEditQuantity(e.target.value)}
+                    className="input text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="input-label">Unit</label>
+                  <input
+                    type="text"
+                    value={editUnit}
+                    onChange={(e) => setEditUnit(e.target.value)}
+                    className="input text-xs"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="input-label">Aisle / Category</label>
+                  <select
+                    value={editCategory}
+                    onChange={(e) => setEditCategory(e.target.value)}
+                    className="select text-xs"
+                  >
+                    <option value="Produce">Produce</option>
+                    <option value="Dairy">Dairy</option>
+                    <option value="Protein">Protein</option>
+                    <option value="Pantry">Pantry</option>
+                    <option value="Grains">Grains</option>
+                    <option value="Spices">Spices</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="input-label">Food Type</label>
+                  <select
+                    value={editType}
+                    onChange={(e) => setEditType(e.target.value)}
+                    className="select text-xs"
+                  >
+                    <option value="Ingredient">Ingredient</option>
+                    <option value="Staple">Staple</option>
+                    <option value="Fresh Food">Fresh Food</option>
+                    <option value="Packaged Food">Packaged Food</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingItem(null)}
+                  className="btn-ghost text-xs"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingEdit}
+                  className="btn-primary text-xs font-semibold shadow-glow-green"
+                >
+                  {savingEdit ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-      ) : totalCount === 0 ? (
+      )}
+
+      {/* Categorized List */}
+      {totalCount === 0 ? (
         <div className="card p-12 text-center bg-dark-card border-dark-border space-y-4 max-w-lg mx-auto">
           <ShoppingCart className="w-12 h-12 text-text-muted mx-auto" />
           <h3 className="text-base font-bold text-white">Your Shopping List is Empty</h3>
@@ -281,6 +557,23 @@ export const GroceryListPage = () => {
             className="btn-primary text-xs !py-2 !px-4 shadow-glow-green"
           >
             + Add First Grocery Item
+          </button>
+        </div>
+      ) : filteredItems.length === 0 ? (
+        <div className="card p-12 text-center bg-dark-card border-dark-border space-y-4 max-w-lg mx-auto">
+          <Search className="w-12 h-12 text-text-muted mx-auto" />
+          <h3 className="text-base font-bold text-white">No Matching Items Found</h3>
+          <p className="text-xs text-text-secondary">
+            No grocery items match "{searchQuery}" in category "{selectedCategory}".
+          </p>
+          <button
+            onClick={() => {
+              setSearchQuery('');
+              setSelectedCategory('All');
+            }}
+            className="btn-outline text-xs !py-2 !px-4"
+          >
+            Reset Filters
           </button>
         </div>
       ) : (
@@ -297,40 +590,62 @@ export const GroceryListPage = () => {
               </div>
 
               <div className="space-y-2">
-                {items.map((item) => (
-                  <div
-                    key={item._id}
-                    onClick={() => handleTogglePurchased(item)}
-                    className={`flex items-center justify-between p-3 rounded-xl border transition-all cursor-pointer select-none ${
-                      item.purchased
-                        ? 'bg-dark-surface/40 border-dark-border/40 opacity-50 line-through text-text-muted'
-                        : 'bg-dark-surface border-dark-border text-white hover:border-sage/40'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      {item.purchased ? (
-                        <CheckCircle2 className="w-4 h-4 text-sage-400 flex-shrink-0" />
-                      ) : (
-                        <Circle className="w-4 h-4 text-text-muted flex-shrink-0" />
-                      )}
-                      <span className="text-xs sm:text-sm font-semibold">
-                        {item.name || item.ingredient?.name}
-                      </span>
-                    </div>
+                {items.map((item) => {
+                  const displayAmount = item.amount || item.quantity || '1';
+                  const displayUnit = item.unit || item.ingredientId?.unit || '';
+                  const displayName = item.name || item.ingredientId?.name || item.ingredient?.name || 'Item';
+                  const displayType = item.type || 'Ingredient';
 
-                    <div className="flex items-center gap-3" onClick={(e) => e.stopPropagation()}>
-                      <span className="font-mono text-xs text-sage-300 bg-sage/15 px-2 py-0.5 rounded-md border border-sage/30">
-                        {item.quantity} {item.unit || ''}
-                      </span>
-                      <button
-                        onClick={() => handleDeleteItem(item._id)}
-                        className="text-text-muted hover:text-accent p-1"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+                  return (
+                    <div
+                      key={item._id}
+                      onClick={() => handleTogglePurchased(item)}
+                      className={`flex items-center justify-between p-3 rounded-xl border transition-all cursor-pointer select-none ${
+                        item.purchased
+                          ? 'bg-dark-surface/40 border-dark-border/40 opacity-50 line-through text-text-muted'
+                          : 'bg-dark-surface border-dark-border text-white hover:border-sage/40'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        {item.purchased ? (
+                          <CheckCircle2 className="w-4 h-4 text-sage-400 flex-shrink-0" />
+                        ) : (
+                          <Circle className="w-4 h-4 text-text-muted flex-shrink-0" />
+                        )}
+                        <div className="flex flex-col">
+                          <span className="text-xs sm:text-sm font-semibold">
+                            {displayName}
+                          </span>
+                          {item.addedFromRecipe && (
+                            <span className="text-[10px] text-text-muted">
+                              from: {item.addedFromRecipe}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                        <span className="font-mono text-xs text-sage-300 bg-sage/15 px-2 py-0.5 rounded-md border border-sage/30">
+                          {displayAmount} {displayUnit}
+                        </span>
+                        <button
+                          onClick={(e) => handleStartEdit(item, e)}
+                          className="text-text-muted hover:text-white p-1 rounded-lg hover:bg-dark-card transition-colors"
+                          title="Edit quantity / item"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteItem(item._id)}
+                          className="text-text-muted hover:text-accent p-1 rounded-lg hover:bg-dark-card transition-colors"
+                          title="Delete item"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           ))}
