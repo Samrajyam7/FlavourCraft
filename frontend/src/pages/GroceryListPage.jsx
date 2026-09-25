@@ -9,6 +9,7 @@ import {
   Sparkles,
   Layers,
   RotateCcw,
+  Check,
 } from 'lucide-react';
 import { groceryService } from '../services/groceryService';
 import { useToast } from '../context/ToastContext';
@@ -115,27 +116,27 @@ export const GroceryListPage = () => {
   const progressPercent = totalCount > 0 ? (purchasedCount / totalCount) * 100 : 0;
 
   return (
-    <div className="container-page py-8 space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 text-left">
       {/* Header Banner */}
-      <div className="card p-6 sm:p-8 bg-gradient-to-r from-primary-900/40 via-dark-card to-dark-surface border-primary/30">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="card p-6 sm:p-8 bg-gradient-to-r from-primary-900/40 via-dark-card to-dark-surface border-sage/30">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/20 text-primary text-xs font-bold">
-              <ShoppingCart className="w-3.5 h-3.5" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sage/15 text-sage-300 text-xs font-bold uppercase tracking-widest border border-sage/30">
+              <ShoppingCart className="w-3.5 h-3.5 text-sage-400" />
               <span>Smart Shopping Assistant</span>
             </div>
             <h1 className="text-2xl sm:text-4xl font-heading font-black text-white">
-              My Grocery Shopping List
+              My Grocery Shopping Checklist
             </h1>
-            <p className="text-sm text-text-secondary max-w-xl">
-              Check off ingredients while at the supermarket or aisle by aisle. Items generated from missing recipe ingredients appear here automatically.
+            <p className="text-xs sm:text-sm text-text-secondary max-w-xl">
+              Check off ingredients while at the market aisle by aisle. Items generated from missing recipe ingredients sync here automatically.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={() => setShowAddForm(true)}
-              className="btn btn-primary flex items-center gap-2 shadow-glow-green"
+              className="btn-primary text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-glow-green"
             >
               <Plus className="w-4 h-4" />
               <span>Add Custom Item</span>
@@ -143,7 +144,7 @@ export const GroceryListPage = () => {
             {purchasedCount > 0 && (
               <button
                 onClick={handleClearPurchased}
-                className="btn btn-outline text-xs flex items-center gap-1.5"
+                className="btn-outline text-xs flex items-center gap-1.5"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>Clear Checked ({purchasedCount})</span>
@@ -151,7 +152,7 @@ export const GroceryListPage = () => {
             )}
             <button
               onClick={handlePrint}
-              className="btn btn-icon btn-ghost border border-dark-border"
+              className="p-2.5 rounded-xl text-text-secondary hover:text-white hover:bg-dark-hover border border-dark-border transition-colors"
               title="Print Shopping List"
             >
               <Printer className="w-4 h-4" />
@@ -164,13 +165,13 @@ export const GroceryListPage = () => {
           <div className="mt-6 pt-6 border-t border-dark-border/60 space-y-2">
             <div className="flex items-center justify-between text-xs font-semibold text-text-secondary">
               <span>Shopping Progress</span>
-              <span className="text-primary font-bold">
+              <span className="text-sage-300 font-bold">
                 {purchasedCount} of {totalCount} items bought ({Math.round(progressPercent)}%)
               </span>
             </div>
             <div className="w-full bg-dark-surface h-2 rounded-full overflow-hidden">
               <div
-                className="bg-primary h-full transition-all duration-300"
+                className="bg-gradient-to-r from-sage to-primary h-full transition-all duration-300"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
@@ -180,10 +181,10 @@ export const GroceryListPage = () => {
 
       {/* Manual Add Item Modal */}
       {showAddForm && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="card max-w-md w-full p-6 bg-dark-card border-dark-border relative shadow-2xl animate-slide-up">
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
+          <div className="card max-w-md w-full p-6 bg-dark-card border-dark-border relative shadow-2xl animate-slide-up text-left">
             <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-              <Plus className="w-5 h-5 text-primary" /> Add Item to Shopping List
+              <Plus className="w-5 h-5 text-sage-400" /> Add Item to Shopping Checklist
             </h3>
 
             <form onSubmit={handleManualAdd} className="space-y-4">
@@ -192,7 +193,7 @@ export const GroceryListPage = () => {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Greek Yogurt or Extra Virgin Olive Oil"
+                  placeholder="e.g., Extra Virgin Olive Oil or Greek Yogurt"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="input text-xs"
@@ -228,15 +229,14 @@ export const GroceryListPage = () => {
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="input text-xs"
+                  className="select text-xs"
                 >
                   <option value="Produce">Produce & Fresh Vegetables</option>
                   <option value="Dairy">Dairy & Eggs</option>
-                  <option value="Meat">Meat & Seafood</option>
+                  <option value="Protein">Protein, Meat & Seafood</option>
                   <option value="Pantry">Pantry Staples</option>
-                  <option value="Grains & Pasta">Grains & Pasta</option>
-                  <option value="Herbs & Spices">Herbs & Spices</option>
-                  <option value="Condiments">Condiments & Oils</option>
+                  <option value="Grains">Grains & Pasta</option>
+                  <option value="Spices">Herbs & Spices</option>
                   <option value="Other">Other</option>
                 </select>
               </div>
@@ -245,14 +245,14 @@ export const GroceryListPage = () => {
                 <button
                   type="button"
                   onClick={() => setShowAddForm(false)}
-                  className="btn btn-ghost text-xs"
+                  className="btn-ghost text-xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={adding}
-                  className="btn btn-primary text-xs shadow-glow-green"
+                  className="btn-primary text-xs font-semibold shadow-glow-green"
                 >
                   {adding ? 'Adding...' : 'Add to List'}
                 </button>
@@ -278,7 +278,7 @@ export const GroceryListPage = () => {
           </p>
           <button
             onClick={() => setShowAddForm(true)}
-            className="btn btn-primary text-xs !py-2 !px-4 shadow-glow-green"
+            className="btn-primary text-xs !py-2 !px-4 shadow-glow-green"
           >
             + Add First Grocery Item
           </button>
@@ -288,11 +288,11 @@ export const GroceryListPage = () => {
           {Object.entries(groupedItems).map(([catName, items]) => (
             <div key={catName} className="card p-6 bg-dark-card border-dark-border space-y-4">
               <div className="flex items-center justify-between border-b border-dark-border pb-3">
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                  <Layers className="w-4 h-4 text-primary" /> {catName}
+                <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                  <Layers className="w-4 h-4 text-sage-400" /> {catName}
                 </h3>
                 <span className="text-xs text-text-muted">
-                  {items.filter((i) => i.purchased).length}/{items.length}
+                  {items.filter((i) => i.purchased).length}/{items.length} completed
                 </span>
               </div>
 
@@ -304,12 +304,12 @@ export const GroceryListPage = () => {
                     className={`flex items-center justify-between p-3 rounded-xl border transition-all cursor-pointer select-none ${
                       item.purchased
                         ? 'bg-dark-surface/40 border-dark-border/40 opacity-50 line-through text-text-muted'
-                        : 'bg-dark-surface border-dark-border/80 text-white hover:border-primary/40'
+                        : 'bg-dark-surface border-dark-border text-white hover:border-sage/40'
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       {item.purchased ? (
-                        <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
+                        <CheckCircle2 className="w-4 h-4 text-sage-400 flex-shrink-0" />
                       ) : (
                         <Circle className="w-4 h-4 text-text-muted flex-shrink-0" />
                       )}
@@ -319,12 +319,12 @@ export const GroceryListPage = () => {
                     </div>
 
                     <div className="flex items-center gap-3" onClick={(e) => e.stopPropagation()}>
-                      <span className="font-mono text-xs text-primary bg-primary/10 px-2 py-0.5 rounded-md">
+                      <span className="font-mono text-xs text-sage-300 bg-sage/15 px-2 py-0.5 rounded-md border border-sage/30">
                         {item.quantity} {item.unit || ''}
                       </span>
                       <button
                         onClick={() => handleDeleteItem(item._id)}
-                        className="text-text-muted hover:text-red-400 p-1"
+                        className="text-text-muted hover:text-accent p-1"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>

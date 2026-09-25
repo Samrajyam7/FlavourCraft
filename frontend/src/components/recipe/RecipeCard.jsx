@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Clock, ChefHat, Star, Heart, Flame, Sparkles } from 'lucide-react';
+import { Clock, Star, Heart, Flame, Sparkles, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { favoriteService } from '../../services/favoriteService';
@@ -55,34 +55,34 @@ export const RecipeCard = ({
     }
   };
 
-  // Match percentage styling
+  // Match percentage styling & visual confidence
   const matchPercent = recipe.matchPercentage !== undefined ? Math.round(recipe.matchPercentage) : null;
-  let matchBadgeColor = 'bg-primary/20 text-primary border-primary/40';
+  let matchBadgeClass = 'badge-match-low';
   if (matchPercent !== null) {
-    if (matchPercent >= 80) matchBadgeColor = 'bg-primary text-white shadow-glow-green';
-    else if (matchPercent >= 50) matchBadgeColor = 'bg-amber-DEFAULT text-dark font-bold shadow-glow-orange';
-    else matchBadgeColor = 'bg-secondary/30 text-secondary border-secondary/40';
+    if (matchPercent >= 90) matchBadgeClass = 'badge-match-high';
+    else if (matchPercent >= 70) matchBadgeClass = 'bg-sage-950/80 text-sage-300 border border-sage-500/40 font-bold px-2.5 py-1 rounded-full text-xs flex items-center gap-1 shadow-sm';
+    else if (matchPercent >= 40) matchBadgeClass = 'badge-match-med';
   }
 
-  // Difficulty color
-  const getDifficultyColor = (diff) => {
+  // Difficulty badge colors
+  const getDifficultyClass = (diff) => {
     switch (diff?.toLowerCase()) {
       case 'easy':
-        return 'badge-green';
+        return 'bg-emerald-950/60 text-emerald-300 border border-emerald-600/30';
       case 'medium':
-        return 'badge-amber';
+        return 'bg-amber-950/60 text-amber-300 border border-amber-600/30';
       case 'hard':
-        return 'badge-red';
+        return 'bg-rose-950/60 text-rose-300 border border-rose-600/30';
       default:
-        return 'badge-gray';
+        return 'bg-dark-surface text-text-secondary border border-dark-border';
     }
   };
 
   const defaultImage = 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=800&q=80';
 
   return (
-    <div className="card-hover group flex flex-col overflow-hidden relative">
-      {/* Recipe Image & Top Overlays */}
+    <div className="card-hover group flex flex-col overflow-hidden relative bg-dark-card border border-dark-border rounded-2xl">
+      {/* Recipe Image with Top Overlays */}
       <Link to={`/recipes/${recipe._id}`} className="relative h-52 sm:h-56 w-full overflow-hidden bg-dark-surface block">
         <img
           src={recipe.imageUrl || defaultImage}
@@ -95,41 +95,41 @@ export const RecipeCard = ({
           loading="lazy"
         />
 
-        {/* Gradient shadow for text contrast */}
-        <div className="absolute inset-0 bg-gradient-to-t from-dark-card via-transparent to-black/30" />
+        {/* Soft Vignette Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-dark-card via-black/10 to-black/40" />
 
-        {/* Top Badges */}
+        {/* Top Badges (Cuisine & Meal Type) */}
         <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 items-center z-10">
           {recipe.cuisine && (
-            <span className="badge bg-dark/80 backdrop-blur-md text-text-primary border border-white/10 text-xs font-semibold">
+            <span className="px-2.5 py-0.5 rounded-lg bg-dark-bg/80 backdrop-blur-md text-sage-200 border border-white/10 text-[11px] font-semibold tracking-wide uppercase">
               {recipe.cuisine}
             </span>
           )}
           {recipe.mealType && (
-            <span className="badge bg-dark/80 backdrop-blur-md text-text-secondary border border-white/10 text-xs">
+            <span className="px-2 py-0.5 rounded-lg bg-dark-bg/80 backdrop-blur-md text-text-secondary border border-white/10 text-[11px] font-medium">
               {recipe.mealType}
             </span>
           )}
         </div>
 
-        {/* Favorite Button */}
+        {/* Tactile Favorite Button */}
         <button
           onClick={handleFavoriteClick}
           disabled={favLoading}
           aria-label={isFav ? 'Remove from favorites' : 'Add to favorites'}
-          className={`absolute top-3 right-3 p-2.5 rounded-full backdrop-blur-md transition-all duration-200 z-20 ${
+          className={`absolute top-3 right-3 p-2 rounded-xl backdrop-blur-md transition-all duration-200 z-20 ${
             isFav
-              ? 'bg-red-500/90 text-white shadow-lg scale-105 hover:bg-red-600'
-              : 'bg-dark/70 text-white/80 hover:text-white hover:bg-dark hover:scale-110'
+              ? 'bg-accent text-white shadow-glow-accent scale-105 hover:bg-accent-600'
+              : 'bg-dark-bg/70 text-white/80 hover:text-white hover:bg-dark-bg hover:scale-110 border border-white/10'
           }`}
         >
-          <Heart className={`w-4 h-4 ${isFav ? 'fill-current' : ''}`} />
+          <Heart className={`w-4 h-4 transition-transform active:scale-125 ${isFav ? 'fill-current' : ''}`} />
         </button>
 
-        {/* Match Percentage Badge (if in match mode) */}
+        {/* Match Percentage Badge */}
         {matchPercent !== null && (
           <div className="absolute bottom-3 right-3 z-10">
-            <div className={`flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold shadow-lg ${matchBadgeColor}`}>
+            <div className={`flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-black shadow-lg backdrop-blur-md ${matchBadgeClass}`}>
               <Sparkles className="w-3.5 h-3.5" />
               <span>{matchPercent}% Match</span>
             </div>
@@ -137,61 +137,69 @@ export const RecipeCard = ({
         )}
       </Link>
 
-      {/* Content Area */}
-      <div className="p-5 flex flex-col flex-grow justify-between gap-4">
-        <div className="space-y-2">
+      {/* Content Body */}
+      <div className="p-5 flex flex-col flex-grow justify-between gap-3.5">
+        <div className="space-y-1.5">
           {/* Title */}
-          <Link to={`/recipes/${recipe._id}`}>
-            <h3 className="text-lg font-heading font-bold text-white group-hover:text-primary transition-colors line-clamp-1">
+          <Link to={`/recipes/${recipe._id}`} className="block focus:outline-none">
+            <h3 className="text-base sm:text-lg font-heading font-bold text-white group-hover:text-sage-300 transition-colors line-clamp-1">
               {recipe.title}
             </h3>
           </Link>
 
           {/* Description */}
           <p className="text-xs text-text-secondary line-clamp-2 leading-relaxed">
-            {recipe.description || 'Delicious home-crafted recipe packed with fresh flavor.'}
+            {recipe.description || 'Delicious culinary creation crafted with fresh ingredients.'}
           </p>
         </div>
 
-        {/* Missing / Available Ingredients info if in match mode */}
-        {showMatchDetails && recipe.missingCount !== undefined && (
-          <div className="p-2.5 rounded-xl bg-dark-surface/80 border border-dark-border/60 text-xs flex items-center justify-between">
-            <span className="text-primary font-medium flex items-center gap-1">
-              ✓ {recipe.matchedCount || 0} in pantry
+        {/* Match Breakdown Banner */}
+        {showMatchDetails && (
+          <div className="p-2.5 rounded-xl bg-dark-surface border border-dark-border text-xs flex items-center justify-between">
+            <span className="text-sage-400 font-medium flex items-center gap-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              {recipe.matchedCount || 0} in kitchen
             </span>
-            <span className={`font-medium ${recipe.missingCount > 0 ? 'text-secondary' : 'text-text-muted'}`}>
-              {recipe.missingCount > 0 ? `+ ${recipe.missingCount} missing` : 'All ingredients ready!'}
+            <span className={`font-medium flex items-center gap-1 ${recipe.missingCount > 0 ? 'text-warm' : 'text-sage-300'}`}>
+              {recipe.missingCount > 0 ? (
+                <>
+                  <AlertCircle className="w-3 h-3 text-warm" />
+                  <span>+{recipe.missingCount} needed</span>
+                </>
+              ) : (
+                'All ready!'
+              )}
             </span>
           </div>
         )}
 
-        {/* Meta Stats: Time, Difficulty, Calories, Rating */}
-        <div className="pt-3 border-t border-dark-border/60 flex items-center justify-between text-xs text-text-secondary">
-          <div className="flex items-center gap-3.5">
+        {/* Metadata Footer */}
+        <div className="pt-3 border-t border-dark-border/80 flex items-center justify-between text-xs text-text-secondary">
+          <div className="flex items-center gap-3">
             {totalTime > 0 && (
               <span className="flex items-center gap-1 hover:text-white transition-colors" title={`Prep: ${prepTime}m, Cook: ${cookTime}m`}>
-                <Clock className="w-3.5 h-3.5 text-primary" />
-                <span>{totalTime}m</span>
+                <Clock className="w-3.5 h-3.5 text-sage-400" />
+                <span className="font-medium text-white">{totalTime}m</span>
               </span>
             )}
 
             {recipe.difficulty && (
-              <span className={`badge ${getDifficultyColor(recipe.difficulty)} !py-0.5 !px-2`}>
+              <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md ${getDifficultyClass(recipe.difficulty)}`}>
                 {recipe.difficulty}
               </span>
             )}
 
             {calories > 0 && (
               <span className="hidden sm:flex items-center gap-1">
-                <Flame className="w-3.5 h-3.5 text-secondary" />
+                <Flame className="w-3.5 h-3.5 text-warm" />
                 <span>{calories} kcal</span>
               </span>
             )}
           </div>
 
           {/* Rating */}
-          <div className="flex items-center gap-1 font-semibold text-white">
-            <Star className="w-3.5 h-3.5 text-amber-DEFAULT fill-amber-DEFAULT" />
+          <div className="flex items-center gap-1 font-bold text-white">
+            <Star className="w-3.5 h-3.5 text-warm fill-warm" />
             <span>{displayRating > 0 ? Number(displayRating).toFixed(1) : 'New'}</span>
             {recipe.reviewCount > 0 && (
               <span className="text-text-muted font-normal text-[11px]">({recipe.reviewCount})</span>

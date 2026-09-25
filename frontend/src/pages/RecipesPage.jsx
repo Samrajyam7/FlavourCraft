@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, SlidersHorizontal, X, RefreshCw, ChefHat, Filter } from 'lucide-react';
+import { Search, SlidersHorizontal, X, RefreshCw, ChefHat, Filter, Sparkles, Flame, Clock } from 'lucide-react';
 import { recipeService } from '../services/recipeService';
 import { RecipeCard } from '../components/recipe/RecipeCard';
 
@@ -20,6 +20,18 @@ export const RecipesPage = () => {
   const [difficulty, setDifficulty] = useState('');
   const [sortBy, setSortBy] = useState('rating');
   const [showMobileFilters, setShowMobileFilters] = useState(false);
+
+  // Universe-style quick discovery filter pills
+  const discoveryChips = [
+    { label: 'All Recipes', action: () => handleResetFilters() },
+    { label: 'Quick Meals (<30m)', action: () => { setDifficulty('Easy'); setSortBy('quickest'); } },
+    { label: 'Breakfast', action: () => setMealType('Breakfast') },
+    { label: 'Lunch', action: () => setMealType('Lunch') },
+    { label: 'Dinner', action: () => setMealType('Dinner') },
+    { label: 'Vegetarian', action: () => setDietary('Vegetarian') },
+    { label: 'Indian Flavors', action: () => setCuisine('Indian') },
+    { label: 'Italian Pasta', action: () => setCuisine('Italian') },
+  ];
 
   useEffect(() => {
     fetchRecipes();
@@ -63,15 +75,19 @@ export const RecipesPage = () => {
   };
 
   return (
-    <div className="container-page py-8 space-y-8">
-      {/* Header Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-dark-border pb-6">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 text-left">
+      {/* Editorial Discovery Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-dark-border pb-6">
         <div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sage/15 text-sage-300 text-xs font-bold uppercase tracking-widest border border-sage/30 mb-2">
+            <Sparkles className="w-3.5 h-3.5 text-sage-400" />
+            <span>Culinary Discovery</span>
+          </div>
           <h1 className="text-3xl sm:text-4xl font-heading font-black text-white">
-            Explore Culinary Recipes
+            Explore Handcrafted Recipes
           </h1>
-          <p className="text-sm text-text-secondary mt-1">
-            Browse our full catalog of mouthwatering chef and community creations.
+          <p className="text-xs sm:text-sm text-text-secondary mt-1">
+            Browse our full catalog of authentic, chef-curated dishes from around the world.
           </p>
         </div>
 
@@ -81,10 +97,10 @@ export const RecipesPage = () => {
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
             <input
               type="text"
-              placeholder="Search recipes or keywords..."
+              placeholder="Search recipes, ingredients..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="input !pl-10 !py-2.5 text-sm"
+              className="input !pl-10 !py-2.5 text-xs sm:text-sm"
             />
             {searchQuery && (
               <button
@@ -102,14 +118,27 @@ export const RecipesPage = () => {
         </form>
       </div>
 
+      {/* Universe-style Discovery Chips */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide text-xs">
+        {discoveryChips.map((chip, idx) => (
+          <button
+            key={idx}
+            onClick={chip.action}
+            className="px-3.5 py-2 rounded-xl font-semibold transition-all whitespace-nowrap bg-dark-card hover:bg-dark-hover text-text-secondary hover:text-white border border-dark-border hover:border-sage/40 active:scale-95"
+          >
+            {chip.label}
+          </button>
+        ))}
+      </div>
+
       {/* Mobile filter toggle */}
       <div className="lg:hidden flex items-center justify-between">
         <button
           onClick={() => setShowMobileFilters((prev) => !prev)}
-          className="btn btn-outline text-xs flex items-center gap-2"
+          className="btn-outline text-xs flex items-center gap-2"
         >
           <Filter className="w-4 h-4" />
-          <span>{showMobileFilters ? 'Hide Filters' : 'Show Filters & Sorting'}</span>
+          <span>{showMobileFilters ? 'Hide Filters' : 'Filter & Sort'}</span>
         </button>
         <span className="text-xs text-text-secondary">{recipes.length} recipes</span>
       </div>
@@ -120,28 +149,28 @@ export const RecipesPage = () => {
         <div className={`space-y-6 ${showMobileFilters ? 'block' : 'hidden lg:block'}`}>
           <div className="card p-6 bg-dark-card border-dark-border space-y-5 sticky top-24">
             <div className="flex items-center justify-between border-b border-dark-border pb-3">
-              <h2 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                <SlidersHorizontal className="w-4 h-4 text-primary" /> Filter Recipes
+              <h2 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                <SlidersHorizontal className="w-3.5 h-3.5 text-sage-400" /> Filter Recipes
               </h2>
               <button
                 onClick={handleResetFilters}
-                className="text-xs text-text-muted hover:text-primary transition-colors"
+                className="text-xs text-text-muted hover:text-sage-300 transition-colors"
               >
-                Reset All
+                Reset
               </button>
             </div>
 
             {/* Sort Order */}
             <div>
-              <label className="input-label">Sort By</label>
+              <label className="input-label">Sort Order</label>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="input text-xs"
+                className="select text-xs"
               >
                 <option value="rating">Highest Rated</option>
                 <option value="popular">Most Popular</option>
-                <option value="quickest">Quickest Prep Time</option>
+                <option value="quickest">Quickest Total Time</option>
                 <option value="newest">Newest Added</option>
               </select>
             </div>
@@ -152,9 +181,9 @@ export const RecipesPage = () => {
               <select
                 value={mealType}
                 onChange={(e) => setMealType(e.target.value)}
-                className="input text-xs"
+                className="select text-xs"
               >
-                <option value="">All Types</option>
+                <option value="">All Meal Types</option>
                 <option value="Breakfast">Breakfast</option>
                 <option value="Lunch">Lunch</option>
                 <option value="Dinner">Dinner</option>
@@ -169,7 +198,7 @@ export const RecipesPage = () => {
               <select
                 value={cuisine}
                 onChange={(e) => setCuisine(e.target.value)}
-                className="input text-xs"
+                className="select text-xs"
               >
                 <option value="">All Cuisines</option>
                 <option value="Italian">Italian</option>
@@ -187,7 +216,7 @@ export const RecipesPage = () => {
               <select
                 value={dietary}
                 onChange={(e) => setDietary(e.target.value)}
-                className="input text-xs"
+                className="select text-xs"
               >
                 <option value="">Any Diet</option>
                 <option value="Vegetarian">Vegetarian</option>
@@ -204,7 +233,7 @@ export const RecipesPage = () => {
               <select
                 value={difficulty}
                 onChange={(e) => setDifficulty(e.target.value)}
-                className="input text-xs"
+                className="select text-xs"
               >
                 <option value="">Any Difficulty</option>
                 <option value="Easy">Easy</option>
@@ -235,7 +264,7 @@ export const RecipesPage = () => {
               <p className="text-xs text-text-secondary max-w-sm mx-auto">
                 We couldn't find any recipes matching your chosen filters. Try resetting the filters or searching a different keyword.
               </p>
-              <button onClick={handleResetFilters} className="btn btn-primary text-xs !py-2 !px-4">
+              <button onClick={handleResetFilters} className="btn-primary text-xs !py-2 !px-4">
                 Reset All Filters
               </button>
             </div>

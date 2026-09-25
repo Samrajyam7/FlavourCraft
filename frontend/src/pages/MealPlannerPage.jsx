@@ -10,6 +10,7 @@ import {
   RotateCcw,
   Utensils,
   ChevronRight,
+  ChefHat,
 } from 'lucide-react';
 import { mealPlanService } from '../services/mealPlanService';
 import { groceryService } from '../services/groceryService';
@@ -69,41 +70,40 @@ export const MealPlannerPage = () => {
     }
   };
 
-  // Helper to find slot data
   const getSlot = (day, type) => {
     const dayObj = mealPlan?.days?.find((d) => d.dayOfWeek === day);
     return dayObj?.slots?.find((s) => s.mealType === type);
   };
 
   return (
-    <div className="container-page py-8 space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 text-left">
       {/* Header Banner */}
-      <div className="card p-6 sm:p-8 bg-gradient-to-r from-primary-900/40 via-dark-card to-dark-surface border-primary/30">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="card p-6 sm:p-8 bg-gradient-to-r from-primary-900/40 via-dark-card to-dark-surface border-sage/30">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/20 text-primary text-xs font-bold">
-              <Calendar className="w-3.5 h-3.5" />
-              <span>Weekly Menu & Meal Prep</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sage/15 text-sage-300 text-xs font-bold uppercase tracking-widest border border-sage/30">
+              <Calendar className="w-3.5 h-3.5 text-sage-400" />
+              <span>Weekly Menu & Kitchen Schedule</span>
             </div>
             <h1 className="text-2xl sm:text-4xl font-heading font-black text-white">
-              7-Day Smart Meal Planner
+              7-Day Digital Meal Planner
             </h1>
-            <p className="text-sm text-text-secondary max-w-xl">
-              Organize your breakfast, lunch, dinner, and snacks for the entire week. Generate your complete weekly shopping list with 1 single click.
+            <p className="text-xs sm:text-sm text-text-secondary max-w-xl">
+              Organize your weekly culinary itinerary across Breakfast, Lunch, Dinner, and Snacks. Export required ingredients to your Grocery Checklist with 1 single click.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={handleGenerateWeeklyGroceries}
-              className="btn btn-primary flex items-center gap-2 shadow-glow-green"
+              className="btn-primary text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-glow-green"
             >
               <ShoppingCart className="w-4 h-4" />
-              <span>Export Week to Grocery List</span>
+              <span>Sync Week to Grocery List</span>
             </button>
             <button
               onClick={handleClearWeek}
-              className="btn btn-outline text-xs flex items-center gap-1.5 border-red-500/30 text-red-400 hover:bg-red-500/10"
+              className="btn-outline text-xs flex items-center gap-1.5 border-accent/30 text-accent hover:bg-accent/10"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span>Clear Week</span>
@@ -134,28 +134,28 @@ export const MealPlannerPage = () => {
                 <div className="p-3 bg-dark-surface border-b border-dark-border flex items-center justify-between">
                   <span className="font-heading font-bold text-sm text-white">{day}</span>
                   {totalScheduled > 0 && (
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/20 text-primary">
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sage/20 text-sage-300 border border-sage/30">
                       {totalScheduled} meals
                     </span>
                   )}
                 </div>
 
                 {/* Slots List for this day */}
-                <div className="p-3 space-y-3">
+                <div className="p-3 space-y-2.5">
                   {mealTypes.map((type) => {
                     const slot = getSlot(day, type);
 
                     return (
                       <div
                         key={type}
-                        className="p-2.5 rounded-xl bg-dark-surface/60 border border-dark-border/60 hover:border-primary/30 transition-all space-y-1.5"
+                        className="p-2.5 rounded-xl bg-dark-surface border border-dark-border hover:border-sage/30 transition-all space-y-1"
                       >
-                        <div className="flex items-center justify-between text-[11px]">
+                        <div className="flex items-center justify-between text-[10px]">
                           <span className="font-bold text-text-muted uppercase tracking-wider">{type}</span>
                           {slot && (
                             <button
                               onClick={() => handleRemoveSlot(day, type, slot._id)}
-                              className="text-text-muted hover:text-red-400 p-0.5"
+                              className="text-text-muted hover:text-accent p-0.5"
                               title="Remove slot"
                             >
                               <Trash2 className="w-3 h-3" />
@@ -166,12 +166,12 @@ export const MealPlannerPage = () => {
                         {slot?.recipe ? (
                           <Link
                             to={`/recipes/${slot.recipe._id}`}
-                            className="block group/link space-y-1"
+                            className="block group/link space-y-0.5"
                           >
-                            <p className="text-xs font-bold text-white group-hover/link:text-primary transition-colors line-clamp-2">
+                            <p className="text-xs font-bold text-white group-hover/link:text-sage-300 transition-colors line-clamp-2">
                               {slot.recipe.title}
                             </p>
-                            <div className="flex items-center gap-2 text-[10px] text-text-muted">
+                            <div className="flex items-center gap-1.5 text-[10px] text-text-muted">
                               <span>{slot.servings || 2} serv</span>
                               {(slot.recipe.cookTimeMinutes ?? slot.recipe.cookTime) && (
                                 <span>• {slot.recipe.cookTimeMinutes ?? slot.recipe.cookTime}m</span>
@@ -181,7 +181,7 @@ export const MealPlannerPage = () => {
                         ) : (
                           <Link
                             to="/recipes"
-                            className="flex items-center justify-center py-2 text-[11px] text-text-muted hover:text-primary hover:bg-primary/5 rounded-lg border border-dashed border-dark-border transition-colors gap-1"
+                            className="flex items-center justify-center py-2 text-[10px] text-text-muted hover:text-sage-300 hover:bg-sage/5 rounded-lg border border-dashed border-dark-border transition-colors gap-1"
                           >
                             <Plus className="w-3 h-3" />
                             <span>Add Recipe</span>

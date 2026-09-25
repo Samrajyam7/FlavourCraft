@@ -1,11 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
-import { Sparkles, SlidersHorizontal, ShoppingCart, RefreshCw, ChefHat, CheckCircle2, AlertCircle, ArrowRight } from 'lucide-react';
+import {
+  Sparkles,
+  SlidersHorizontal,
+  ShoppingCart,
+  RefreshCw,
+  ChefHat,
+  CheckCircle2,
+  AlertCircle,
+  ArrowRight,
+  Filter,
+  Flame,
+} from 'lucide-react';
 import { recipeService } from '../services/recipeService';
 import { ingredientService } from '../services/ingredientService';
 import { groceryService } from '../services/groceryService';
 import { IngredientPicker } from '../components/ingredient/IngredientPicker';
 import { RecipeCard } from '../components/recipe/RecipeCard';
+import CookingPotInteractive from '../components/ingredient/CookingPotInteractive';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 
@@ -51,7 +63,11 @@ export const RecipeMatcherPage = () => {
     handleInitial();
   }, [location.state]);
 
-  const triggerMatch = async (customIngredients = null, customMinPct = minMatchPercentage, overrides = {}) => {
+  const triggerMatch = async (
+    customIngredients = null,
+    customMinPct = minMatchPercentage,
+    overrides = {}
+  ) => {
     const listToMatch = customIngredients !== null ? customIngredients : selectedIngredients;
     if (!listToMatch || listToMatch.length === 0) {
       setMatchedRecipes([]);
@@ -68,7 +84,9 @@ export const RecipeMatcherPage = () => {
     setLoading(true);
     setSearched(true);
     try {
-      const ids = listToMatch.map((i) => (typeof i === 'object' ? (i._id || i.id) : i)).filter(Boolean);
+      const ids = listToMatch
+        .map((i) => (typeof i === 'object' ? i._id || i.id : i))
+        .filter(Boolean);
       const filters = {
         minMatchPercentage: Number(customMinPct || 0),
         mealType: currentMealType || undefined,
@@ -78,14 +96,14 @@ export const RecipeMatcherPage = () => {
       };
 
       const res = await recipeService.matchRecipes(ids, filters);
-      
+
       // If a newer request was dispatched in the meantime, ignore this stale response
       if (currentReqId !== requestIdRef.current) {
         return;
       }
 
       const list = res?.results || res?.matches || res?.recipes || (Array.isArray(res) ? res : []);
-      
+
       let filtered = Array.isArray(list) ? list : [];
       if (customMinPct > 0) {
         filtered = filtered.filter((r) => {
@@ -134,7 +152,9 @@ export const RecipeMatcherPage = () => {
   };
 
   const handleRemoveIngredient = (ing) => {
-    const updated = selectedIngredients.filter((item) => (item._id || item) !== (ing._id || ing));
+    const updated = selectedIngredients.filter(
+      (item) => (item._id || item) !== (ing._id || ing)
+    );
     setSelectedIngredients(updated);
     if (updated.length > 0) {
       triggerMatch(updated);
@@ -182,41 +202,41 @@ export const RecipeMatcherPage = () => {
   };
 
   return (
-    <div className="container-page py-8 space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header Banner */}
-      <div className="card p-6 sm:p-8 bg-gradient-to-r from-primary-900/40 via-dark-card to-dark-surface border-primary/30">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/20 text-primary text-xs font-bold">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Smart Pantry Matcher</span>
+      <div className="card p-6 sm:p-8 bg-gradient-to-r from-primary-900/50 via-dark-card to-dark-surface border-sage/30 relative overflow-hidden">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+          <div className="space-y-2 text-left">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sage/15 text-sage-300 text-xs font-bold uppercase tracking-widest border border-sage/30">
+              <Sparkles className="w-3.5 h-3.5 text-sage-400" />
+              <span>Smart Match Engine</span>
             </div>
             <h1 className="text-2xl sm:text-4xl font-heading font-black text-white">
-              What can I make with my ingredients?
+              What can I make with my kitchen ingredients?
             </h1>
-            <p className="text-sm text-text-secondary max-w-xl">
-              Select what is currently in your fridge or pantry. FlavorCraft computes recipe matches in real-time, highlights missing elements, and suggests dishes you can cook now.
+            <p className="text-xs sm:text-sm text-text-secondary max-w-xl">
+              Select what is currently in your fridge or pantry. FlavorCraft computes recipe matches in real-time, highlights missing elements, and suggests what you can cook right now.
             </p>
           </div>
 
           <button
             onClick={() => triggerMatch()}
             disabled={loading || selectedIngredients.length === 0}
-            className="btn btn-primary btn-lg shadow-glow-green self-start md:self-center flex items-center gap-2"
+            className="btn-primary btn-lg shadow-glow-green self-start md:self-center flex items-center gap-2"
           >
-            {loading ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5" />}
-            <span>Find Matching Recipes ({selectedIngredients.length})</span>
+            {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+            <span>Find Recipes ({selectedIngredients.length})</span>
           </button>
         </div>
       </div>
 
       {/* Grid: Ingredient Picker (Left) & Controls/Filters (Right) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Ingredient Picker Area (2 cols on large screen) */}
+        {/* Ingredient Picker Area */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="card p-6 bg-dark-card border-dark-border">
+          <div className="card p-6 bg-dark-card border-dark-border text-left">
             <h2 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-              <ChefHat className="w-5 h-5 text-primary" />
+              <ChefHat className="w-5 h-5 text-sage-400" />
               <span>Step 1: Pick Available Kitchen Ingredients</span>
             </h2>
 
@@ -233,19 +253,19 @@ export const RecipeMatcherPage = () => {
           </div>
         </div>
 
-        {/* Filter & Matching Criteria (1 col) */}
+        {/* Filter & Matching Criteria */}
         <div className="space-y-6">
-          <div className="card p-6 bg-dark-card border-dark-border space-y-5">
+          <div className="card p-6 bg-dark-card border-dark-border space-y-5 text-left">
             <h2 className="text-base font-bold text-white flex items-center gap-2 border-b border-dark-border pb-3">
-              <SlidersHorizontal className="w-4 h-4 text-secondary" />
+              <SlidersHorizontal className="w-4 h-4 text-warm" />
               <span>Step 2: Match Threshold & Filters</span>
             </h2>
 
             {/* Min Match % Slider */}
             <div>
               <div className="flex justify-between text-xs font-semibold mb-2">
-                <span className="text-text-secondary">Minimum Match</span>
-                <span className="text-primary font-mono font-bold text-sm">{minMatchPercentage}%</span>
+                <span className="text-text-secondary">Minimum Match Percentage</span>
+                <span className="text-sage-300 font-mono font-bold text-sm">{minMatchPercentage}%</span>
               </div>
               <input
                 type="range"
@@ -264,7 +284,7 @@ export const RecipeMatcherPage = () => {
               />
               <div className="flex justify-between text-[11px] text-text-muted mt-1">
                 <span>Any (0%)</span>
-                <span>Balanced (30%)</span>
+                <span>Balanced (50%)</span>
                 <span>Exact (100%)</span>
               </div>
             </div>
@@ -281,7 +301,7 @@ export const RecipeMatcherPage = () => {
                     triggerMatch(selectedIngredients, minMatchPercentage, { mealType: val });
                   }
                 }}
-                className="input text-xs"
+                className="select text-xs"
               >
                 <option value="">All Meal Types</option>
                 <option value="Breakfast">Breakfast</option>
@@ -304,7 +324,7 @@ export const RecipeMatcherPage = () => {
                     triggerMatch(selectedIngredients, minMatchPercentage, { cuisine: val });
                   }
                 }}
-                className="input text-xs"
+                className="select text-xs"
               >
                 <option value="">All Cuisines</option>
                 <option value="Italian">Italian</option>
@@ -328,7 +348,7 @@ export const RecipeMatcherPage = () => {
                     triggerMatch(selectedIngredients, minMatchPercentage, { dietary: val });
                   }
                 }}
-                className="input text-xs"
+                className="select text-xs"
               >
                 <option value="">No Dietary Restriction</option>
                 <option value="Vegetarian">Vegetarian</option>
@@ -342,28 +362,28 @@ export const RecipeMatcherPage = () => {
             <button
               onClick={() => triggerMatch()}
               disabled={loading || selectedIngredients.length === 0}
-              className="btn btn-primary w-full py-3 shadow-glow-green"
+              className="btn-primary w-full py-3 text-xs font-bold uppercase tracking-wider shadow-glow-green"
             >
-              Apply & Find Recipes
+              Apply & Match Recipes
             </button>
           </div>
         </div>
       </div>
 
       {/* Results Section */}
-      <div className="space-y-6 pt-4">
+      <div className="space-y-6 pt-4 text-left">
         <div className="flex items-center justify-between border-b border-dark-border pb-4">
           <div>
             <h2 className="text-xl sm:text-2xl font-heading font-bold text-white flex items-center gap-2">
               <span>Matching Recipe Results</span>
               {searched && (
-                <span className="text-sm font-normal text-primary bg-primary/10 px-2.5 py-0.5 rounded-full border border-primary/20">
+                <span className="text-xs font-bold text-sage-300 bg-sage/15 px-2.5 py-0.5 rounded-full border border-sage/30">
                   {matchedRecipes.length} found
                 </span>
               )}
             </h2>
             <p className="text-xs text-text-secondary mt-1">
-              Sorted by highest percentage match with your selected pantry items.
+              Ranked deterministically by highest match score, fewest missing required items, and fastest prep time.
             </p>
           </div>
         </div>
@@ -376,29 +396,29 @@ export const RecipeMatcherPage = () => {
           </div>
         ) : searched && matchedRecipes.length === 0 ? (
           <div className="card p-12 text-center max-w-lg mx-auto bg-dark-card border-dark-border space-y-4">
-            <div className="w-14 h-14 rounded-2xl bg-amber-DEFAULT/10 text-amber-DEFAULT flex items-center justify-center mx-auto">
+            <div className="w-14 h-14 rounded-2xl bg-amber-950/40 text-warm flex items-center justify-center mx-auto border border-warm/30">
               <AlertCircle className="w-7 h-7" />
             </div>
             <h3 className="text-lg font-bold text-white">No Direct Matches Found</h3>
             <p className="text-xs text-text-secondary leading-relaxed">
-              Try selecting a few more common ingredients (like olive oil, garlic, salt, or pasta) or lowering the match threshold slider to 20%.
+              Try selecting a few more staple ingredients (like olive oil, garlic, salt, or pasta) or lowering the match threshold slider.
             </p>
             <button
               onClick={() => {
                 setMinMatchPercentage(20);
-                triggerMatch();
+                triggerMatch(selectedIngredients, 20);
               }}
-              className="btn btn-outline text-xs !py-2 !px-4"
+              className="btn-outline text-xs !py-2 !px-4"
             >
               Lower Match Threshold to 20%
             </button>
           </div>
         ) : !searched ? (
           <div className="card p-12 text-center max-w-lg mx-auto bg-dark-card border-dashed border-dark-border space-y-3">
-            <Sparkles className="w-10 h-10 text-primary mx-auto opacity-70 animate-pulse-slow" />
-            <h3 className="text-base font-bold text-white">Select Ingredients to Begin</h3>
+            <Sparkles className="w-10 h-10 text-sage-400 mx-auto opacity-70 animate-pulse" />
+            <h3 className="text-base font-bold text-white">Select Ingredients to Begin Simmering</h3>
             <p className="text-xs text-text-secondary">
-              Pick ingredients from the box above or tap "Use My Pantry" and click "Find Matching Recipes".
+              Pick ingredients from the categories above or tap "Use My Pantry" to discover matching dishes.
             </p>
           </div>
         ) : (
@@ -406,10 +426,15 @@ export const RecipeMatcherPage = () => {
             {matchedRecipes.map((match, idx) => {
               const recipe = match.recipe || match;
               const recipeId = recipe._id || recipe.recipeId || recipe.id || `match-${idx}`;
-              const matchPercent = match.matchPercentage !== undefined ? match.matchPercentage : (recipe.matchPercentage ?? 0);
+              const matchPercent =
+                match.matchPercentage !== undefined ? match.matchPercentage : recipe.matchPercentage ?? 0;
               const missingList = match.missingIngredients || recipe.missingIngredients || [];
-              const missingCount = match.missingCount !== undefined ? match.missingCount : missingList.length;
-              const matchedCount = match.matchedCount !== undefined ? match.matchedCount : (match.matchedIngredients?.length || recipe.matchedCount || 0);
+              const missingCount =
+                match.missingCount !== undefined ? match.missingCount : missingList.length;
+              const matchedCount =
+                match.matchedCount !== undefined
+                  ? match.matchedCount
+                  : match.matchedIngredients?.length || recipe.matchedCount || 0;
 
               return (
                 <div key={recipeId} className="flex flex-col justify-between">
@@ -427,11 +452,16 @@ export const RecipeMatcherPage = () => {
 
                   {missingCount > 0 && (
                     <button
-                      onClick={() => handleAddAllMissingToGrocery({ ...recipe, missingIngredients: missingList })}
-                      className="mt-2 btn btn-outline !py-2 text-xs flex items-center justify-center gap-1.5 border-secondary/40 text-secondary hover:bg-secondary/10"
+                      onClick={() =>
+                        handleAddAllMissingToGrocery({
+                          ...recipe,
+                          missingIngredients: missingList,
+                        })
+                      }
+                      className="mt-2.5 btn-secondary !py-2 text-xs flex items-center justify-center gap-1.5"
                     >
                       <ShoppingCart className="w-3.5 h-3.5" />
-                      <span>Add {missingCount} Missing Items to Grocery</span>
+                      <span>Add {missingCount} Missing Items to Grocery List</span>
                     </button>
                   )}
                 </div>

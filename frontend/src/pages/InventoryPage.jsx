@@ -11,13 +11,19 @@ import {
   Search,
   PackageCheck,
   RefreshCw,
+  Clock,
+  Layers,
+  ChefHat,
+  UtensilsCrossed,
 } from 'lucide-react';
 import { inventoryService } from '../services/inventoryService';
 import { ingredientService } from '../services/ingredientService';
+import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 
 export const InventoryPage = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { success, warning, error: toastError } = useToast();
 
   const [inventoryItems, setInventoryItems] = useState([]);
@@ -26,7 +32,7 @@ export const InventoryPage = () => {
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchFilter, setSearchFilter] = useState('');
 
-  // Add Item Modal / Inline Form State
+  // Add Item Modal State
   const [showAddForm, setShowAddForm] = useState(false);
   const [selectedIngredientId, setSelectedIngredientId] = useState('');
   const [customName, setCustomName] = useState('');
@@ -52,7 +58,7 @@ export const InventoryPage = () => {
       setAvailableIngredients(allIngs);
     } catch (err) {
       console.error('Failed to load inventory:', err);
-      toastError('Failed to load your pantry');
+      toastError('Failed to load your kitchen pantry');
     } finally {
       setLoading(false);
     }
@@ -74,7 +80,7 @@ export const InventoryPage = () => {
         expiryDate: expiryDate || undefined,
       });
 
-      success('Ingredient added to your pantry! 🍏');
+      success('Ingredient added to your kitchen! 🍏');
       setShowAddForm(false);
       setSelectedIngredientId('');
       setCustomName('');
@@ -117,7 +123,7 @@ export const InventoryPage = () => {
 
   const handleLaunchMatcherWithPantry = () => {
     const names = inventoryItems
-      .map((item) => (item.ingredientId?.name || item.ingredient?.name || item.customName))
+      .map((item) => item.ingredientId?.name || item.ingredient?.name || item.customName)
       .filter(Boolean);
 
     if (names.length === 0) {
@@ -136,12 +142,12 @@ export const InventoryPage = () => {
     const diffDays = Math.ceil((exp - today) / (1000 * 60 * 60 * 24));
 
     if (diffDays < 0) {
-      return { label: 'Expired', color: 'badge-red', icon: AlertTriangle };
+      return { label: 'Expired', color: 'bg-accent/20 text-accent border border-accent/40', icon: AlertTriangle };
     }
     if (diffDays <= 3) {
-      return { label: `Expires in ${diffDays}d`, color: 'badge-orange', icon: AlertTriangle };
+      return { label: `Use Soon (${diffDays}d left)`, color: 'bg-warm/20 text-warm border border-warm/40', icon: Clock };
     }
-    return { label: `Fresh (${diffDays}d left)`, color: 'badge-green', icon: CheckCircle2 };
+    return { label: `Fresh (${diffDays}d left)`, color: 'bg-sage/20 text-sage-300 border border-sage/40', icon: CheckCircle2 };
   };
 
   const categories = ['All', 'Protein', 'Dairy', 'Vegetables', 'Grains', 'Spices', 'Fruits', 'Pantry'];
@@ -150,33 +156,42 @@ export const InventoryPage = () => {
     const ingObj = item.ingredientId || item.ingredient || {};
     const ingName = ingObj.name || item.customName || '';
     const cat = ingObj.category || 'Pantry';
-    const matchesCat = activeCategory === 'All' || cat === activeCategory;
+    const matchesCat = activeCategory === 'All' || cat.toLowerCase() === activeCategory.toLowerCase();
     const matchesSearch = ingName.toLowerCase().includes(searchFilter.toLowerCase().trim());
     return matchesCat && matchesSearch;
   });
 
+  // Expiring soon items count
+  const expiringSoonCount = inventoryItems.filter((item) => {
+    if (!item.expiryDate) return false;
+    const exp = new Date(item.expiryDate);
+    const today = new Date();
+    const diffDays = Math.ceil((exp - today) / (1000 * 60 * 60 * 24));
+    return diffDays >= 0 && diffDays <= 3;
+  }).length;
+
   return (
-    <div className="container-page py-8 space-y-8">
-      {/* Top Banner */}
-      <div className="card p-6 sm:p-8 bg-gradient-to-r from-primary-900/40 via-dark-card to-dark-surface border-primary/30">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 text-left">
+      {/* Top Banner & Welcome */}
+      <div className="card p-6 sm:p-8 bg-gradient-to-r from-primary-900/40 via-dark-card to-dark-surface border-sage/30">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/20 text-primary text-xs font-bold">
-              <Refrigerator className="w-3.5 h-3.5" />
-              <span>Zero-Waste Smart Pantry</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sage/15 text-sage-300 text-xs font-bold uppercase tracking-widest border border-sage/30">
+              <Refrigerator className="w-3.5 h-3.5 text-sage-400" />
+              <span>Digital Kitchen Shelf</span>
             </div>
             <h1 className="text-2xl sm:text-4xl font-heading font-black text-white">
-              My Kitchen Pantry & Fridge
+              Good day, {user?.name || 'Chef'} 👋
             </h1>
-            <p className="text-sm text-text-secondary max-w-xl">
-              Keep track of what ingredients you currently have on hand. Never let food expire and cook with what you already bought!
+            <p className="text-xs sm:text-sm text-text-secondary max-w-xl">
+              Track ingredients in your fridge and pantry. Keep stock fresh, eliminate food waste, and simmer recipes instantly.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={() => setShowAddForm(true)}
-              className="btn btn-primary flex items-center gap-2 shadow-glow-green"
+              className="btn-primary text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-glow-green"
             >
               <Plus className="w-4 h-4" />
               <span>Add Ingredient</span>
@@ -185,21 +200,48 @@ export const InventoryPage = () => {
             <button
               onClick={handleLaunchMatcherWithPantry}
               disabled={inventoryItems.length === 0}
-              className="btn btn-secondary flex items-center gap-2 shadow-glow-orange"
+              className="btn-secondary text-xs font-bold uppercase tracking-wider flex items-center gap-2"
             >
-              <Sparkles className="w-4 h-4" />
-              <span>Find Matching Recipes ({inventoryItems.length})</span>
+              <Sparkles className="w-4 h-4 text-warm" />
+              <span>Match From Pantry ({inventoryItems.length})</span>
             </button>
+          </div>
+        </div>
+
+        {/* Quick Summary Badges */}
+        <div className="mt-6 pt-4 border-t border-dark-border/60 grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <div className="p-3 bg-dark-surface/80 rounded-xl border border-dark-border flex items-center gap-3">
+            <PackageCheck className="w-5 h-5 text-sage-400" />
+            <div>
+              <span className="text-[10px] text-text-muted uppercase font-bold block">Pantry Items</span>
+              <span className="text-sm font-bold text-white">{inventoryItems.length} stocked</span>
+            </div>
+          </div>
+
+          <div className="p-3 bg-dark-surface/80 rounded-xl border border-dark-border flex items-center gap-3">
+            <Clock className="w-5 h-5 text-warm" />
+            <div>
+              <span className="text-[10px] text-text-muted uppercase font-bold block">Use Soon</span>
+              <span className="text-sm font-bold text-white">{expiringSoonCount} expiring soon</span>
+            </div>
+          </div>
+
+          <div className="p-3 bg-dark-surface/80 rounded-xl border border-dark-border flex items-center gap-3 col-span-2 sm:col-span-1">
+            <UtensilsCrossed className="w-5 h-5 text-accent" />
+            <div>
+              <span className="text-[10px] text-text-muted uppercase font-bold block">Pantry Value</span>
+              <span className="text-sm font-bold text-white">100% Cookable</span>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Add Item Modal */}
       {showAddForm && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="card max-w-lg w-full p-6 bg-dark-card border-dark-border relative shadow-2xl animate-slide-up">
-            <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-              <Plus className="w-5 h-5 text-primary" /> Add Item to Pantry
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
+          <div className="card max-w-lg w-full p-6 bg-dark-card border-dark-border relative shadow-2xl animate-slide-up text-left">
+            <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
+              <Plus className="w-5 h-5 text-sage-400" /> Add Item to Pantry Shelf
             </h3>
 
             <form onSubmit={handleAddItem} className="space-y-4">
@@ -211,7 +253,7 @@ export const InventoryPage = () => {
                     setSelectedIngredientId(e.target.value);
                     if (e.target.value) setCustomName('');
                   }}
-                  className="input text-xs"
+                  className="select text-xs"
                 >
                   <option value="">-- Choose from standard ingredients --</option>
                   {availableIngredients.map((ing) => (
@@ -226,7 +268,7 @@ export const InventoryPage = () => {
                 <label className="input-label">Or Custom Name</label>
                 <input
                   type="text"
-                  placeholder="e.g. Grandma's special paprika"
+                  placeholder="e.g., Organic Greek yogurt"
                   value={customName}
                   onChange={(e) => {
                     setCustomName(e.target.value);
@@ -274,14 +316,14 @@ export const InventoryPage = () => {
                 <button
                   type="button"
                   onClick={() => setShowAddForm(false)}
-                  className="btn btn-ghost text-xs"
+                  className="btn-ghost text-xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={adding}
-                  className="btn btn-primary text-xs shadow-glow-green"
+                  className="btn-primary text-xs font-semibold shadow-glow-green"
                 >
                   {adding ? 'Adding...' : 'Save to Pantry'}
                 </button>
@@ -299,10 +341,10 @@ export const InventoryPage = () => {
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`px-3.5 py-1.5 rounded-xl font-medium transition-all whitespace-nowrap ${
+              className={`px-3.5 py-1.5 rounded-xl font-semibold transition-all whitespace-nowrap ${
                 activeCategory === cat
-                  ? 'bg-primary text-white shadow-glow-green font-semibold'
-                  : 'bg-dark-surface text-text-secondary hover:text-white border border-dark-border/60'
+                  ? 'bg-primary text-white shadow-glow-green'
+                  : 'bg-dark-surface text-text-secondary hover:text-white border border-dark-border'
               }`}
             >
               {cat}
@@ -341,7 +383,7 @@ export const InventoryPage = () => {
           </p>
           <button
             onClick={() => setShowAddForm(true)}
-            className="btn btn-primary text-xs !py-2 !px-4 shadow-glow-green"
+            className="btn-primary text-xs !py-2 !px-4 shadow-glow-green"
           >
             + Add First Ingredient
           </button>
@@ -356,11 +398,11 @@ export const InventoryPage = () => {
             return (
               <div
                 key={item._id}
-                className="card p-4 bg-dark-card hover:border-primary/40 border-dark-border transition-all flex flex-col justify-between gap-3 group"
+                className="card p-4 bg-dark-card hover:border-sage/40 border-dark-border transition-all flex flex-col justify-between gap-3 group"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <h3 className="text-sm font-bold text-white group-hover:text-primary transition-colors">
+                    <h3 className="text-sm font-bold text-white group-hover:text-sage-300 transition-colors">
                       {ingName}
                     </h3>
                     <span className="text-[11px] text-text-muted">
@@ -370,17 +412,17 @@ export const InventoryPage = () => {
 
                   <button
                     onClick={() => handleDeleteItem(item._id)}
-                    className="text-text-muted hover:text-red-400 p-1 opacity-60 hover:opacity-100 transition-opacity"
+                    className="text-text-muted hover:text-accent p-1 opacity-60 hover:opacity-100 transition-opacity"
                     title="Remove from pantry"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
 
-                {/* Expiry Badge */}
+                {/* Expiry Status */}
                 {expStatus && (
                   <div>
-                    <span className={`badge ${expStatus.color} text-[10px]`}>
+                    <span className={`px-2 py-0.5 rounded-lg text-[10px] font-semibold flex items-center gap-1 w-max ${expStatus.color}`}>
                       <expStatus.icon className="w-3 h-3" />
                       {expStatus.label}
                     </span>
@@ -390,10 +432,10 @@ export const InventoryPage = () => {
                 {/* Quantity Controls */}
                 <div className="pt-2 border-t border-dark-border/60 flex items-center justify-between text-xs">
                   <span className="text-text-muted">Stock:</span>
-                  <div className="flex items-center gap-2 bg-dark-surface px-2 py-1 rounded-lg border border-dark-border/60">
+                  <div className="flex items-center gap-2 bg-dark-surface px-2 py-1 rounded-lg border border-dark-border">
                     <button
                       onClick={() => handleUpdateQuantity(item, -1)}
-                      className="w-4 h-4 rounded bg-dark-border flex items-center justify-center font-bold text-xs hover:bg-red-500 hover:text-white"
+                      className="w-4 h-4 rounded bg-dark-card flex items-center justify-center font-bold text-xs hover:bg-accent hover:text-white"
                     >
                       -
                     </button>
@@ -402,7 +444,7 @@ export const InventoryPage = () => {
                     </span>
                     <button
                       onClick={() => handleUpdateQuantity(item, 1)}
-                      className="w-4 h-4 rounded bg-dark-border flex items-center justify-center font-bold text-xs hover:bg-primary hover:text-white"
+                      className="w-4 h-4 rounded bg-dark-card flex items-center justify-center font-bold text-xs hover:bg-primary hover:text-white"
                     >
                       +
                     </button>

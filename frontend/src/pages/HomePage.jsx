@@ -3,9 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
   Sparkles,
   Search,
-  Utensils,
   ArrowRight,
-  Refrigerator,
   Flame,
   Clock,
   ShieldCheck,
@@ -15,9 +13,13 @@ import {
   TrendingUp,
   Award,
   Zap,
+  BookOpen,
+  UtensilsCrossed,
 } from 'lucide-react';
 import { recipeService } from '../services/recipeService';
 import { RecipeCard } from '../components/recipe/RecipeCard';
+import ThreeCookingScene from '../components/common/ThreeCookingScene';
+import CookingPotInteractive from '../components/ingredient/CookingPotInteractive';
 
 export const HomePage = () => {
   const navigate = useNavigate();
@@ -25,20 +27,25 @@ export const HomePage = () => {
   const [loading, setLoading] = useState(true);
   const [quickSearch, setQuickSearch] = useState('');
 
-  // Quick select ingredients for instant hero launcher
+  // Popular quick ingredient picks for the signature cooking pot
   const popularPantryItems = [
-    'Chicken',
-    'Egg',
-    'Garlic',
-    'Tomato',
-    'Pasta',
-    'Rice',
-    'Cheese',
-    'Spinach',
-    'Onion',
-    'Olive Oil',
+    { _id: 'egg_hero', name: 'Egg' },
+    { _id: 'cheese_hero', name: 'Cheese' },
+    { _id: 'tomato_hero', name: 'Tomato' },
+    { _id: 'chicken_hero', name: 'Chicken' },
+    { _id: 'garlic_hero', name: 'Garlic' },
+    { _id: 'onion_hero', name: 'Onion' },
+    { _id: 'butter_hero', name: 'Butter' },
+    { _id: 'pasta_hero', name: 'Pasta' },
+    { _id: 'rice_hero', name: 'Rice' },
+    { _id: 'paneer_hero', name: 'Paneer' },
   ];
-  const [selectedHeroPantry, setSelectedHeroPantry] = useState(['Chicken', 'Garlic', 'Olive Oil']);
+
+  const [selectedHeroPantry, setSelectedHeroPantry] = useState([
+    { _id: 'egg_hero', name: 'Egg' },
+    { _id: 'cheese_hero', name: 'Cheese' },
+    { _id: 'tomato_hero', name: 'Tomato' },
+  ]);
 
   useEffect(() => {
     const fetchFeatured = async () => {
@@ -57,13 +64,18 @@ export const HomePage = () => {
   }, []);
 
   const handleHeroIngredientToggle = (item) => {
-    setSelectedHeroPantry((prev) =>
-      prev.includes(item) ? prev.filter((i) => i !== item) : [...prev, item]
-    );
+    setSelectedHeroPantry((prev) => {
+      const exists = prev.some((i) => (typeof i === 'object' ? i.name === item.name : i === item.name));
+      if (exists) {
+        return prev.filter((i) => (typeof i === 'object' ? i.name !== item.name : i !== item.name));
+      }
+      return [...prev, item];
+    });
   };
 
   const handleLaunchMatcher = () => {
-    navigate('/matcher', { state: { initialIngredients: selectedHeroPantry } });
+    const names = selectedHeroPantry.map((i) => (typeof i === 'object' ? i.name : i));
+    navigate('/matcher', { state: { initialIngredients: names } });
   };
 
   const handleSearchSubmit = (e) => {
@@ -74,97 +86,94 @@ export const HomePage = () => {
   };
 
   const cuisines = [
-    { name: 'Italian', icon: '🍝', count: '12+ recipes', desc: 'Classic pasta, risottos, and rustic breads' },
-    { name: 'Asian', icon: '🥢', count: '18+ recipes', desc: 'Sizzling woks, noodles, and savory broths' },
-    { name: 'Mexican', icon: '🌮', count: '10+ recipes', desc: 'Zesty salsas, tacos, and spiced meats' },
-    { name: 'Mediterranean', icon: '🥗', count: '15+ recipes', desc: 'Heart-healthy oils, fresh greens, and herbs' },
+    { name: 'Italian', icon: '🍝', count: 'Classic Pasta & Risottos', tag: 'Italian' },
+    { name: 'Indian', icon: '🍛', count: 'Aromatic Curries & Biryanis', tag: 'Indian' },
+    { name: 'Asian', icon: '🥢', count: 'Stir-fries & Savory Woks', tag: 'Asian' },
+    { name: 'American', icon: '🥞', count: 'Fluffy Pancakes & Sandwiches', tag: 'American' },
   ];
 
   return (
-    <div className="space-y-20 pb-16">
+    <div className="space-y-24 pb-20">
       {/* ============================================================
-          HERO SECTION
+          HERO SECTION — EDITORIAL WITH 3D COOKING SCENE
           ============================================================ */}
-      <section className="relative overflow-hidden hero-bg pt-12 pb-20 border-b border-dark-border/40">
-        <div className="container-page relative z-10">
-          <div className="max-w-4xl mx-auto text-center space-y-6">
-            {/* Pill Tag */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30 text-primary text-xs font-semibold animate-fade-in">
-              <Sparkles className="w-4 h-4 animate-spin-slow" />
-              <span>Intelligent Ingredient-Based Recipe Matcher</span>
-            </div>
-
-            {/* Headline */}
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-heading font-black tracking-tight text-white leading-tight">
-              Turn what's in your fridge into <span className="gradient-text">meals you'll love</span>.
-            </h1>
-
-            {/* Subtext */}
-            <p className="text-base sm:text-xl text-text-secondary max-w-2xl mx-auto leading-relaxed">
-              No more random grocery runs or wasted food. Pick the ingredients you already have, and FlavorCraft will instantly curate delicious dishes with exact percentage match.
-            </p>
-
-            {/* Quick Search Bar */}
-            <form onSubmit={handleSearchSubmit} className="max-w-2xl mx-auto pt-2">
-              <div className="relative flex items-center shadow-2xl rounded-2xl bg-dark-card border border-dark-border p-2 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all">
-                <Search className="w-5 h-5 text-text-muted ml-3" />
-                <input
-                  type="text"
-                  placeholder="Search 100+ gourmet dishes, cuisines, or diets (e.g. Creamy Tuscan Chicken)..."
-                  value={quickSearch}
-                  onChange={(e) => setQuickSearch(e.target.value)}
-                  className="bg-transparent border-none text-white text-sm sm:text-base px-3 py-2 flex-grow focus:outline-none placeholder-text-muted"
-                />
-                <button
-                  type="submit"
-                  className="btn btn-primary btn-sm !py-2.5 !px-5 rounded-xl flex items-center gap-1.5 shadow-glow-green"
-                >
-                  <span>Search</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
+      <section className="relative overflow-hidden pt-8 pb-16 border-b border-dark-border/40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            {/* Left Column: Editorial Headline & Search */}
+            <div className="lg:col-span-7 space-y-6 text-left">
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sage/15 border border-sage/30 text-sage-300 text-xs font-bold uppercase tracking-widest animate-fade-in">
+                <Sparkles className="w-3.5 h-3.5 text-sage-400" />
+                <span>The Intelligent Digital Kitchen</span>
               </div>
-            </form>
 
-            {/* Interactive Hero Pantry Selector Box */}
-            <div className="pt-6 max-w-3xl mx-auto">
-              <div className="card p-5 sm:p-6 bg-dark-card/90 backdrop-blur-xl border border-primary/20 shadow-2xl">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-                  <div className="flex items-center gap-2 text-left">
-                    <Refrigerator className="w-5 h-5 text-secondary" />
-                    <div>
-                      <h2 className="text-sm font-bold text-white">What's in your kitchen right now?</h2>
-                      <p className="text-xs text-text-muted">Tap to select your available items</p>
-                    </div>
-                  </div>
+              {/* Main Headline */}
+              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-heading font-black tracking-tight text-white leading-[1.08]">
+                Turn the ingredients you have into <span className="text-transparent bg-clip-text bg-gradient-to-r from-sage-300 via-warm to-accent">meals you'll love</span>.
+              </h1>
+
+              {/* Subtitle */}
+              <p className="text-base sm:text-lg text-text-secondary max-w-xl leading-relaxed">
+                Discover culinary recipes based on what's already in your kitchen. No grocery stress. Exact percentage matching. Zero food waste.
+              </p>
+
+              {/* CTA Action Buttons */}
+              <div className="flex flex-wrap items-center gap-3.5 pt-2">
+                <Link
+                  to="/matcher"
+                  className="btn-primary !py-3.5 !px-7 rounded-2xl text-sm font-bold uppercase tracking-wider flex items-center gap-2 shadow-glow-green"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  <span>Start Cooking</span>
+                </Link>
+                <Link
+                  to="/recipes"
+                  className="btn-outline !py-3.5 !px-6 rounded-2xl text-sm font-semibold uppercase tracking-wider flex items-center gap-2"
+                >
+                  <BookOpen className="w-4 h-4" />
+                  <span>Explore Recipes</span>
+                </Link>
+              </div>
+
+              {/* Instant Search Bar */}
+              <form onSubmit={handleSearchSubmit} className="pt-2 max-w-lg">
+                <div className="relative flex items-center shadow-card rounded-2xl bg-dark-card border border-dark-border p-1.5 focus-within:border-sage/50 focus-within:ring-2 focus-within:ring-sage/20 transition-all">
+                  <Search className="w-4 h-4 text-text-muted ml-3" />
+                  <input
+                    type="text"
+                    placeholder="Search dishes (e.g., Chicken Dum Biryani, Pasta)..."
+                    value={quickSearch}
+                    onChange={(e) => setQuickSearch(e.target.value)}
+                    className="bg-transparent border-none text-white text-xs sm:text-sm px-3 py-2 flex-grow focus:outline-none placeholder-text-muted"
+                  />
                   <button
-                    onClick={handleLaunchMatcher}
-                    className="btn btn-primary !py-2 !px-4 text-xs font-bold uppercase tracking-wider shadow-glow-green"
+                    type="submit"
+                    className="btn-primary btn-sm !py-2 !px-4 rounded-xl flex items-center gap-1"
                   >
-                    <span>Match Recipes ({selectedHeroPantry.length})</span>
-                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>Search</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
+              </form>
+            </div>
 
-                {/* Popular Pills */}
-                <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
-                  {popularPantryItems.map((item) => {
-                    const isSelected = selectedHeroPantry.includes(item);
-                    return (
-                      <button
-                        key={item}
-                        type="button"
-                        onClick={() => handleHeroIngredientToggle(item)}
-                        className={`ingredient-pill ${
-                          isSelected
-                            ? 'bg-primary text-white font-bold shadow-glow-green border border-primary'
-                            : 'bg-dark-surface hover:bg-dark-hover text-text-secondary border border-dark-border/70 hover:text-white'
-                        }`}
-                      >
-                        <span className="text-xs">{item}</span>
-                        {isSelected ? <CheckCircle2 className="w-3.5 h-3.5 text-white" /> : <span className="text-text-muted text-xs">+</span>}
-                      </button>
-                    );
-                  })}
+            {/* Right Column: 3D Interactive Cooking Canvas */}
+            <div className="lg:col-span-5 relative flex items-center justify-center">
+              <div className="relative w-full aspect-square max-w-[440px] rounded-3xl bg-gradient-to-b from-dark-surface/60 to-dark-card/90 border border-dark-border p-2 shadow-2xl flex items-center justify-center overflow-hidden">
+                <ThreeCookingScene className="w-full h-full" />
+                
+                {/* Floating Dish Highlights */}
+                <div className="absolute top-4 left-4 p-2.5 rounded-2xl bg-dark-bg/85 backdrop-blur-md border border-white/10 shadow-lg text-left animate-float-gentle">
+                  <p className="text-[10px] uppercase font-bold text-sage-400 tracking-wider">Live Matcher</p>
+                  <p className="text-xs font-bold text-white">Classic Omelette</p>
+                  <span className="text-[10px] font-bold text-emerald-400">100% Available</span>
+                </div>
+
+                <div className="absolute bottom-4 right-4 p-2.5 rounded-2xl bg-dark-bg/85 backdrop-blur-md border border-white/10 shadow-lg text-left animate-float-slow">
+                  <p className="text-[10px] uppercase font-bold text-warm tracking-wider">Chef's Special</p>
+                  <p className="text-xs font-bold text-white">Butter Chicken</p>
+                  <span className="text-[10px] font-medium text-text-secondary">⭐ 4.9 Rating</span>
                 </div>
               </div>
             </div>
@@ -173,72 +182,127 @@ export const HomePage = () => {
       </section>
 
       {/* ============================================================
-          HOW IT WORKS 3-STEP SECTION
+          SIGNATURE COOKING POT WORKSTATION SECTION
           ============================================================ */}
-      <section className="container-page">
-        <div className="text-center max-w-2xl mx-auto mb-12 space-y-3">
-          <span className="text-xs font-bold uppercase tracking-wider text-primary">Simple & Smart</span>
-          <h2 className="section-title">Cooking made effortless in 3 steps</h2>
-          <p className="section-subtitle">
-            From fridge contents to five-star dinner in under 30 minutes.
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          {/* Left Column: Explanation */}
+          <div className="lg:col-span-5 space-y-4 text-left">
+            <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-sage-400">
+              <UtensilsCrossed className="w-4 h-4 text-sage-400" />
+              <span>Interactive Digital Kitchen</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-heading font-bold text-white leading-tight">
+              Select what's in your pantry and let FlavorCraft cook.
+            </h2>
+            <p className="text-sm text-text-secondary leading-relaxed">
+              Tap any common ingredient below to drop it into your Cooking Pot. FlavorCraft instantly analyzes our culinary database to calculate exact match percentages and missing items.
+            </p>
+
+            {/* Quick Chips to tap */}
+            <div className="pt-2">
+              <p className="text-xs font-bold uppercase tracking-wider text-text-muted mb-2.5">
+                Quick Select Pantry Essentials:
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {popularPantryItems.map((item) => {
+                  const isSelected = selectedHeroPantry.some((i) => i.name === item.name);
+                  return (
+                    <button
+                      key={item._id}
+                      type="button"
+                      onClick={() => handleHeroIngredientToggle(item)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+                        isSelected
+                          ? 'bg-primary text-white border-primary shadow-glow-green scale-105'
+                          : 'bg-dark-surface hover:bg-dark-hover text-text-secondary border-dark-border hover:text-white'
+                      }`}
+                    >
+                      <span>{item.name}</span>
+                      <span className="ml-1.5 opacity-75">{isSelected ? '✓' : '+'}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Signature Interactive Cooking Pot */}
+          <div className="lg:col-span-7">
+            <CookingPotInteractive
+              selectedIngredients={selectedHeroPantry}
+              onRemoveIngredient={handleHeroIngredientToggle}
+              onClearAll={() => setSelectedHeroPantry([])}
+              onFindMatches={handleLaunchMatcher}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================================
+          HOW FLAVORCRAFT WORKS (3-STEP EDITORIAL)
+          ============================================================ */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-2xl mx-auto mb-12 space-y-2">
+          <span className="text-xs font-bold uppercase tracking-widest text-sage-400">Effortless Workflow</span>
+          <h2 className="text-3xl sm:text-4xl font-heading font-bold text-white">How FlavorCraft Works</h2>
+          <p className="text-sm text-text-secondary">
+            From fridge contents to gourmet dining in 3 simple steps.
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Step 1 */}
-          <div className="card p-8 bg-dark-card border-dark-border relative group hover:border-primary/40 transition-all">
-            <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-bold text-xl mb-6 group-hover:scale-110 transition-transform">
-              1
+          <div className="card p-7 bg-dark-card border-dark-border hover:border-sage/40 transition-all text-left space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-sage/15 text-sage-300 flex items-center justify-center font-bold text-lg font-heading">
+              01
             </div>
-            <h3 className="text-xl font-heading font-bold text-white mb-3">Add Your Ingredients</h3>
-            <p className="text-sm text-text-secondary leading-relaxed">
-              Select what you have in your pantry or sync your stock with 1 click. No ingredient is left behind.
+            <h3 className="text-lg font-heading font-bold text-white">Pick Your Ingredients</h3>
+            <p className="text-xs text-text-secondary leading-relaxed">
+              Select items from your pantry or use our smart categories (Vegetables, Protein, Spices, Grains).
             </p>
           </div>
 
-          {/* Step 2 */}
-          <div className="card p-8 bg-dark-card border-dark-border relative group hover:border-secondary/40 transition-all">
-            <div className="w-12 h-12 rounded-2xl bg-secondary/10 text-secondary flex items-center justify-center font-bold text-xl mb-6 group-hover:scale-110 transition-transform">
-              2
+          <div className="card p-7 bg-dark-card border-dark-border hover:border-primary/40 transition-all text-left space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-primary/20 text-primary-light flex items-center justify-center font-bold text-lg font-heading">
+              02
             </div>
-            <h3 className="text-xl font-heading font-bold text-white mb-3">Instant AI Match</h3>
-            <p className="text-sm text-text-secondary leading-relaxed">
-              Our algorithm calculates exact match percentages, highlights missing items, and suggests smart substitutions.
+            <h3 className="text-lg font-heading font-bold text-white">Deterministic Recipe Match</h3>
+            <p className="text-xs text-text-secondary leading-relaxed">
+              Our 3-tier algorithm ranks recipes by match percentage, missing items, and total cooking time.
             </p>
           </div>
 
-          {/* Step 3 */}
-          <div className="card p-8 bg-dark-card border-dark-border relative group hover:border-amber-DEFAULT/40 transition-all">
-            <div className="w-12 h-12 rounded-2xl bg-amber-DEFAULT/10 text-amber-DEFAULT flex items-center justify-center font-bold text-xl mb-6 group-hover:scale-110 transition-transform">
-              3
+          <div className="card p-7 bg-dark-card border-dark-border hover:border-accent/40 transition-all text-left space-y-3">
+            <div className="w-10 h-10 rounded-xl bg-accent/15 text-accent flex items-center justify-center font-bold text-lg font-heading">
+              03
             </div>
-            <h3 className="text-xl font-heading font-bold text-white mb-3">Cook in Focused Mode</h3>
-            <p className="text-sm text-text-secondary leading-relaxed">
-              Follow step-by-step instructions with built-in voice timers, scalable serving portions, and dynamic grocery exports.
+            <h3 className="text-lg font-heading font-bold text-white">Focused Cooking Mode</h3>
+            <p className="text-xs text-text-secondary leading-relaxed">
+              Step-by-step guidance with interactive voice timers, ingredient checklists, and grocery integration.
             </p>
           </div>
         </div>
       </section>
 
       {/* ============================================================
-          FEATURED RECIPES SHOWCASE
+          FEATURED & TRENDING RECIPES
           ============================================================ */}
-      <section className="container-page">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 text-left">
           <div>
-            <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-secondary mb-2">
-              <Flame className="w-4 h-4 text-secondary" />
-              <span>Trending Now</span>
+            <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-warm mb-1">
+              <Flame className="w-4 h-4 text-warm" />
+              <span>Trending Recipes</span>
             </div>
-            <h2 className="section-title">Chef's Handcrafted Picks</h2>
-            <p className="section-subtitle mt-1">Discover popular dishes loved by our culinary community.</p>
+            <h2 className="text-3xl font-heading font-bold text-white">Chef's Handcrafted Picks</h2>
+            <p className="text-xs text-text-secondary mt-1">Gourmet recipes rated highest by our culinary community.</p>
           </div>
           <Link
             to="/recipes"
-            className="btn btn-outline flex items-center gap-2 self-start sm:self-auto hover:border-primary hover:text-primary"
+            className="btn-outline !py-2.5 !px-5 rounded-xl text-xs font-semibold uppercase tracking-wider flex items-center gap-2 self-start sm:self-auto"
           >
-            <span>Explore All Recipes</span>
-            <ArrowRight className="w-4 h-4" />
+            <span>View All Recipes</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
@@ -258,69 +322,30 @@ export const HomePage = () => {
       </section>
 
       {/* ============================================================
-          POPULAR CUISINES EXPLORER
+          CUISINE DISCOVERY COLLECTIONS
           ============================================================ */}
-      <section className="container-page">
-        <div className="card p-8 sm:p-12 bg-gradient-to-br from-dark-surface to-dark-card border-dark-border">
-          <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-primary">Global Flavors</span>
-            <h2 className="text-2xl sm:text-3xl font-heading font-bold text-white">
-              Explore Cuisines Across The World
-            </h2>
-            <p className="text-sm text-text-secondary">
-              From comforting rustic Italian pasta to spicy authentic Mexican street dishes.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {cuisines.map((c) => (
-              <Link
-                key={c.name}
-                to={`/recipes?cuisine=${c.name}`}
-                className="card p-6 bg-dark-card/60 hover:bg-dark-hover border-dark-border/80 hover:border-primary/50 transition-all group flex flex-col justify-between"
-              >
-                <div>
-                  <span className="text-4xl mb-4 block group-hover:scale-110 transition-transform">
-                    {c.icon}
-                  </span>
-                  <h3 className="text-lg font-bold text-white group-hover:text-primary transition-colors">
-                    {c.name}
-                  </h3>
-                  <p className="text-xs text-text-secondary mt-1 line-clamp-2">{c.desc}</p>
-                </div>
-                <div className="mt-4 pt-3 border-t border-dark-border/40 flex items-center justify-between text-xs text-text-muted">
-                  <span>{c.count}</span>
-                  <ArrowRight className="w-3.5 h-3.5 text-primary group-hover:translate-x-1 transition-transform" />
-                </div>
-              </Link>
-            ))}
-          </div>
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-left mb-8">
+          <span className="text-xs font-bold uppercase tracking-widest text-sage-400">Global Flavors</span>
+          <h2 className="text-3xl font-heading font-bold text-white mt-1">Explore by Cuisine</h2>
         </div>
-      </section>
 
-      {/* ============================================================
-          BOTTOM CALL TO ACTION BANNER
-          ============================================================ */}
-      <section className="container-page">
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-primary-900/60 via-dark-card to-secondary-900/40 border border-primary/30 p-8 sm:p-16 text-center space-y-6 shadow-2xl">
-          <div className="max-w-2xl mx-auto space-y-4">
-            <h2 className="text-3xl sm:text-4xl font-heading font-bold text-white">
-              Ready to create something delicious today?
-            </h2>
-            <p className="text-sm sm:text-base text-text-secondary leading-relaxed">
-              Join thousands of passionate home chefs saving money, eliminating food waste, and discovering incredible flavors every day.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
-              <Link to="/matcher" className="btn btn-primary btn-lg shadow-glow-green w-full sm:w-auto">
-                <Sparkles className="w-5 h-5" />
-                <span>Launch Recipe Matcher</span>
-              </Link>
-              <Link to="/inventory" className="btn btn-outline btn-lg w-full sm:w-auto">
-                <Refrigerator className="w-5 h-5" />
-                <span>Setup My Pantry</span>
-              </Link>
-            </div>
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {cuisines.map((c) => (
+            <Link
+              key={c.name}
+              to={`/recipes?cuisine=${c.tag}`}
+              className="card p-6 bg-dark-card border-dark-border hover:border-sage/40 hover:-translate-y-1 transition-all text-left flex flex-col justify-between group"
+            >
+              <div className="text-3xl mb-4 group-hover:scale-110 transition-transform">{c.icon}</div>
+              <div>
+                <h3 className="text-lg font-heading font-bold text-white group-hover:text-sage-300 transition-colors">
+                  {c.name}
+                </h3>
+                <p className="text-xs text-text-secondary mt-1">{c.count}</p>
+              </div>
+            </Link>
+          ))}
         </div>
       </section>
     </div>

@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* ============================================================
-   FLAVORCRAFT GLOBAL STYLES
+   FLAVORCRAFT — PREMIUM DIGITAL KITCHEN GLOBAL STYLES
    ============================================================ */
 
 @layer base {
@@ -16,63 +16,72 @@
   }
 
   body {
-    @apply bg-dark text-text-primary font-sans;
+    @apply bg-dark text-text-primary font-sans antialiased selection:bg-sage/20 selection:text-white;
     min-height: 100vh;
     line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    background-color: #0c120f;
+    background-image: 
+      radial-gradient(circle at 15% 15%, rgba(45, 106, 79, 0.08) 0%, transparent 40%),
+      radial-gradient(circle at 85% 85%, rgba(233, 196, 106, 0.05) 0%, transparent 45%);
+    background-attachment: fixed;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading font-bold;
+    @apply font-heading tracking-tight text-white;
   }
 
+  /* Refined Digital Kitchen Scrollbars */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-dark-surface;
+    background: #0c120f;
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-dark-border rounded-full;
+    background: #23342b;
+    border-radius: 9999px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-primary;
+    background: #52b788;
   }
 }
 
 @layer components {
-  /* Buttons */
+  /* Buttons - shadcn inspired with tactile kitchen styling */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-dark;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-dark-surface active:scale-[0.98];
   }
 
   .btn-primary {
-    @apply btn bg-primary text-white hover:bg-primary-dark shadow-glow-green focus:ring-primary active:scale-95;
+    @apply btn bg-gradient-to-r from-primary-dark via-primary to-primary-light text-white font-semibold shadow-glow-green hover:shadow-lg hover:brightness-110 focus:ring-primary;
   }
 
   .btn-secondary {
-    @apply btn bg-secondary text-white hover:bg-secondary-dark shadow-glow-orange focus:ring-secondary active:scale-95;
+    @apply btn bg-sage/15 text-sage-400 border border-sage/30 hover:bg-sage/25 hover:border-sage/50 focus:ring-sage;
+  }
+
+  .btn-accent {
+    @apply btn bg-accent text-white font-semibold shadow-glow-accent hover:bg-accent-600 focus:ring-accent;
   }
 
   .btn-outline {
-    @apply btn border border-dark-border text-text-primary hover:border-primary hover:text-primary hover:bg-primary/10 focus:ring-primary active:scale-95;
+    @apply btn border border-dark-border text-text-primary hover:border-sage/40 hover:text-white hover:bg-dark-hover focus:ring-primary;
   }
 
   .btn-ghost {
-    @apply btn text-text-secondary hover:text-text-primary hover:bg-dark-hover focus:ring-primary active:scale-95;
+    @apply btn text-text-secondary hover:text-white hover:bg-dark-hover focus:ring-primary;
   }
 
   .btn-danger {
-    @apply btn bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 active:scale-95;
+    @apply btn bg-accent/15 text-accent-400 border border-accent/30 hover:bg-accent/25 hover:border-accent/50 focus:ring-accent;
   }
 
   .btn-lg {
-    @apply px-6 py-3.5 text-base rounded-2xl;
+    @apply px-6 py-3.5 text-base rounded-2xl font-semibold;
   }
 
   .btn-sm {
@@ -80,258 +89,62 @@
   }
 
   .btn-icon {
-    @apply btn p-2 rounded-xl;
+    @apply btn p-2.5 rounded-xl aspect-square;
   }
 
-  /* Cards */
+  /* Cards - editorial tactile containers */
   .card {
-    @apply bg-dark-card border border-dark-border rounded-2xl shadow-card transition-all duration-200;
+    @apply bg-dark-card border border-dark-border rounded-2xl shadow-card backdrop-blur-sm transition-all duration-300;
   }
 
   .card-hover {
-    @apply card hover:border-primary/30 hover:shadow-card-hover hover:-translate-y-1;
+    @apply card hover:border-sage/40 hover:shadow-card-hover hover:-translate-y-1;
   }
 
-  /* Form inputs */
+  .card-interactive {
+    @apply card hover:border-primary/50 hover:bg-dark-hover/80 hover:shadow-glow-green cursor-pointer;
+  }
+
+  /* Glass Panels */
+  .glass-panel {
+    @apply bg-dark-surface/85 backdrop-blur-md border border-dark-border/80 shadow-xl;
+  }
+
+  .glass-card {
+    @apply bg-dark-card/90 backdrop-blur-md border border-dark-border shadow-card;
+  }
+
+  /* Form Inputs */
   .input {
-    @apply w-full bg-dark-surface border border-dark-border text-text-primary placeholder-text-muted rounded-xl px-4 py-3 text-sm transition-all duration-200 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20;
+    @apply w-full bg-dark-surface border border-dark-border text-white placeholder-text-muted rounded-xl px-4 py-3 text-sm transition-all duration-200 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20;
   }
 
   .input-label {
-    @apply block text-sm font-medium text-text-secondary mb-1.5;
+    @apply block text-xs font-semibold uppercase tracking-wider text-text-secondary mb-1.5;
   }
 
-  /* Badges */
-  .badge {
-    @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold;
+  .select {
+    @apply input appearance-none bg-no-repeat pr-10 cursor-pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239ab3a6'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-position: right 12px center;
+    background-size: 16px;
   }
 
-  .badge-green {
-    @apply badge bg-primary/20 text-primary;
+  /* Match Badges - clear, color-coded confidence indicators */
+  .badge-match-high {
+    @apply bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 font-bold px-2.5 py-1 rounded-full text-xs flex items-center gap-1 shadow-sm;
   }
 
-  .badge-orange {
-    @apply badge bg-secondary/20 text-secondary;
+  .badge-match-med {
+    @apply bg-amber-950/80 text-amber-300 border border-amber-500/40 font-bold px-2.5 py-1 rounded-full text-xs flex items-center gap-1 shadow-sm;
   }
 
-  .badge-amber {
-    @apply badge bg-amber/20 text-amber;
+  .badge-match-low {
+    @apply bg-stone-900/90 text-stone-300 border border-stone-600/40 font-bold px-2.5 py-1 rounded-full text-xs flex items-center gap-1 shadow-sm;
   }
 
-  .badge-red {
-    @apply badge bg-red-500/20 text-red-400;
-  }
-
-  .badge-blue {
-    @apply badge bg-blue-500/20 text-blue-400;
-  }
-
-  .badge-gray {
-    @apply badge bg-dark-border/50 text-text-secondary;
-  }
-
-  /* Section containers */
-  .container-page {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
-  }
-
-  .section-title {
-    @apply text-3xl sm:text-4xl font-heading font-bold text-text-primary;
-  }
-
-  .section-subtitle {
-    @apply text-lg text-text-secondary;
-  }
-
-  /* Glass morphism effect */
-  .glass {
-    @apply bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl;
-  }
-
-  /* Gradient text */
-  .gradient-text {
-    @apply bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent;
-  }
-
-  .gradient-text-warm {
-    @apply bg-gradient-to-r from-amber to-secondary bg-clip-text text-transparent;
-  }
-
-  /* Match percentage colors */
-  .match-high {
-    @apply text-primary;
-  }
-
-  .match-medium {
-    @apply text-amber;
-  }
-
-  .match-low {
-    @apply text-secondary;
-  }
-
-  /* Loading skeleton */
+  /* Subtle shimmer / skeleton effect */
   .skeleton {
-    @apply bg-dark-surface animate-pulse rounded-lg;
+    @apply bg-dark-surface/60 animate-pulse rounded-xl;
   }
-
-  /* Tabs */
-  .tab {
-    @apply px-4 py-2 text-sm font-medium text-text-secondary rounded-lg transition-all duration-200 cursor-pointer hover:text-text-primary hover:bg-dark-hover;
-  }
-
-  .tab-active {
-    @apply tab bg-primary/10 text-primary;
-  }
-
-  /* Divider */
-  .divider {
-    @apply border-t border-dark-border my-6;
-  }
-
-  /* Empty state */
-  .empty-state {
-    @apply flex flex-col items-center justify-center py-16 text-center;
-  }
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .line-clamp-3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-}
-
-/* ============================================================
-   ANIMATIONS
-   ============================================================ */
-
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-.shimmer {
-  background: linear-gradient(90deg, #253346 25%, #2d3f57 50%, #253346 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-}
-
-/* Match ring animation */
-@keyframes matchPing {
-  0% { transform: scale(1); opacity: 0.8; }
-  100% { transform: scale(1.5); opacity: 0; }
-}
-
-.match-ring {
-  position: relative;
-}
-
-.match-ring::after {
-  content: '';
-  position: absolute;
-  inset: -4px;
-  border-radius: 50%;
-  border: 2px solid currentColor;
-  animation: matchPing 1.5s ease-out infinite;
-}
-
-/* Hero gradient background */
-.hero-bg {
-  background: 
-    radial-gradient(ellipse at 20% 50%, rgba(34, 197, 94, 0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 20%, rgba(249, 115, 22, 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 80%, rgba(251, 191, 36, 0.05) 0%, transparent 50%),
-    #0f172a;
-}
-
-/* Card gradient border */
-.card-gradient-border {
-  position: relative;
-  background: #253346;
-  border-radius: 1rem;
-}
-
-.card-gradient-border::before {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  border-radius: 1rem;
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.3), rgba(249, 115, 22, 0.3));
-  z-index: -1;
-}
-
-/* Percentage ring */
-.match-circle {
-  --percentage: 0;
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: conic-gradient(
-    var(--match-color, #22c55e) calc(var(--percentage) * 1%),
-    #334155 0
-  );
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.match-circle-inner {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: #253346;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Ingredient pill hover */
-.ingredient-pill {
-  @apply flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm transition-all duration-200 cursor-pointer select-none;
-}
-
-.ingredient-pill:hover {
-  transform: translateY(-1px);
-}
-
-/* Toast styles */
-.toast-enter {
-  animation: toastIn 0.3s ease-out forwards;
-}
-
-.toast-exit {
-  animation: toastOut 0.3s ease-in forwards;
-}
-
-@keyframes toastIn {
-  from { transform: translateX(120%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
-
-@keyframes toastOut {
-  from { transform: translateX(0); opacity: 1; }
-  to { transform: translateX(120%); opacity: 0; }
 }
