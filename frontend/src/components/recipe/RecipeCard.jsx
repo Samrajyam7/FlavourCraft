@@ -18,7 +18,11 @@ export const RecipeCard = ({
   const [isFav, setIsFav] = useState(initialIsFavorite || recipe.isFavorite || false);
   const [favLoading, setFavLoading] = useState(false);
 
-  const totalTime = (recipe.prepTime || 0) + (recipe.cookTime || 0);
+  const prepTime = recipe.prepTimeMinutes ?? recipe.prepTime ?? 0;
+  const cookTime = recipe.cookTimeMinutes ?? recipe.cookTime ?? 0;
+  const totalTime = prepTime + cookTime;
+  const calories = recipe.nutrition?.calories ?? recipe.caloriesPerServing ?? 0;
+  const displayRating = recipe.rating ?? recipe.averageRating ?? 0;
 
   const handleFavoriteClick = async (e) => {
     e.preventDefault();
@@ -165,7 +169,7 @@ export const RecipeCard = ({
         <div className="pt-3 border-t border-dark-border/60 flex items-center justify-between text-xs text-text-secondary">
           <div className="flex items-center gap-3.5">
             {totalTime > 0 && (
-              <span className="flex items-center gap-1 hover:text-white transition-colors" title={`Prep: ${recipe.prepTime}m, Cook: ${recipe.cookTime}m`}>
+              <span className="flex items-center gap-1 hover:text-white transition-colors" title={`Prep: ${prepTime}m, Cook: ${cookTime}m`}>
                 <Clock className="w-3.5 h-3.5 text-primary" />
                 <span>{totalTime}m</span>
               </span>
@@ -177,10 +181,10 @@ export const RecipeCard = ({
               </span>
             )}
 
-            {recipe.caloriesPerServing && (
+            {calories > 0 && (
               <span className="hidden sm:flex items-center gap-1">
                 <Flame className="w-3.5 h-3.5 text-secondary" />
-                <span>{recipe.caloriesPerServing} kcal</span>
+                <span>{calories} kcal</span>
               </span>
             )}
           </div>
@@ -188,7 +192,7 @@ export const RecipeCard = ({
           {/* Rating */}
           <div className="flex items-center gap-1 font-semibold text-white">
             <Star className="w-3.5 h-3.5 text-amber-DEFAULT fill-amber-DEFAULT" />
-            <span>{recipe.averageRating ? recipe.averageRating.toFixed(1) : 'New'}</span>
+            <span>{displayRating > 0 ? Number(displayRating).toFixed(1) : 'New'}</span>
             {recipe.reviewCount > 0 && (
               <span className="text-text-muted font-normal text-[11px]">({recipe.reviewCount})</span>
             )}

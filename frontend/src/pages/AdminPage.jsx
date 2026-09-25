@@ -236,14 +236,13 @@ export const AdminPage = () => {
                   className="input text-xs"
                 >
                   <option value="Produce">Produce</option>
+                  <option value="Vegetables">Vegetables</option>
+                  <option value="Fruits">Fruits</option>
+                  <option value="Protein">Protein</option>
                   <option value="Dairy">Dairy</option>
-                  <option value="Meat">Meat & Seafood</option>
-                  <option value="Pantry">Pantry Staples</option>
-                  <option value="Grains & Pasta">Grains & Pasta</option>
-                  <option value="Herbs & Spices">Herbs & Spices</option>
-                  <option value="Condiments">Condiments & Sauces</option>
-                  <option value="Baking">Baking</option>
-                  <option value="Other">Other</option>
+                  <option value="Grains">Grains</option>
+                  <option value="Pantry">Pantry</option>
+                  <option value="Spices">Spices</option>
                 </select>
               </div>
 

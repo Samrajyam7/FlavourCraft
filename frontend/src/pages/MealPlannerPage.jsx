@@ -62,21 +62,10 @@ export const MealPlannerPage = () => {
 
   const handleGenerateWeeklyGroceries = async () => {
     try {
-      // Find all recipe IDs in the current meal plan
-      const allSlots = mealPlan?.days?.flatMap((d) => d.slots) || [];
-      const recipeIds = allSlots.map((s) => s.recipe?._id).filter(Boolean);
-
-      if (recipeIds.length === 0) {
-        info('No recipes scheduled this week to generate groceries for.');
-        return;
-      }
-
-      for (const rId of recipeIds) {
-        await groceryService.generateFromRecipe(rId, []);
-      }
-      success(`Generated groceries for all scheduled meals! Check your Grocery List 🛒`);
+      const res = await mealPlanService.generateGrocery();
+      success(res.message || 'Generated groceries for all scheduled meals! Check your Grocery List 🛒');
     } catch (err) {
-      toastError('Failed to generate weekly grocery list');
+      toastError(err.response?.data?.message || 'Failed to generate weekly grocery list');
     }
   };
 

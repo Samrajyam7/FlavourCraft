@@ -14,17 +14,25 @@ const getRecipes = async (req, res) => {
       difficulty,
       dietaryTags,
       maxTime,
-      minMatch,
+      author,
+      createdBy,
       page = 1,
       limit = 12,
       sort = '-popularity',
     } = req.query;
 
     const query = {};
-    if (search) query.$text = { $search: search };
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
+        { cuisine: { $regex: search, $options: 'i' } },
+      ];
+    }
     if (cuisine) query.cuisine = cuisine;
     if (mealType) query.mealType = mealType;
     if (difficulty) query.difficulty = difficulty;
+    if (author || createdBy) query.createdBy = author || createdBy;
     if (dietaryTags) {
       const tags = dietaryTags.split(',').map((t) => t.trim());
       query.dietaryTags = { $in: tags };
@@ -35,11 +43,25 @@ const getRecipes = async (req, res) => {
       };
     }
 
+    // Map UI sort keys explicitly
+    let sortOption = '-popularity';
+    if (sort === 'rating' || sort === '-rating' || sort === 'highest-rated') {
+      sortOption = '-rating';
+    } else if (sort === 'popularity' || sort === '-popularity' || sort === 'popular') {
+      sortOption = '-popularity';
+    } else if (sort === 'newest' || sort === '-createdAt') {
+      sortOption = '-createdAt';
+    } else if (sort === 'quickest' || sort === 'time') {
+      sortOption = 'prepTimeMinutes cookTimeMinutes';
+    } else if (sort) {
+      sortOption = sort;
+    }
+
     const skip = (Number(page) - 1) * Number(limit);
     const total = await Recipe.countDocuments(query);
     const recipes = await Recipe.find(query)
       .populate('ingredients.ingredientId', 'name icon category unit substitutes')
-      .sort(sort)
+      .sort(sortOption)
       .skip(skip)
       .limit(Number(limit))
       .lean();
@@ -197,7 +219,7 @@ const searchRecipes = async (req, res) => {
   }
 };
 
-// @desc    Create recipe (Admin)
+// @desc    Create recipe (Authenticated user or Admin)
 // @route   POST /api/recipes
 const createRecipe = async (req, res) => {
   try {
@@ -208,31 +230,42 @@ const createRecipe = async (req, res) => {
   }
 };
 
-// @desc    Update recipe (Admin)
+// @desc    Update recipe (Author or Admin)
 // @route   PUT /api/recipes/:id
 const updateRecipe = async (req, res) => {
   try {
-    const recipe = await Recipe.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    const recipe = await Recipe.findById(req.params.id);
     if (!recipe) {
       return res.status(404).json({ success: false, message: 'Recipe not found.' });
     }
+
+    if (recipe.createdBy && recipe.createdBy.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+      return res.status(403).json({ success: false, message: 'Not authorized to edit this recipe.' });
+    }
+
+    Object.assign(recipe, req.body);
+    await recipe.save();
+
     res.json({ success: true, message: 'Recipe updated!', recipe });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// @desc    Delete recipe (Admin)
+// @desc    Delete recipe (Author or Admin)
 // @route   DELETE /api/recipes/:id
 const deleteRecipe = async (req, res) => {
   try {
-    const recipe = await Recipe.findByIdAndDelete(req.params.id);
+    const recipe = await Recipe.findById(req.params.id);
     if (!recipe) {
       return res.status(404).json({ success: false, message: 'Recipe not found.' });
     }
+
+    if (recipe.createdBy && recipe.createdBy.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+      return res.status(403).json({ success: false, message: 'Not authorized to delete this recipe.' });
+    }
+
+    await recipe.deleteOne();
     res.json({ success: true, message: 'Recipe deleted.' });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

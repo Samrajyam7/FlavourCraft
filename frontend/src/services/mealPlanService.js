@@ -20,6 +20,11 @@ export const mealPlanService = {
     const res = await API.delete('/mealplan/clear');
     return res.data;
   },
+
+  async generateGrocery() {
+    const res = await API.post('/mealplan/generate-grocery');
+    return res.data;
+  },
 };
 
 export default mealPlanService;

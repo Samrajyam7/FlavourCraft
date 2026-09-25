@@ -5,6 +5,7 @@ const mealSlotSchema = new mongoose.Schema(
     breakfast: { type: mongoose.Schema.Types.ObjectId, ref: 'Recipe', default: null },
     lunch: { type: mongoose.Schema.Types.ObjectId, ref: 'Recipe', default: null },
     dinner: { type: mongoose.Schema.Types.ObjectId, ref: 'Recipe', default: null },
+    snack: { type: mongoose.Schema.Types.ObjectId, ref: 'Recipe', default: null },
   },
   { _id: false }
 );

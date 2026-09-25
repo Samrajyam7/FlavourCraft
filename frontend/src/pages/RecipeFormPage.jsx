@@ -165,26 +165,31 @@ export const RecipeFormPage = () => {
         cuisine,
         mealType,
         difficulty,
-        prepTime: Number(prepTime),
-        cookTime: Number(cookTime),
+        prepTimeMinutes: Number(prepTime),
+        cookTimeMinutes: Number(cookTime),
         servings: Number(servings),
-        caloriesPerServing: Number(caloriesPerServing),
+        nutrition: {
+          calories: Number(caloriesPerServing) || 0,
+        },
         imageUrl:
           imageUrl ||
           'https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=800&q=80',
         dietaryTags,
-        ingredients: ingredientsList.map((item) => ({
-          ingredient: item.ingredientId || undefined,
-          name: item.name,
-          amount: Number(item.amount) || 1,
-          unit: item.unit || 'unit',
-          notes: item.notes || '',
-        })),
-        instructions: instructionsList.map((step) => ({
-          stepNumber: step.stepNumber,
-          instruction: step.instruction,
-          timerMinutes: Number(step.timerMinutes) || 0,
-        })),
+        ingredients: ingredientsList
+          .filter((item) => item.ingredientId || item.name)
+          .map((item) => ({
+            ingredientId: item.ingredientId || undefined,
+            amount: `${item.amount} ${item.unit || ''}`.trim(),
+            isOptional: false,
+            importance: 2,
+          })),
+        instructions: instructionsList
+          .filter((step) => step.instruction || step.description)
+          .map((step, idx) => ({
+            step: step.stepNumber || idx + 1,
+            description: step.instruction || step.description,
+            timerMinutes: Number(step.timerMinutes) || 0,
+          })),
       };
 
       if (isEditMode) {
@@ -192,9 +197,10 @@ export const RecipeFormPage = () => {
         success('Recipe updated successfully!');
         navigate(`/recipes/${id}`);
       } else {
-        const created = await recipeService.createRecipe(payload);
+        const res = await recipeService.createRecipe(payload);
+        const createdRecipe = res?.recipe || res;
         success('Recipe crafted & published! 🎉');
-        navigate(`/recipes/${created._id || ''}`);
+        navigate(`/recipes/${createdRecipe._id || ''}`);
       }
     } catch (err) {
       toastError(err.response?.data?.message || 'Failed to save recipe');

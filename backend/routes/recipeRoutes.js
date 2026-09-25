@@ -23,10 +23,10 @@ router.post('/match', matchRecipesHandler);
 router.get('/', getRecipes);
 router.get('/:id', getRecipeById);
 
-// Admin routes
-router.post('/', protect, adminOnly, createRecipe);
-router.put('/:id', protect, adminOnly, updateRecipe);
-router.delete('/:id', protect, adminOnly, deleteRecipe);
+// Recipe management routes (authenticated user or admin)
+router.post('/', protect, createRecipe);
+router.put('/:id', protect, updateRecipe);
+router.delete('/:id', protect, deleteRecipe);
 
 // Recipe reviews (nested)
 router.get('/:recipeId/reviews', getReviews);

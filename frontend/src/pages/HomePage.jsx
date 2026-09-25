@@ -28,7 +28,7 @@ export const HomePage = () => {
   // Quick select ingredients for instant hero launcher
   const popularPantryItems = [
     'Chicken',
-    'Eggs',
+    'Egg',
     'Garlic',
     'Tomato',
     'Pasta',

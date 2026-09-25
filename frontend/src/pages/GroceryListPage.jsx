@@ -43,11 +43,11 @@ export const GroceryListPage = () => {
   };
 
   const handleTogglePurchased = async (item) => {
-    const nextPurchased = !item.isPurchased;
+    const nextPurchased = !item.purchased;
     try {
-      await groceryService.updateGroceryItem(item._id, { isPurchased: nextPurchased });
+      await groceryService.updateGroceryItem(item._id, { purchased: nextPurchased });
       setGroceryItems((prev) =>
-        prev.map((i) => (i._id === item._id ? { ...i, isPurchased: nextPurchased } : i))
+        prev.map((i) => (i._id === item._id ? { ...i, purchased: nextPurchased } : i))
       );
     } catch (err) {
       toastError('Failed to update item');
@@ -67,7 +67,7 @@ export const GroceryListPage = () => {
   const handleClearPurchased = async () => {
     try {
       await groceryService.clearPurchased();
-      setGroceryItems((prev) => prev.filter((i) => !i.isPurchased));
+      setGroceryItems((prev) => prev.filter((i) => !i.purchased));
       success('Cleared all completed items! 🧹');
     } catch (err) {
       toastError('Failed to clear purchased items');
@@ -111,7 +111,7 @@ export const GroceryListPage = () => {
   }, {});
 
   const totalCount = groceryItems.length;
-  const purchasedCount = groceryItems.filter((i) => i.isPurchased).length;
+  const purchasedCount = groceryItems.filter((i) => i.purchased).length;
   const progressPercent = totalCount > 0 ? (purchasedCount / totalCount) * 100 : 0;
 
   return (
@@ -292,7 +292,7 @@ export const GroceryListPage = () => {
                   <Layers className="w-4 h-4 text-primary" /> {catName}
                 </h3>
                 <span className="text-xs text-text-muted">
-                  {items.filter((i) => i.isPurchased).length}/{items.length}
+                  {items.filter((i) => i.purchased).length}/{items.length}
                 </span>
               </div>
 
@@ -302,13 +302,13 @@ export const GroceryListPage = () => {
                     key={item._id}
                     onClick={() => handleTogglePurchased(item)}
                     className={`flex items-center justify-between p-3 rounded-xl border transition-all cursor-pointer select-none ${
-                      item.isPurchased
+                      item.purchased
                         ? 'bg-dark-surface/40 border-dark-border/40 opacity-50 line-through text-text-muted'
                         : 'bg-dark-surface border-dark-border/80 text-white hover:border-primary/40'
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      {item.isPurchased ? (
+                      {item.purchased ? (
                         <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
                       ) : (
                         <Circle className="w-4 h-4 text-text-muted flex-shrink-0" />

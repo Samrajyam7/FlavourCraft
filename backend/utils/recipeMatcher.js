@@ -57,15 +57,14 @@ function calculateRecipeMatch(recipeIngredients, userIngredientSet) {
     }
   }
 
-  // Base score from required ingredients
-  const baseScore =
-    totalRequiredWeight > 0 ? (matchedRequiredWeight / totalRequiredWeight) * 100 : 0;
-
-  // Optional bonus: up to 5%
-  const optionalBonus =
-    optional.length > 0 ? (optionalMatchCount / optional.length) * 5 : 0;
-
-  const matchPercentage = Math.min(Math.round(baseScore + optionalBonus), 100);
+  // Calculate score strictly from required ingredients (Rule 3, 4, 5)
+  let matchPercentage = 0;
+  if (totalRequiredWeight > 0) {
+    matchPercentage = Math.min(Math.max(Math.round((matchedRequiredWeight / totalRequiredWeight) * 100), 0), 100);
+  } else if (recipeIngredients.length > 0) {
+    // If a recipe has only optional ingredients, base on matched optional count
+    matchPercentage = Math.min(Math.max(Math.round((optionalMatchCount / optional.length) * 100), 0), 100);
+  }
 
   return {
     matchPercentage,

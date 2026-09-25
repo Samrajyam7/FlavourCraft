@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { Sparkles, SlidersHorizontal, ShoppingCart, RefreshCw, ChefHat, CheckCircle2, AlertCircle, ArrowRight } from 'lucide-react';
 import { recipeService } from '../services/recipeService';
@@ -19,6 +19,7 @@ export const RecipeMatcherPage = () => {
   const [matchedRecipes, setMatchedRecipes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
+  const requestIdRef = useRef(0);
 
   // Filters
   const [minMatchPercentage, setMinMatchPercentage] = useState(0);
@@ -51,12 +52,15 @@ export const RecipeMatcherPage = () => {
   }, [location.state]);
 
   const triggerMatch = async (customIngredients = null, customMinPct = minMatchPercentage, overrides = {}) => {
-    const listToMatch = Array.isArray(customIngredients) ? customIngredients : selectedIngredients;
+    const listToMatch = customIngredients !== null ? customIngredients : selectedIngredients;
     if (!listToMatch || listToMatch.length === 0) {
-      warning('Please pick at least one ingredient to match recipes!');
+      setMatchedRecipes([]);
+      setSearched(false);
+      setLoading(false);
       return;
     }
 
+    const currentReqId = ++requestIdRef.current;
     const currentMealType = overrides.mealType !== undefined ? overrides.mealType : mealType;
     const currentCuisine = overrides.cuisine !== undefined ? overrides.cuisine : cuisine;
     const currentDietary = overrides.dietary !== undefined ? overrides.dietary : dietary;
@@ -74,6 +78,12 @@ export const RecipeMatcherPage = () => {
       };
 
       const res = await recipeService.matchRecipes(ids, filters);
+      
+      // If a newer request was dispatched in the meantime, ignore this stale response
+      if (currentReqId !== requestIdRef.current) {
+        return;
+      }
+
       const list = res?.results || res?.matches || res?.recipes || (Array.isArray(res) ? res : []);
       
       let filtered = Array.isArray(list) ? list : [];
@@ -104,39 +114,42 @@ export const RecipeMatcherPage = () => {
 
       setMatchedRecipes(filtered);
     } catch (err) {
-      console.error('Match error:', err);
-      toastError(err.response?.data?.message || 'Failed to match recipes');
+      if (currentReqId === requestIdRef.current) {
+        console.error('Match error:', err);
+        toastError(err.response?.data?.message || 'Failed to match recipes');
+      }
     } finally {
-      setLoading(false);
+      if (currentReqId === requestIdRef.current) {
+        setLoading(false);
+      }
     }
   };
 
   const handleSelectIngredient = (ing) => {
-    setSelectedIngredients((prev) => {
-      if (prev.some((item) => (item._id || item) === (ing._id || ing))) return prev;
-      const updated = [...prev, ing];
-      triggerMatch(updated);
-      return updated;
-    });
+    const exists = selectedIngredients.some((item) => (item._id || item) === (ing._id || ing));
+    if (exists) return;
+    const updated = [...selectedIngredients, ing];
+    setSelectedIngredients(updated);
+    triggerMatch(updated);
   };
 
   const handleRemoveIngredient = (ing) => {
-    setSelectedIngredients((prev) => {
-      const updated = prev.filter((item) => (item._id || item) !== (ing._id || ing));
-      if (updated.length > 0) {
-        triggerMatch(updated);
-      } else {
-        setMatchedRecipes([]);
-        setSearched(false);
-      }
-      return updated;
-    });
+    const updated = selectedIngredients.filter((item) => (item._id || item) !== (ing._id || ing));
+    setSelectedIngredients(updated);
+    if (updated.length > 0) {
+      triggerMatch(updated);
+    } else {
+      setMatchedRecipes([]);
+      setSearched(false);
+    }
   };
 
   const handleClearAll = () => {
+    requestIdRef.current++;
     setSelectedIngredients([]);
     setMatchedRecipes([]);
     setSearched(false);
+    setLoading(false);
   };
 
   const handleAddAllMissingToGrocery = async (recipe) => {

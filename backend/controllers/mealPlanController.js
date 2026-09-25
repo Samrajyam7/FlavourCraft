@@ -13,6 +13,7 @@ const formatMealPlanResponse = (plan) => {
         { mealType: 'Breakfast', recipe: dayData.breakfast || null },
         { mealType: 'Lunch', recipe: dayData.lunch || null },
         { mealType: 'Dinner', recipe: dayData.dinner || null },
+        { mealType: 'Snack', recipe: dayData.snack || null },
       ],
     };
   });
@@ -25,13 +26,13 @@ const formatMealPlanResponse = (plan) => {
 const getMealPlan = async (req, res) => {
   try {
     let plan = await MealPlan.findOne({ userId: req.user._id })
-      .populate('meals.monday.breakfast meals.monday.lunch meals.monday.dinner', 'title imageUrl prepTimeMinutes cookTimeMinutes difficulty nutrition')
-      .populate('meals.tuesday.breakfast meals.tuesday.lunch meals.tuesday.dinner', 'title imageUrl prepTimeMinutes cookTimeMinutes difficulty nutrition')
-      .populate('meals.wednesday.breakfast meals.wednesday.lunch meals.wednesday.dinner', 'title imageUrl prepTimeMinutes cookTimeMinutes difficulty nutrition')
-      .populate('meals.thursday.breakfast meals.thursday.lunch meals.thursday.dinner', 'title imageUrl prepTimeMinutes cookTimeMinutes difficulty nutrition')
-      .populate('meals.friday.breakfast meals.friday.lunch meals.friday.dinner', 'title imageUrl prepTimeMinutes cookTimeMinutes difficulty nutrition')
-      .populate('meals.saturday.breakfast meals.saturday.lunch meals.saturday.dinner', 'title imageUrl prepTimeMinutes cookTimeMinutes difficulty nutrition')
-      .populate('meals.sunday.breakfast meals.sunday.lunch meals.sunday.dinner', 'title imageUrl prepTimeMinutes cookTimeMinutes difficulty nutrition')
+      .populate('meals.monday.breakfast meals.monday.lunch meals.monday.dinner meals.monday.snack', 'title imageUrl prepTimeMinutes cookTimeMinutes difficulty nutrition')
+      .populate('meals.tuesday.breakfast meals.tuesday.lunch meals.tuesday.dinner meals.tuesday.snack', 'title imageUrl prepTimeMinutes cookTimeMinutes difficulty nutrition')
+      .populate('meals.wednesday.breakfast meals.wednesday.lunch meals.wednesday.dinner meals.wednesday.snack', 'title imageUrl prepTimeMinutes cookTimeMinutes difficulty nutrition')
+      .populate('meals.thursday.breakfast meals.thursday.lunch meals.thursday.dinner meals.thursday.snack', 'title imageUrl prepTimeMinutes cookTimeMinutes difficulty nutrition')
+      .populate('meals.friday.breakfast meals.friday.lunch meals.friday.dinner meals.friday.snack', 'title imageUrl prepTimeMinutes cookTimeMinutes difficulty nutrition')
+      .populate('meals.saturday.breakfast meals.saturday.lunch meals.saturday.dinner meals.saturday.snack', 'title imageUrl prepTimeMinutes cookTimeMinutes difficulty nutrition')
+      .populate('meals.sunday.breakfast meals.sunday.lunch meals.sunday.dinner meals.sunday.snack', 'title imageUrl prepTimeMinutes cookTimeMinutes difficulty nutrition')
       .lean();
 
     if (!plan) {
@@ -141,7 +142,7 @@ const generateGroceryFromPlan = async (req, res) => {
     const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
     for (const day of days) {
       const daySlots = plan.meals[day] || {};
-      for (const slot of ['breakfast', 'lunch', 'dinner']) {
+      for (const slot of ['breakfast', 'lunch', 'dinner', 'snack']) {
         if (daySlots[slot]) {
           recipeIds.add(daySlots[slot].toString());
         }
@@ -163,14 +164,23 @@ const generateGroceryFromPlan = async (req, res) => {
       if (recipe.ingredients) {
         for (const ri of recipe.ingredients) {
           const ingName = ri.ingredientId?.name || 'Ingredient';
-          const existing = grocery.items.find((i) => i.name && i.name.toLowerCase() === ingName.toLowerCase());
-          if (!existing) {
+          const existingIdx = grocery.items.findIndex(
+            (i) => i.name && i.name.toLowerCase() === ingName.toLowerCase()
+          );
+          if (existingIdx >= 0) {
+            const curVal = parseFloat(grocery.items[existingIdx].quantity) || 0;
+            const newVal = parseFloat(ri.amount) || 1;
+            if (curVal > 0 && newVal > 0) {
+              grocery.items[existingIdx].quantity = String(curVal + newVal);
+            }
+          } else {
             grocery.items.push({
               name: ingName,
               quantity: ri.amount || '1',
               unit: ri.ingredientId?.unit || 'unit',
               category: ri.ingredientId?.category || 'Produce',
               ingredientId: ri.ingredientId?._id || ri.ingredientId,
+              purchased: false,
             });
             addedCount++;
           }

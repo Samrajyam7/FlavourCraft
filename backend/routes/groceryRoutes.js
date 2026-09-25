@@ -14,6 +14,7 @@ router.use(protect);
 router.get('/', getGroceryList);
 router.post('/', addToGroceryList);
 router.delete('/clear-purchased', clearPurchased);
+router.post('/clear-purchased', clearPurchased);
 router.put('/:itemId', updateGroceryItem);
 router.delete('/:itemId', deleteGroceryItem);
 

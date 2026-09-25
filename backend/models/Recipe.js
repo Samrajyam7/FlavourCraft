@@ -76,6 +76,10 @@ const recipeSchema = new mongoose.Schema(
       {
         step: Number,
         description: String,
+        timerMinutes: {
+          type: Number,
+          default: 0,
+        },
       },
     ],
     dietaryTags: {

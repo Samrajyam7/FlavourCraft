@@ -29,21 +29,15 @@ export const RecipesPage = () => {
     try {
       setLoading(true);
       const params = {
-        q: query || undefined,
+        search: query ? query.trim() : undefined,
         cuisine: cuisine || undefined,
-        dietary: dietary || undefined,
+        dietaryTags: dietary || undefined,
         mealType: mealType || undefined,
         difficulty: difficulty || undefined,
         sort: sortBy,
       };
 
-      let data;
-      if (query && query.trim()) {
-        data = await recipeService.searchRecipes(query.trim(), params);
-      } else {
-        data = await recipeService.getRecipes(params);
-      }
-
+      const data = await recipeService.getRecipes(params);
       setRecipes(data.recipes || data || []);
     } catch (err) {
       console.error('Failed to load recipes:', err);

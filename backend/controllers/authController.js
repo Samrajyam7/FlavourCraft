@@ -104,12 +104,13 @@ const getMe = async (req, res) => {
 // @route   PUT /api/auth/profile
 const updateProfile = async (req, res) => {
   try {
-    const { name, dietaryPreferences, allergies, avatar } = req.body;
+    const { name, dietaryPreferences, allergies, avatar, bio } = req.body;
     const updateData = {};
     if (name !== undefined) updateData.name = name;
     if (dietaryPreferences !== undefined) updateData.dietaryPreferences = dietaryPreferences;
     if (allergies !== undefined) updateData.allergies = allergies;
     if (avatar !== undefined) updateData.avatar = avatar;
+    if (bio !== undefined) updateData.bio = bio;
 
     const user = await User.findByIdAndUpdate(
       req.user._id,

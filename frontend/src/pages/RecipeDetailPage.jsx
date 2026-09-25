@@ -266,14 +266,18 @@ export const RecipeDetailPage = () => {
                 <span className="text-[11px] text-text-muted uppercase font-bold flex items-center gap-1 mb-1">
                   <Clock className="w-3.5 h-3.5 text-primary" /> Prep Time
                 </span>
-                <span className="text-lg font-bold text-white">{recipe.prepTime || 0} mins</span>
+                <span className="text-lg font-bold text-white">
+                  {recipe.prepTimeMinutes ?? recipe.prepTime ?? 0} mins
+                </span>
               </div>
 
               <div className="p-3.5 rounded-2xl bg-dark-surface border border-dark-border/60">
                 <span className="text-[11px] text-text-muted uppercase font-bold flex items-center gap-1 mb-1">
                   <Flame className="w-3.5 h-3.5 text-secondary" /> Cook Time
                 </span>
-                <span className="text-lg font-bold text-white">{recipe.cookTime || 0} mins</span>
+                <span className="text-lg font-bold text-white">
+                  {recipe.cookTimeMinutes ?? recipe.cookTime ?? 0} mins
+                </span>
               </div>
 
               <div className="p-3.5 rounded-2xl bg-dark-surface border border-dark-border/60">
@@ -288,7 +292,7 @@ export const RecipeDetailPage = () => {
                   <Star className="w-3.5 h-3.5 text-amber-DEFAULT" /> Rating
                 </span>
                 <span className="text-lg font-bold text-white">
-                  {recipe.averageRating ? recipe.averageRating.toFixed(1) : 'New'} ⭐
+                  {recipe.rating ? Number(recipe.rating).toFixed(1) : (recipe.averageRating ? Number(recipe.averageRating).toFixed(1) : 'New')} ⭐
                 </span>
               </div>
             </div>
@@ -360,8 +364,8 @@ export const RecipeDetailPage = () => {
             {/* Scaled Ingredients List */}
             <ul className="space-y-3">
               {recipe.ingredients?.map((item, index) => {
-                const scaledAmount = item.amount ? Number((item.amount * servingMultiplier).toFixed(2)) : null;
-                const ingName = item.ingredient?.name || item.name;
+                const ingName = item.ingredientId?.name || item.ingredient?.name || item.name || 'Ingredient';
+                const ingIcon = item.ingredientId?.icon || '🥗';
 
                 return (
                   <li
@@ -369,14 +373,13 @@ export const RecipeDetailPage = () => {
                     className="flex items-center justify-between p-3 rounded-xl bg-dark-surface/60 border border-dark-border/40 text-sm"
                   >
                     <div className="flex items-center gap-2.5">
-                      <span className="w-2 h-2 rounded-full bg-primary" />
+                      <span className="text-base">{ingIcon}</span>
                       <span className="font-semibold text-white">{ingName}</span>
-                      {item.notes && <span className="text-xs text-text-muted italic">({item.notes})</span>}
+                      {item.isOptional && <span className="text-xs text-text-muted italic">(Optional)</span>}
                     </div>
 
                     <span className="font-mono text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded-lg">
-                      {scaledAmount ? `${scaledAmount} ` : ''}
-                      {item.unit || ''}
+                      {item.amount || ''}
                     </span>
                   </li>
                 );
@@ -384,20 +387,36 @@ export const RecipeDetailPage = () => {
             </ul>
           </div>
 
-          {/* Nutrition Info if available */}
-          {recipe.caloriesPerServing && (
+          {/* Nutrition Info */}
+          {(recipe.nutrition || recipe.caloriesPerServing) && (
             <div className="card p-6 bg-dark-card border-dark-border">
               <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
                 <Flame className="w-4 h-4 text-secondary" /> Estimated Nutrition (Per Serving)
               </h3>
-              <div className="grid grid-cols-2 gap-3 text-center">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-center">
                 <div className="p-3 bg-dark-surface rounded-xl border border-dark-border/60">
                   <span className="text-xs text-text-muted block">Calories</span>
-                  <span className="text-lg font-bold text-white">{recipe.caloriesPerServing} kcal</span>
+                  <span className="text-base font-bold text-white">{recipe.nutrition?.calories ?? recipe.caloriesPerServing ?? 0} kcal</span>
                 </div>
                 <div className="p-3 bg-dark-surface rounded-xl border border-dark-border/60">
-                  <span className="text-xs text-text-muted block">Cook Difficulty</span>
-                  <span className="text-lg font-bold text-white">{recipe.difficulty || 'Easy'}</span>
+                  <span className="text-xs text-text-muted block">Protein</span>
+                  <span className="text-base font-bold text-white">{recipe.nutrition?.protein ?? 0}g</span>
+                </div>
+                <div className="p-3 bg-dark-surface rounded-xl border border-dark-border/60">
+                  <span className="text-xs text-text-muted block">Carbs</span>
+                  <span className="text-base font-bold text-white">{recipe.nutrition?.carbs ?? 0}g</span>
+                </div>
+                <div className="p-3 bg-dark-surface rounded-xl border border-dark-border/60">
+                  <span className="text-xs text-text-muted block">Fat</span>
+                  <span className="text-base font-bold text-white">{recipe.nutrition?.fat ?? 0}g</span>
+                </div>
+                <div className="p-3 bg-dark-surface rounded-xl border border-dark-border/60">
+                  <span className="text-xs text-text-muted block">Fiber</span>
+                  <span className="text-base font-bold text-white">{recipe.nutrition?.fiber ?? 0}g</span>
+                </div>
+                <div className="p-3 bg-dark-surface rounded-xl border border-dark-border/60">
+                  <span className="text-xs text-text-muted block">Difficulty</span>
+                  <span className="text-base font-bold text-white">{recipe.difficulty || 'Easy'}</span>
                 </div>
               </div>
             </div>
@@ -414,19 +433,19 @@ export const RecipeDetailPage = () => {
 
             <div className="space-y-6">
               {recipe.instructions?.map((step, idx) => {
-                const stepText = typeof step === 'string' ? step : step.instruction;
+                const stepText = typeof step === 'string' ? step : (step.description || step.instruction);
                 return (
                   <div key={idx} className="flex gap-4 group">
                     <div className="w-9 h-9 rounded-2xl bg-dark-surface border border-dark-border text-primary font-bold flex items-center justify-center flex-shrink-0 group-hover:bg-primary group-hover:text-white transition-all">
-                      {idx + 1}
+                      {step.step || idx + 1}
                     </div>
                     <div className="space-y-1 pt-1">
                       <p className="text-base text-text-primary leading-relaxed">{stepText}</p>
-                      {step.timerMinutes && (
+                      {step.timerMinutes ? (
                         <span className="inline-flex items-center gap-1 text-xs text-secondary font-medium mt-1">
                           <Clock className="w-3.5 h-3.5" /> Timer: {step.timerMinutes} minutes
                         </span>
-                      )}
+                      ) : null}
                     </div>
                   </div>
                 );

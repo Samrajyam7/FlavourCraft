@@ -11,10 +11,15 @@ export const CookingModeModal = ({ recipe, isOpen, onClose }) => {
   const instructions = recipe?.instructions || [];
   const currentStep = instructions[currentStepIndex] || {};
 
-  // Auto-detect timer from current step instruction text (e.g. "Simmer for 15 minutes")
+  // Auto-detect timer from current step instruction text (e.g. "Simmer for 15 minutes") or timerMinutes
   useEffect(() => {
     if (!currentStep) return;
-    const text = typeof currentStep === 'string' ? currentStep : currentStep.instruction || '';
+    if (currentStep.timerMinutes && currentStep.timerMinutes > 0) {
+      setTimerSeconds(currentStep.timerMinutes * 60);
+      setTimerActive(false);
+      return;
+    }
+    const text = typeof currentStep === 'string' ? currentStep : (currentStep.description || currentStep.instruction || '');
     const match = text.match(/(\d+)\s*(?:minutes|mins|min)/i);
     if (match && match[1]) {
       const minutes = parseInt(match[1], 10);
@@ -22,9 +27,6 @@ export const CookingModeModal = ({ recipe, isOpen, onClose }) => {
         setTimerSeconds(minutes * 60);
         setTimerActive(false);
       }
-    } else if (currentStep.timerMinutes) {
-      setTimerSeconds(currentStep.timerMinutes * 60);
-      setTimerActive(false);
     }
   }, [currentStepIndex, recipe]);
 
@@ -70,7 +72,7 @@ export const CookingModeModal = ({ recipe, isOpen, onClose }) => {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const stepText = typeof currentStep === 'string' ? currentStep : currentStep.instruction || '';
+  const stepText = typeof currentStep === 'string' ? currentStep : (currentStep.description || currentStep.instruction || '');
   const progressPercent = instructions.length > 0 ? ((currentStepIndex + 1) / instructions.length) * 100 : 0;
 
   return (
@@ -210,7 +212,7 @@ export const CookingModeModal = ({ recipe, isOpen, onClose }) => {
                     <span className="font-semibold text-white">
                       {item.amount || ''} {item.unit || ''}{' '}
                     </span>
-                    <span>{item.ingredient?.name || item.name}</span>
+                    <span>{item.ingredientId?.name || item.ingredient?.name || item.name}</span>
                     {item.notes && <span className="text-xs text-text-muted block">({item.notes})</span>}
                   </div>
                 </li>
