@@ -309,7 +309,7 @@ const buildRecipes = (ingMap) => [
   {
     title: 'Paneer Fried Rice',
     description: 'A fusion delight — crispy paneer cubes tossed with fragrant basmati rice, colorful capsicum, and aromatic spices. A crowd-pleaser!',
-    imageUrl: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1512058564366-18510be2db19?w=800&q=80',
     prepTimeMinutes: 15, cookTimeMinutes: 20, difficulty: 'Medium',
     cuisine: 'Indo-Chinese', mealType: 'Lunch', servings: 3,
     dietaryTags: ['vegetarian'],
@@ -336,7 +336,7 @@ const buildRecipes = (ingMap) => [
   {
     title: 'Egg Curry',
     description: 'Hard-boiled eggs simmered in a bold, spiced tomato-onion masala. This Indian egg curry is hearty, flavorful, and pairs perfectly with rice or roti.',
-    imageUrl: 'https://images.unsplash.com/photo-1613844237701-8f3664fc2eff?w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1596797038530-2c107229654b?w=800&q=80',
     prepTimeMinutes: 10, cookTimeMinutes: 25, difficulty: 'Medium',
     cuisine: 'Indian', mealType: 'Dinner', servings: 3,
     dietaryTags: ['non-vegetarian'],
@@ -901,7 +901,7 @@ const buildRecipes = (ingMap) => [
   {
     title: 'Tadka Dal & Jeera Rice Combo',
     description: 'Golden yellow lentils tempered with sizzling garlic, cumin, and dried red chilli, paired with fragrant cumin-infused basmati rice.',
-    imageUrl: 'https://images.unsplash.com/photo-1512058564366-18510be2db19?w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=800&q=80',
     prepTimeMinutes: 10, cookTimeMinutes: 20, difficulty: 'Easy',
     cuisine: 'Indian', mealType: 'Lunch', servings: 3,
     dietaryTags: ['vegetarian', 'gluten-free'],

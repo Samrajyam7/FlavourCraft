@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Recipe = require('../models/Recipe');
 const Ingredient = require('../models/Ingredient');
 const Favorite = require('../models/Favorite');
@@ -32,7 +33,12 @@ const getRecipes = async (req, res) => {
     if (cuisine) query.cuisine = cuisine;
     if (mealType) query.mealType = mealType;
     if (difficulty) query.difficulty = difficulty;
-    if (author || createdBy) query.createdBy = author || createdBy;
+    if (author || createdBy) {
+      const authId = author || createdBy;
+      if (mongoose.Types.ObjectId.isValid(authId)) {
+        query.createdBy = authId;
+      }
+    }
     if (dietaryTags) {
       const tags = dietaryTags.split(',').map((t) => t.trim());
       query.dietaryTags = { $in: tags };
@@ -83,6 +89,10 @@ const getRecipes = async (req, res) => {
 // @route   GET /api/recipes/:id
 const getRecipeById = async (req, res) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ success: false, message: 'Invalid recipe ID format.' });
+    }
+
     const recipe = await Recipe.findById(req.params.id)
       .populate('ingredients.ingredientId', 'name icon category unit substitutes nutrition')
       .lean();
@@ -113,19 +123,35 @@ const matchRecipesHandler = async (req, res) => {
     if (!userIngredientIds || !Array.isArray(userIngredientIds) || userIngredientIds.length === 0) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide at least one ingredient ID.',
+        results: [],
+        message: 'Please select at least one ingredient.',
       });
     }
 
-    // Validate and fetch user ingredients
+    // Validate that every ingredient ID is a valid ObjectId format
+    for (const id of userIngredientIds) {
+      if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({
+          success: false,
+          results: [],
+          message: `Invalid ingredient ID format: ${id}`,
+        });
+      }
+    }
+
+    // Deduplicate IDs
+    const uniqueIds = Array.from(new Set(userIngredientIds.map((id) => id.toString())));
+
+    // Validate and fetch user ingredients from database
     const userIngredients = await Ingredient.find({
-      _id: { $in: userIngredientIds },
+      _id: { $in: uniqueIds },
     }).lean();
 
     if (userIngredients.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'No valid ingredients found. Please select ingredients first.',
+      return res.json({
+        success: true,
+        results: [],
+        message: 'No matching recipes found.',
       });
     }
 
@@ -142,7 +168,7 @@ const matchRecipesHandler = async (req, res) => {
       return res.json({
         success: true,
         results: [],
-        message: 'No recipes found for the selected ingredients.',
+        message: 'No matching recipes found.',
       });
     }
 
@@ -234,6 +260,10 @@ const createRecipe = async (req, res) => {
 // @route   PUT /api/recipes/:id
 const updateRecipe = async (req, res) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ success: false, message: 'Invalid recipe ID format.' });
+    }
+
     const recipe = await Recipe.findById(req.params.id);
     if (!recipe) {
       return res.status(404).json({ success: false, message: 'Recipe not found.' });
@@ -256,6 +286,10 @@ const updateRecipe = async (req, res) => {
 // @route   DELETE /api/recipes/:id
 const deleteRecipe = async (req, res) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ success: false, message: 'Invalid recipe ID format.' });
+    }
+
     const recipe = await Recipe.findById(req.params.id);
     if (!recipe) {
       return res.status(404).json({ success: false, message: 'Recipe not found.' });

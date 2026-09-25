@@ -173,7 +173,9 @@ export const MealPlannerPage = () => {
                             </p>
                             <div className="flex items-center gap-2 text-[10px] text-text-muted">
                               <span>{slot.servings || 2} serv</span>
-                              {slot.recipe.cookTime && <span>• {slot.recipe.cookTime}m</span>}
+                              {(slot.recipe.cookTimeMinutes ?? slot.recipe.cookTime) && (
+                                <span>• {slot.recipe.cookTimeMinutes ?? slot.recipe.cookTime}m</span>
+                              )}
                             </div>
                           </Link>
                         ) : (
