@@ -1,12 +1,17 @@
 /**
  * FlavorCraft Recipe Matching Engine
  *
- * Weighted Matching Algorithm:
- * - Each recipe ingredient has an 'importance' score (0.5 to 3.0)
- * - Optional ingredients do not penalize the match score
+ * Deterministic Matching Algorithm:
+ * - Required ingredients determine the match percentage.
+ * - Optional ingredients do not increase or decrease the required-ingredient score.
+ * - A recipe with all required ingredients available scores exactly 100%.
  * - Score = (sum of matched required ingredient importance / sum of all required ingredient importance) * 100
- * - Bonus: up to 5% added for matched optional ingredients
- * - Final score capped at 100%
+ * - Clamped strictly between 0% and 100%.
+ *
+ * Deterministic Sorting Rules:
+ * 1. matchPercentage descending (highest match first)
+ * 2. number of missing REQUIRED ingredients ascending (fewer missing required first)
+ * 3. total cooking time ascending (prepTimeMinutes + cookTimeMinutes)
  */
 
 const Ingredient = require('../models/Ingredient');
@@ -47,17 +52,19 @@ function calculateRecipeMatch(recipeIngredients, userIngredientSet) {
     }
   }
 
-  // Check optional ingredients for bonus
+  // Check optional ingredients
   let optionalMatchCount = 0;
   for (const ri of optional) {
     const riId = getIngredientIdStr(ri.ingredientId);
     if (userIngredientSet.has(riId)) {
       optionalMatchCount++;
       matchedIngredients.push(ri);
+    } else {
+      missingIngredients.push(ri);
     }
   }
 
-  // Calculate score strictly from required ingredients (Rule 3, 4, 5)
+  // Calculate score strictly from required ingredients
   let matchPercentage = 0;
   if (totalRequiredWeight > 0) {
     matchPercentage = Math.min(Math.max(Math.round((matchedRequiredWeight / totalRequiredWeight) * 100), 0), 100);
@@ -158,14 +165,9 @@ function matchRecipes(recipes, userIngredients) {
       for (const ri of recipe.ingredients) {
         if (ri.ingredientId && ri.ingredientId._id) {
           recipeIngMap.set(ri.ingredientId._id.toString(), ri.ingredientId);
-        } else if (ri.ingredientId) {
-          // ingredientId is just an ID, not populated
         }
       }
     }
-
-    // Find substitutions for missing required ingredients
-    const missingRequired = missingIngredients.filter((ri) => !ri.isOptional);
 
     // Build a combined ingredient map from recipe's populated ingredients
     const combinedIngMap = new Map();
@@ -209,11 +211,31 @@ function matchRecipes(recipes, userIngredients) {
     });
   }
 
-  // Sort by match percentage (highest first), then by popularity
+  // Deterministic Sorting:
+  // 1. matchPercentage descending
+  // 2. number of missing REQUIRED ingredients ascending
+  // 3. total cooking time ascending (prepTimeMinutes + cookTimeMinutes)
   results.sort((a, b) => {
+    // 1. matchPercentage descending
     if (b.matchPercentage !== a.matchPercentage) {
       return b.matchPercentage - a.matchPercentage;
     }
+
+    // 2. missing REQUIRED count ascending
+    const aMissingReq = (a.missingIngredients || []).filter((ri) => !ri.isOptional).length;
+    const bMissingReq = (b.missingIngredients || []).filter((ri) => !ri.isOptional).length;
+    if (aMissingReq !== bMissingReq) {
+      return aMissingReq - bMissingReq;
+    }
+
+    // 3. total cooking time ascending (prepTimeMinutes + cookTimeMinutes)
+    const aTime = (Number(a.recipe.prepTimeMinutes) || 0) + (Number(a.recipe.cookTimeMinutes) || 0);
+    const bTime = (Number(b.recipe.prepTimeMinutes) || 0) + (Number(b.recipe.cookTimeMinutes) || 0);
+    if (aTime !== bTime) {
+      return aTime - bTime;
+    }
+
+    // Secondary stable fallback by popularity
     return (b.recipe.popularity || 0) - (a.recipe.popularity || 0);
   });
 

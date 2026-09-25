@@ -6,10 +6,13 @@ backend/node_modules/
 
 # Environment Variables
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
 backend/.env
+backend/.env.*
 frontend/.env
+frontend/.env.*
+!frontend/.env.example
 
 # Production Build
 dist/

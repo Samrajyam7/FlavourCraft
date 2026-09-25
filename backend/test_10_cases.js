@@ -52,7 +52,7 @@ async function run10TestCases() {
     const saltId = ingMap['salt'];
 
     // -------------------------------------------------------------
-    // TEST 1: Egg + Cheese + Tomato -> Relevant recipes returned
+    // TEST 1: Egg + Cheese + Tomato -> Relevant recipes returned & sorted deterministically
     // -------------------------------------------------------------
     try {
       const res1 = await apiRequest('/recipes/match', {
@@ -61,11 +61,39 @@ async function run10TestCases() {
       });
       const matches = res1.data.results || [];
       const hasClassicOmelette = matches.some((m) => m.title === 'Classic Omelette');
-      if (res1.status === 200 && matches.length > 0 && hasClassicOmelette) {
-        console.log(`✅ TEST 1 PASSED: Egg + Cheese + Tomato matched ${matches.length} recipes including Classic Omelette.`);
+
+      // Verify deterministic sorting rules
+      let isSorted = true;
+      for (let i = 0; i < matches.length - 1; i++) {
+        const a = matches[i];
+        const b = matches[i + 1];
+        if (b.matchPercentage > a.matchPercentage) {
+          isSorted = false;
+          break;
+        }
+        if (b.matchPercentage === a.matchPercentage) {
+          const aMissingReq = (a.missingIngredients || []).filter((mi) => !mi.isOptional).length;
+          const bMissingReq = (b.missingIngredients || []).filter((mi) => !mi.isOptional).length;
+          if (bMissingReq < aMissingReq) {
+            isSorted = false;
+            break;
+          }
+          if (aMissingReq === bMissingReq) {
+            const aTime = (Number(a.prepTimeMinutes) || 0) + (Number(a.cookTimeMinutes) || 0);
+            const bTime = (Number(b.prepTimeMinutes) || 0) + (Number(b.cookTimeMinutes) || 0);
+            if (bTime < aTime) {
+              isSorted = false;
+              break;
+            }
+          }
+        }
+      }
+
+      if (res1.status === 200 && matches.length > 0 && hasClassicOmelette && isSorted) {
+        console.log(`✅ TEST 1 PASSED: Egg + Cheese + Tomato matched ${matches.length} recipes in deterministic sort order.`);
         passedCount++;
       } else {
-        console.error(`❌ TEST 1 FAILED: Expected matches including Classic Omelette, got ${matches.length}`);
+        console.error(`❌ TEST 1 FAILED: Expected matches in deterministic sort order, got ${matches.length}, isSorted=${isSorted}`);
       }
     } catch (e) {
       console.error(`❌ TEST 1 FAILED: ${e.message}`);
