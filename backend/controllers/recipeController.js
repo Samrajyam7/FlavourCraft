@@ -134,10 +134,14 @@ const matchRecipesHandler = async (req, res) => {
     }
 
     const formattedResults = results.map((r) => ({
+      _id: r.recipe._id,
       recipeId: r.recipe._id,
+      id: r.recipe._id,
       title: r.recipe.title,
       description: r.recipe.description,
       imageUrl: r.recipe.imageUrl,
+      prepTime: r.recipe.prepTimeMinutes || r.recipe.prepTime || 0,
+      cookTime: r.recipe.cookTimeMinutes || r.recipe.cookTime || 0,
       prepTimeMinutes: r.recipe.prepTimeMinutes,
       cookTimeMinutes: r.recipe.cookTimeMinutes,
       difficulty: r.recipe.difficulty,
@@ -150,6 +154,8 @@ const matchRecipesHandler = async (req, res) => {
       matchPercentage: r.matchPercentage,
       matchedIngredients: r.matchedIngredients,
       missingIngredients: r.missingIngredients,
+      matchedCount: r.matchedIngredients?.length || 0,
+      missingCount: r.missingIngredients?.length || 0,
       substitutions: r.substitutions,
       isFavorite: userFavorites.has(r.recipe._id.toString()),
     }));
@@ -158,6 +164,7 @@ const matchRecipesHandler = async (req, res) => {
       success: true,
       count: formattedResults.length,
       results: formattedResults,
+      matches: formattedResults,
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

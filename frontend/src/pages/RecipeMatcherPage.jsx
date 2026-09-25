@@ -59,7 +59,7 @@ export const RecipeMatcherPage = () => {
     setLoading(true);
     setSearched(true);
     try {
-      const ids = ingredientsToMatch.map((i) => (typeof i === 'object' ? i._id : i));
+      const ids = ingredientsToMatch.map((i) => (typeof i === 'object' ? (i._id || i.id) : i));
       const filters = {
         minMatchPercentage: Number(minMatchPercentage),
         mealType: mealType || undefined,
@@ -69,7 +69,35 @@ export const RecipeMatcherPage = () => {
       };
 
       const res = await recipeService.matchRecipes(ids, filters);
-      setMatchedRecipes(res.matches || res.recipes || res || []);
+      const list = res?.results || res?.matches || res?.recipes || (Array.isArray(res) ? res : []);
+      
+      let filtered = Array.isArray(list) ? list : [];
+      if (minMatchPercentage) {
+        filtered = filtered.filter((r) => {
+          const score = r.matchPercentage !== undefined ? r.matchPercentage : r.recipe?.matchPercentage;
+          return (score ?? 0) >= Number(minMatchPercentage);
+        });
+      }
+      if (mealType) {
+        filtered = filtered.filter((r) => {
+          const type = r.mealType || r.recipe?.mealType;
+          return type && type.toLowerCase() === mealType.toLowerCase();
+        });
+      }
+      if (cuisine) {
+        filtered = filtered.filter((r) => {
+          const c = r.cuisine || r.recipe?.cuisine;
+          return c && c.toLowerCase() === cuisine.toLowerCase();
+        });
+      }
+      if (dietary) {
+        filtered = filtered.filter((r) => {
+          const tags = r.dietaryTags || r.recipe?.dietaryTags || [];
+          return tags.some((t) => t.toLowerCase() === dietary.toLowerCase());
+        });
+      }
+
+      setMatchedRecipes(filtered);
     } catch (err) {
       console.error('Match error:', err);
       toastError(err.response?.data?.message || 'Failed to match recipes');
@@ -105,9 +133,22 @@ export const RecipeMatcherPage = () => {
     }
 
     try {
-      const missingIds = recipe.missingIngredients?.map((i) => i._id || i.ingredient?._id || i.ingredient) || [];
-      await groceryService.generateFromRecipe(recipe._id, missingIds);
-      success(`Added ${missingIds.length || 'missing'} items for "${recipe.title}" to your grocery list! 🛒`);
+      const missing = recipe.missingIngredients || [];
+      if (missing.length === 0) {
+        warning('No missing ingredients to add!');
+        return;
+      }
+
+      const itemsToAdd = missing.map((i) => ({
+        name: i.name || (typeof i === 'string' ? i : 'Ingredient'),
+        quantity: i.amount || '1',
+        unit: i.unit || 'unit',
+        category: i.category || 'Produce',
+        ingredientId: i.id || i._id,
+      }));
+
+      await groceryService.addGroceryItem({ items: itemsToAdd });
+      success(`Added ${itemsToAdd.length} missing items for "${recipe.title}" to your grocery list! 🛒`);
     } catch (err) {
       toastError(err.response?.data?.message || 'Failed to add items to grocery list');
     }
@@ -308,27 +349,31 @@ export const RecipeMatcherPage = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {matchedRecipes.map((match) => {
+            {matchedRecipes.map((match, idx) => {
               const recipe = match.recipe || match;
-              const matchPercent = match.matchPercentage !== undefined ? match.matchPercentage : recipe.matchPercentage;
-              const missingCount = match.missingCount !== undefined ? match.missingCount : recipe.missingCount;
-              const matchedCount = match.matchedCount !== undefined ? match.matchedCount : recipe.matchedCount;
+              const recipeId = recipe._id || recipe.recipeId || recipe.id || `match-${idx}`;
+              const matchPercent = match.matchPercentage !== undefined ? match.matchPercentage : (recipe.matchPercentage ?? 0);
+              const missingList = match.missingIngredients || recipe.missingIngredients || [];
+              const missingCount = match.missingCount !== undefined ? match.missingCount : missingList.length;
+              const matchedCount = match.matchedCount !== undefined ? match.matchedCount : (match.matchedIngredients?.length || recipe.matchedCount || 0);
 
               return (
-                <div key={recipe._id} className="flex flex-col justify-between">
+                <div key={recipeId} className="flex flex-col justify-between">
                   <RecipeCard
                     recipe={{
                       ...recipe,
+                      _id: recipeId,
                       matchPercentage: matchPercent,
                       missingCount,
                       matchedCount,
+                      missingIngredients: missingList,
                     }}
                     showMatchDetails={true}
                   />
 
                   {missingCount > 0 && (
                     <button
-                      onClick={() => handleAddAllMissingToGrocery(recipe)}
+                      onClick={() => handleAddAllMissingToGrocery({ ...recipe, missingIngredients: missingList })}
                       className="mt-2 btn btn-outline !py-2 text-xs flex items-center justify-center gap-1.5 border-secondary/40 text-secondary hover:bg-secondary/10"
                     >
                       <ShoppingCart className="w-3.5 h-3.5" />
