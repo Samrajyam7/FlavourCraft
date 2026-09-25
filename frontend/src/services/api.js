@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 // Base URL configuration for both local dev and production deployment
 const getBaseURL = () => {
   const envUrl =
@@ -10,6 +12,15 @@ const getBaseURL = () => {
     return trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
   }
 
+  // In production (e.g. Vercel deployment), fallback to the deployed Render backend API
+  if (
+    typeof window !== 'undefined' &&
+    window.location.hostname !== 'localhost' &&
+    window.location.hostname !== '127.0.0.1'
+  ) {
+    return 'https://flavourcraft-wug2.onrender.com/api';
+  }
+
   // In local development with Vite proxy, use relative /api
   return '/api';
 };
@@ -19,7 +30,7 @@ const API = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 25000,
+  timeout: 30000,
 });
 
 // Request interceptor to attach JWT token

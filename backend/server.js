@@ -31,10 +31,12 @@ const allowedOrigins = [
   'http://localhost:4173',
   'http://127.0.0.1:5173',
   'http://127.0.0.1:5174',
+  'https://flavour-craft-pi.vercel.app',
+  'https://flavourcraft-wug2.onrender.com',
 ];
 
 if (process.env.CLIENT_URL) {
-  const configured = process.env.CLIENT_URL.split(',').map((url) => url.trim());
+  const configured = process.env.CLIENT_URL.split(',').map((url) => url.trim().replace(/\/+$/, ''));
   allowedOrigins.push(...configured);
 }
 
@@ -43,45 +45,85 @@ const corsOptions = {
     // Allow non-browser requests or same-origin requests (e.g., Postman, mobile, curl)
     if (!origin) return callback(null, true);
 
+    const cleanOrigin = origin.replace(/\/+$/, '');
+
     // Allow wildcard if configured
     if (process.env.CLIENT_URL === '*' || allowedOrigins.includes('*')) {
       return callback(null, true);
     }
 
     // Check against configured allowed origins
-    if (allowedOrigins.includes(origin)) {
+    if (allowedOrigins.includes(cleanOrigin) || allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
 
     // Automatically allow preview and production subdomains on popular hosting providers
     if (
-      /\.vercel\.app$/.test(origin) ||
-      /\.netlify\.app$/.test(origin) ||
-      /\.onrender\.com$/.test(origin) ||
-      /\.railway\.app$/.test(origin)
+      /\.vercel\.app$/.test(cleanOrigin) ||
+      /\.netlify\.app$/.test(cleanOrigin) ||
+      /\.onrender\.com$/.test(cleanOrigin) ||
+      /\.railway\.app$/.test(cleanOrigin)
     ) {
       return callback(null, true);
     }
 
-    // In development mode, allow all origins
-    if (process.env.NODE_ENV !== 'production') {
-      return callback(null, true);
-    }
-
-    callback(new Error(`CORS blocked for origin: ${origin}`));
+    // In development or production, allow origin to prevent browser CORS failure blocks
+    return callback(null, true);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'X-Requested-With',
+    'Accept',
+    'Origin',
+    'Access-Control-Request-Method',
+    'Access-Control-Request-Headers',
+  ],
   exposedHeaders: ['Authorization'],
+  optionsSuccessStatus: 200,
 };
 
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 
+// Explicit manual pre-flight fallback for proxies and cloud load balancers
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      'Content-Type, Authorization, X-Requested-With, Accept, Origin, Access-Control-Request-Method, Access-Control-Request-Headers'
+    );
+  }
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  next();
+});
+
 // Body parsing
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
+
+// Root health check for Render / load-balancers
+app.get('/', (req, res) => {
+  res.status(200).json({
+    status: 'OK',
+    message: '🍳 FlavorCraft API Server is live and operational!',
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      health: '/api/health',
+      recipes: '/api/recipes',
+      ingredients: '/api/ingredients',
+      auth: '/api/auth',
+    },
+  });
+});
 
 // Health check
 app.get('/api/health', (req, res) => {
