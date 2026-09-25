@@ -21,7 +21,7 @@ export const RecipeMatcherPage = () => {
   const [searched, setSearched] = useState(false);
 
   // Filters
-  const [minMatchPercentage, setMinMatchPercentage] = useState(30);
+  const [minMatchPercentage, setMinMatchPercentage] = useState(0);
   const [mealType, setMealType] = useState('');
   const [cuisine, setCuisine] = useState('');
   const [dietary, setDietary] = useState('');
@@ -50,21 +50,26 @@ export const RecipeMatcherPage = () => {
     handleInitial();
   }, [location.state]);
 
-  const triggerMatch = async (ingredientsToMatch = selectedIngredients) => {
-    if (ingredientsToMatch.length === 0) {
+  const triggerMatch = async (customIngredients = null, customMinPct = minMatchPercentage, overrides = {}) => {
+    const listToMatch = Array.isArray(customIngredients) ? customIngredients : selectedIngredients;
+    if (!listToMatch || listToMatch.length === 0) {
       warning('Please pick at least one ingredient to match recipes!');
       return;
     }
 
+    const currentMealType = overrides.mealType !== undefined ? overrides.mealType : mealType;
+    const currentCuisine = overrides.cuisine !== undefined ? overrides.cuisine : cuisine;
+    const currentDietary = overrides.dietary !== undefined ? overrides.dietary : dietary;
+
     setLoading(true);
     setSearched(true);
     try {
-      const ids = ingredientsToMatch.map((i) => (typeof i === 'object' ? (i._id || i.id) : i));
+      const ids = listToMatch.map((i) => (typeof i === 'object' ? (i._id || i.id) : i)).filter(Boolean);
       const filters = {
-        minMatchPercentage: Number(minMatchPercentage),
-        mealType: mealType || undefined,
-        cuisine: cuisine || undefined,
-        dietary: dietary || undefined,
+        minMatchPercentage: Number(customMinPct || 0),
+        mealType: currentMealType || undefined,
+        cuisine: currentCuisine || undefined,
+        dietary: currentDietary || undefined,
         maxReadyTime: maxReadyTime ? Number(maxReadyTime) : undefined,
       };
 
@@ -72,28 +77,28 @@ export const RecipeMatcherPage = () => {
       const list = res?.results || res?.matches || res?.recipes || (Array.isArray(res) ? res : []);
       
       let filtered = Array.isArray(list) ? list : [];
-      if (minMatchPercentage) {
+      if (customMinPct > 0) {
         filtered = filtered.filter((r) => {
           const score = r.matchPercentage !== undefined ? r.matchPercentage : r.recipe?.matchPercentage;
-          return (score ?? 0) >= Number(minMatchPercentage);
+          return (score ?? 0) >= Number(customMinPct);
         });
       }
-      if (mealType) {
+      if (currentMealType) {
         filtered = filtered.filter((r) => {
           const type = r.mealType || r.recipe?.mealType;
-          return type && type.toLowerCase() === mealType.toLowerCase();
+          return type && type.toLowerCase() === currentMealType.toLowerCase();
         });
       }
-      if (cuisine) {
+      if (currentCuisine) {
         filtered = filtered.filter((r) => {
           const c = r.cuisine || r.recipe?.cuisine;
-          return c && c.toLowerCase() === cuisine.toLowerCase();
+          return c && c.toLowerCase() === currentCuisine.toLowerCase();
         });
       }
-      if (dietary) {
+      if (currentDietary) {
         filtered = filtered.filter((r) => {
           const tags = r.dietaryTags || r.recipe?.dietaryTags || [];
-          return tags.some((t) => t.toLowerCase() === dietary.toLowerCase());
+          return tags.some((t) => t.toLowerCase() === currentDietary.toLowerCase());
         });
       }
 
@@ -109,14 +114,23 @@ export const RecipeMatcherPage = () => {
   const handleSelectIngredient = (ing) => {
     setSelectedIngredients((prev) => {
       if (prev.some((item) => (item._id || item) === (ing._id || ing))) return prev;
-      return [...prev, ing];
+      const updated = [...prev, ing];
+      triggerMatch(updated);
+      return updated;
     });
   };
 
   const handleRemoveIngredient = (ing) => {
-    setSelectedIngredients((prev) =>
-      prev.filter((item) => (item._id || item) !== (ing._id || ing))
-    );
+    setSelectedIngredients((prev) => {
+      const updated = prev.filter((item) => (item._id || item) !== (ing._id || ing));
+      if (updated.length > 0) {
+        triggerMatch(updated);
+      } else {
+        setMatchedRecipes([]);
+        setSearched(false);
+      }
+      return updated;
+    });
   };
 
   const handleClearAll = () => {
@@ -198,7 +212,10 @@ export const RecipeMatcherPage = () => {
               onSelectIngredient={handleSelectIngredient}
               onRemoveIngredient={handleRemoveIngredient}
               onClearAll={handleClearAll}
-              onBatchSelect={(ings) => setSelectedIngredients(ings)}
+              onBatchSelect={(ings) => {
+                setSelectedIngredients(ings);
+                triggerMatch(ings);
+              }}
             />
           </div>
         </div>
@@ -219,16 +236,22 @@ export const RecipeMatcherPage = () => {
               </div>
               <input
                 type="range"
-                min="10"
+                min="0"
                 max="100"
                 step="5"
                 value={minMatchPercentage}
-                onChange={(e) => setMinMatchPercentage(Number(e.target.value))}
+                onChange={(e) => {
+                  const val = Number(e.target.value);
+                  setMinMatchPercentage(val);
+                  if (selectedIngredients.length > 0) {
+                    triggerMatch(selectedIngredients, val);
+                  }
+                }}
                 className="w-full accent-primary cursor-pointer"
               />
               <div className="flex justify-between text-[11px] text-text-muted mt-1">
-                <span>Any (10%)</span>
-                <span>Balanced (50%)</span>
+                <span>Any (0%)</span>
+                <span>Balanced (30%)</span>
                 <span>Exact (100%)</span>
               </div>
             </div>
@@ -238,7 +261,13 @@ export const RecipeMatcherPage = () => {
               <label className="input-label">Meal Type</label>
               <select
                 value={mealType}
-                onChange={(e) => setMealType(e.target.value)}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setMealType(val);
+                  if (selectedIngredients.length > 0) {
+                    triggerMatch(selectedIngredients, minMatchPercentage, { mealType: val });
+                  }
+                }}
                 className="input text-xs"
               >
                 <option value="">All Meal Types</option>
@@ -255,7 +284,13 @@ export const RecipeMatcherPage = () => {
               <label className="input-label">Cuisine</label>
               <select
                 value={cuisine}
-                onChange={(e) => setCuisine(e.target.value)}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setCuisine(val);
+                  if (selectedIngredients.length > 0) {
+                    triggerMatch(selectedIngredients, minMatchPercentage, { cuisine: val });
+                  }
+                }}
                 className="input text-xs"
               >
                 <option value="">All Cuisines</option>
@@ -273,7 +308,13 @@ export const RecipeMatcherPage = () => {
               <label className="input-label">Dietary Preference</label>
               <select
                 value={dietary}
-                onChange={(e) => setDietary(e.target.value)}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setDietary(val);
+                  if (selectedIngredients.length > 0) {
+                    triggerMatch(selectedIngredients, minMatchPercentage, { dietary: val });
+                  }
+                }}
                 className="input text-xs"
               >
                 <option value="">No Dietary Restriction</option>
