@@ -77,14 +77,14 @@ async function runTests() {
 
   // 5. Recipe Matcher Algorithm
   try {
-    const sampleIds = ingredients.slice(0, 5).map(i => i._id);
+    const sampleIds = (recipes[0]?.ingredients?.map(i => (typeof i.ingredientId === 'object' ? i.ingredientId?._id : i.ingredientId)) || ingredients.slice(0, 5).map(i => i._id)).slice(0, 4);
     const res = await fetch(`${API}/recipes/match`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userIngredientIds: sampleIds, minMatchPercentage: 10 }),
     });
     const data = await res.json();
-    const matches = data.matches || data || [];
+    const matches = data.results || data.matches || [];
     if (res.ok) {
       console.log(`✅ [5/9] Recipe Matching Algorithm passed: Computed matches for ${matches.length} recipes.`);
       passed++;

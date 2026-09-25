@@ -12,6 +12,14 @@
 const Ingredient = require('../models/Ingredient');
 const { getSubstitutes } = require('./substitutions');
 
+const getIngredientIdStr = (ingredientId) => {
+  if (!ingredientId) return '';
+  if (typeof ingredientId === 'object' && ingredientId._id) {
+    return ingredientId._id.toString();
+  }
+  return ingredientId.toString();
+};
+
 /**
  * Calculate match percentage for a single recipe
  * @param {Array} recipeIngredients - Array of recipe ingredient objects
@@ -30,7 +38,7 @@ function calculateRecipeMatch(recipeIngredients, userIngredientSet) {
 
   // Check required ingredients
   for (const ri of required) {
-    const riId = ri.ingredientId ? ri.ingredientId.toString() : '';
+    const riId = getIngredientIdStr(ri.ingredientId);
     if (userIngredientSet.has(riId)) {
       matchedRequiredWeight += ri.importance || 2;
       matchedIngredients.push(ri);
@@ -42,7 +50,7 @@ function calculateRecipeMatch(recipeIngredients, userIngredientSet) {
   // Check optional ingredients for bonus
   let optionalMatchCount = 0;
   for (const ri of optional) {
-    const riId = ri.ingredientId ? ri.ingredientId.toString() : '';
+    const riId = getIngredientIdStr(ri.ingredientId);
     if (userIngredientSet.has(riId)) {
       optionalMatchCount++;
       matchedIngredients.push(ri);
@@ -80,7 +88,8 @@ function findSubstitutions(missingIngredients, ingredientMap, userIngredientSet,
   const substitutions = [];
 
   for (const ri of missingIngredients) {
-    const ingredient = ingredientMap.get(ri.ingredientId ? ri.ingredientId.toString() : '');
+    const idStr = getIngredientIdStr(ri.ingredientId);
+    const ingredient = (ri.ingredientId && ri.ingredientId.name) ? ri.ingredientId : ingredientMap.get(idStr);
     if (!ingredient) continue;
 
     const subs = getSubstitutes(ingredient.name);
@@ -133,7 +142,7 @@ function matchRecipes(recipes, userIngredients) {
 
     // Only include recipes with at least one matching ingredient
     const hasAnyMatch = recipe.ingredients.some((ri) => {
-      const riId = ri.ingredientId ? ri.ingredientId.toString() : '';
+      const riId = getIngredientIdStr(ri.ingredientId);
       return userIngredientSet.has(riId);
     });
 
