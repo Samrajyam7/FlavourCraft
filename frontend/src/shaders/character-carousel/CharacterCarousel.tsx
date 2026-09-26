@@ -154,7 +154,7 @@ export function CharacterCarousel({
         ref={iframeRef}
         title={isFilmstrip ? "Interactive character filmstrip" : "Interactive character wave"}
         srcDoc={source}
-        sandbox="allow-scripts"
+        sandbox="allow-scripts allow-same-origin"
         onLoad={postControls}
         style={{
           position: "absolute",

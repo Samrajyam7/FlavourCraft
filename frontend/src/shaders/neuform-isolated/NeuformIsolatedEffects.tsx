@@ -1870,7 +1870,7 @@ function NeuformIsolatedEffect({
       data-mode={safeMode}
       title={definition.title}
       srcDoc={source}
-      sandbox="allow-scripts"
+      sandbox="allow-scripts allow-same-origin"
       loading="eager"
       style={{
         display: "block",

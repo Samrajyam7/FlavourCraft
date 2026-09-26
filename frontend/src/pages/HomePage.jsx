@@ -121,7 +121,7 @@ export const HomePage = () => {
 
               {/* Hero Action Area featuring ThreeUI LiquidMetalButton */}
               <div className="flex flex-wrap items-center gap-4 pt-2">
-                <div className="h-12 flex items-center min-w-[160px]">
+                <div className="flex items-center min-w-[190px] h-[52px]">
                   <LiquidMetalButton
                     variant="pill"
                     text="START COOKING"
@@ -131,7 +131,7 @@ export const HomePage = () => {
 
                 <Link
                   to="/recipes"
-                  className="btn-outline !py-3.5 !px-6 rounded-2xl text-xs font-bold uppercase tracking-wider flex items-center gap-2"
+                  className="btn-outline !py-3.5 !px-6 rounded-2xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 h-[52px]"
                 >
                   <BookOpen className="w-4 h-4" />
                   <span>Explore Recipes</span>
@@ -160,7 +160,7 @@ export const HomePage = () => {
               </form>
             </div>
 
-            {/* Right Column: ThreeUI TextAnimationCollection Canvas with Readable Brand DOM Layer */}
+            {/* Right Column: ThreeUI TextAnimationCollection Canvas */}
             <div className="lg:col-span-5 relative flex items-center justify-center">
               <div className="relative w-full aspect-square max-w-[460px] rounded-3xl bg-dark-card border border-dark-border shadow-2xl overflow-hidden flex items-center justify-center">
                 <TextAnimationCollection
@@ -171,18 +171,6 @@ export const HomePage = () => {
                   brightness={1.0}
                   className="w-full h-full"
                 />
-
-                {/* Central Prominent Brand Layer over WebGL animation */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none p-6 text-center z-10 bg-gradient-to-t from-dark/70 via-transparent to-dark/30">
-                  <div className="px-5 py-3 rounded-2xl bg-dark-card/85 backdrop-blur-md border border-white/10 shadow-2xl space-y-1.5 transform hover:scale-105 transition-transform">
-                    <h2 className="text-2xl sm:text-3xl font-heading font-black tracking-widest uppercase text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
-                      FLAVOR<span className="text-sage-400">CRAFT</span>
-                    </h2>
-                    <p className="text-[11px] sm:text-xs font-semibold text-text-secondary tracking-wide">
-                      Turn What You Have Into What You Crave.
-                    </p>
-                  </div>
-                </div>
 
                 {/* Floating Culinary Badges */}
                 <div className="absolute top-4 left-4 p-2.5 rounded-2xl bg-dark-bg/90 backdrop-blur-md border border-white/10 shadow-lg text-left pointer-events-none z-20">

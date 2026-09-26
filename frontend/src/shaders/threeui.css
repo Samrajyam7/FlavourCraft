@@ -12,7 +12,6 @@
 .isometric-motion-grid,
 .isometric-illustration,
 .tetrahedron-365,
-.liquid-metal-button,
 .iso-mail-lightshafts,
 .spark-badge,
 .hypnotic-loops,
@@ -218,18 +217,29 @@
 }
 
 .liquid-metal-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 190px;
+  height: 52px;
+  background: transparent;
+  overflow: visible;
   isolation: isolate;
-  background: #070708;
+  cursor: pointer;
 }
 
 .liquid-metal-button__frame {
   position: absolute;
-  inset: 0;
+  top: 50%;
+  left: 50%;
+  width: 360px;
+  height: 240px;
+  transform: translate(-50%, -50%);
   display: block;
-  width: 100%;
-  height: 100%;
   border: 0;
-  background: #070708;
+  background: transparent;
+  pointer-events: auto;
   opacity: 0;
   transition: opacity 180ms ease-out;
 }
@@ -1772,4 +1782,52 @@ img.sunset-valley-fallback {
   .atd-glass__item {
     transform: none !important;
   }
+}
+
+/* ============================================================
+   LIQUID METAL BUTTON STYLING (FLAVORCRAFT)
+   ============================================================ */
+.liquid-metal-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 196px;
+  height: 52px;
+  min-width: 170px;
+  min-height: 48px;
+  overflow: visible;
+  border-radius: 9999px;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  z-index: 10;
+}
+
+.liquid-metal-button[data-variant="pill"] {
+  width: 200px;
+  height: 52px;
+}
+
+.liquid-metal-button[data-variant="circle"] {
+  width: 56px;
+  height: 56px;
+}
+
+.liquid-metal-button[data-variant="play"] {
+  width: 88px;
+  height: 88px;
+}
+
+.liquid-metal-button__frame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 360px;
+  height: 240px;
+  border: 0;
+  background: transparent;
+  pointer-events: auto;
+  opacity: 1;
 }

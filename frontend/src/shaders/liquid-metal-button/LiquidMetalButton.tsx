@@ -35,7 +35,11 @@ const LIQUID_METAL_BUTTON_BRIDGE = `
     stage.style.transform = config.embedded ? 'translate(-50%, -50%)' : '';
   });
 
-  btn.addEventListener('click', () => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    parent.postMessage({ liquidMetalButton: { type: 'activate' } }, '*');
+  });
+  document.addEventListener('click', () => {
     parent.postMessage({ liquidMetalButton: { type: 'activate' } }, '*');
   });
 </script>`;
@@ -238,6 +242,10 @@ export function LiquidMetalButton({
       className={`liquid-metal-button${className ? ` ${className}` : ""}`}
       data-state={!mounted ? "paused" : ready ? "ready" : "loading"}
       data-variant={safeVariant}
+      onClick={onClick}
+      role="button"
+      tabIndex={0}
+      style={{ cursor: "pointer" }}
     >
       {mounted ? (
         <iframe
@@ -250,7 +258,7 @@ export function LiquidMetalButton({
               ? "Interactive liquid metal play button"
               : "Interactive liquid metal button"}
           srcDoc={source}
-          sandbox="allow-scripts"
+          sandbox="allow-scripts allow-same-origin"
           loading="eager"
           onLoad={() => {
             setReady(true);

@@ -258,31 +258,61 @@
 
   <script>
     (() => {
+      const dishSvg = (bg1, bg2, icon, accent) => `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="${bg1}"/><stop offset="100%" stop-color="${bg2}"/></linearGradient></defs><rect width="400" height="400" fill="url(%23g)"/><circle cx="200" cy="200" r="140" fill="%23000000" opacity="0.35"/><circle cx="200" cy="200" r="120" fill="none" stroke="${accent}" stroke-width="4" stroke-dasharray="8 6"/><text x="200" y="225" font-size="100" text-anchor="middle" dominant-baseline="central">${icon}</text></svg>`;
+
       const defaultPortraits = {
-        butter_chicken: "https://images.unsplash.com/photo-1603894584373-5ac82b2b3a98?w=600&auto=format&fit=crop&q=80",
-        biryani: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=600&auto=format&fit=crop&q=80",
-        pasta: "https://images.unsplash.com/photo-1612874742237-6526221469e3?w=600&auto=format&fit=crop&q=80",
-        pizza: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&auto=format&fit=crop&q=80",
-        fried_rice: "https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=600&auto=format&fit=crop&q=80",
-        paneer_tikka: "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=600&auto=format&fit=crop&q=80",
-        palak_paneer: "https://images.unsplash.com/photo-1601050690597-df0568f6a7d5?w=600&auto=format&fit=crop&q=80",
-        dal_makhani: "https://images.unsplash.com/photo-1546833999-b9f581a19902?w=600&auto=format&fit=crop&q=80"
+        butter_chicken: {
+          src: "https://images.unsplash.com/photo-1603894584373-5ac82b2b3a98?w=600&auto=format&fit=crop&q=80",
+          fallback: dishSvg('%23e65100', '%23ff9800', '🍗', '%23ffe0b2')
+        },
+        biryani: {
+          src: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=600&auto=format&fit=crop&q=80",
+          fallback: dishSvg('%23f57f17', '%23ffb300', '🍛', '%23fff9c4')
+        },
+        pasta: {
+          src: "https://images.unsplash.com/photo-1612874742237-6526221469e3?w=600&auto=format&fit=crop&q=80",
+          fallback: dishSvg('%23c2185b', '%23f06292', '🍝', '%23f8bbd0')
+        },
+        pizza: {
+          src: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&auto=format&fit=crop&q=80",
+          fallback: dishSvg('%23d32f2f', '%23ff5722', '🍕', '%23ffccbc')
+        },
+        fried_rice: {
+          src: "https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=600&auto=format&fit=crop&q=80",
+          fallback: dishSvg('%23388e3c', '%238bc34a', '🍚', '%23dcedc8')
+        },
+        paneer_tikka: {
+          src: "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=600&auto=format&fit=crop&q=80",
+          fallback: dishSvg('%23e64a19', '%23ff7043', '🍢', '%23ffccbc')
+        },
+        palak_paneer: {
+          src: "https://images.unsplash.com/photo-1601050690597-df0568f6a7d5?w=600&auto=format&fit=crop&q=80",
+          fallback: dishSvg('%231b5e20', '%234caf50', '🍲', '%23c8e6c9')
+        },
+        dal_makhani: {
+          src: "https://images.unsplash.com/photo-1546833999-b9f581a19902?w=600&auto=format&fit=crop&q=80",
+          fallback: dishSvg('%234e342e', '%238d6e63', '🥣', '%23d7ccc8')
+        }
       };
 
       const profiles = (window.__FLAVORCRAFT_ITEMS || [
-        ["Butter Chicken", "Murgh Makhani", defaultPortraits.butter_chicken],
-        ["Hyderabadi Biryani", "Royal Dum Biryani", defaultPortraits.biryani],
-        ["Pasta Carbonara", "Italian Classic", defaultPortraits.pasta],
-        ["Artisan Pizza", "Wood-Fired Neapolitan", defaultPortraits.pizza],
-        ["Vegetable Fried Rice", "Wok-Tossed Fragrant", defaultPortraits.fried_rice],
-        ["Paneer Tikka", "Tandoori Spiced", defaultPortraits.paneer_tikka],
-        ["Palak Paneer", "Spinach & Herb Curry", defaultPortraits.palak_paneer],
-        ["Dal Makhani", "Slow-Simmered Lentils", defaultPortraits.dal_makhani]
-      ]).map(([name, role, portrait]) => ({
-        name,
-        role,
-        portrait: defaultPortraits[portrait] || portrait
-      }));
+        ["Butter Chicken", "Murgh Makhani", "butter_chicken"],
+        ["Hyderabadi Biryani", "Royal Dum Biryani", "biryani"],
+        ["Pasta Carbonara", "Italian Classic", "pasta"],
+        ["Artisan Pizza", "Wood-Fired Neapolitan", "pizza"],
+        ["Vegetable Fried Rice", "Wok-Tossed Fragrant", "fried_rice"],
+        ["Paneer Tikka", "Tandoori Spiced", "paneer_tikka"],
+        ["Palak Paneer", "Spinach & Herb Curry", "palak_paneer"],
+        ["Dal Makhani", "Slow-Simmered Lentils", "dal_makhani"]
+      ]).map(([name, role, portrait]) => {
+        const item = defaultPortraits[portrait] || { src: portrait, fallback: dishSvg('%23333333', '%23111111', '🍽️', '%23ffffff') };
+        return {
+          name,
+          role,
+          src: item.src || item,
+          fallback: item.fallback || item.src || item
+        };
+      });
 
       const stage = document.querySelector("#stage");
       const deck = document.querySelector("#deck");
@@ -294,7 +324,7 @@
         card.setAttribute("aria-label", `Focus ${profile.name}, ${profile.role}`);
         card.innerHTML = `
           <span class="portrait">
-            <img src="${profile.portrait}" alt="${profile.name}" loading="lazy">
+            <img src="${profile.src}" alt="${profile.name}" referrerpolicy="no-referrer" crossorigin="anonymous" onerror="this.onerror=null;this.src='${profile.fallback}';">
           </span>
           <span class="footer">
             <span class="index">${String(index + 1).padStart(2, "0")}</span>
