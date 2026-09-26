@@ -34,6 +34,8 @@ export default {
           500: '#52b788',
           600: '#3d9970',
           700: '#2d7a56',
+          800: '#1f563d',
+          900: '#153b2a',
           DEFAULT: '#52b788',
         },
         // Tomato / chili red accent

@@ -28,7 +28,7 @@ export const App = () => {
     <Router>
       <AuthProvider>
         <ToastProvider>
-          <div className="flex flex-col min-h-screen bg-dark text-text-primary selection:bg-primary/30 selection:text-white">
+          <div className="flex flex-col min-h-screen bg-dark text-text-primary selection:bg-sage/20 selection:text-white">
             <Navbar />
             <main className="flex-grow">
               <Routes>

@@ -15,8 +15,13 @@
     scroll-behavior: smooth;
   }
 
+  ::selection {
+    background-color: rgba(82, 183, 136, 0.2);
+    color: #ffffff;
+  }
+
   body {
-    @apply bg-dark text-text-primary font-sans antialiased selection:bg-sage/20 selection:text-white;
+    @apply bg-dark text-text-primary font-sans antialiased;
     min-height: 100vh;
     line-height: 1.6;
     background-color: #0c120f;
