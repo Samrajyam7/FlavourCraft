@@ -17,6 +17,7 @@ import '@designcodeio/threeui/style.css';
 import { recipeService } from '../services/recipeService';
 import { RecipeCard } from '../components/recipe/RecipeCard';
 import CookingPotInteractive from '../components/ingredient/CookingPotInteractive';
+import heroVegetableBowl from '../assets/hero_vegetable_bowl.jpg';
 
 export const HomePage = () => {
   const navigate = useNavigate();
@@ -160,39 +161,58 @@ export const HomePage = () => {
               </form>
             </div>
 
-            {/* Right Column: Hero Box with ThreeUI TextAnimationCollection & Kitchen Animation */}
+            {/* Right Column: Hero Box with Animated Bowl of Fresh Vegetables & Kitchen Ingredients */}
             <div className="lg:col-span-5 relative flex items-center justify-center">
               <div className="relative w-full aspect-square max-w-[460px] rounded-3xl bg-dark-card border border-dark-border shadow-2xl overflow-hidden flex items-center justify-center group">
                 
                 {/* Ambient Kitchen Aura & Steam Glow */}
                 <div className="absolute inset-0 pointer-events-none z-0">
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-sage-500/10 blur-3xl animate-pulse-kitchen" />
-                  <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 rounded-full bg-warm/10 blur-2xl animate-pulse-kitchen" style={{ animationDelay: '1.5s' }} />
-                  
-                  {/* Subtle Kitchen Simmering Grid Lines */}
-                  <div className="absolute inset-0 bg-[radial-gradient(#9ab3a6_1px,transparent_1px)] [background-size:24px_24px] opacity-15" />
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full bg-sage-500/15 blur-3xl animate-pulse-kitchen" />
+                  <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-56 h-56 rounded-full bg-warm/15 blur-2xl animate-pulse-kitchen" style={{ animationDelay: '1.5s' }} />
+                  <div className="absolute inset-0 bg-[radial-gradient(#9ab3a6_1px,transparent_1px)] [background-size:24px_24px] opacity-20" />
+                </div>
+
+                {/* Animated Bowl of Fresh Vegetables & Kitchen Ingredients */}
+                <div className="relative z-10 w-full h-full flex items-center justify-center p-3">
+                  <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-2xl animate-float-slow">
+                    <img
+                      src={heroVegetableBowl}
+                      alt="Fresh kitchen ingredients and vegetable bowl"
+                      className="w-full h-full object-cover rounded-2xl filter brightness-105 contrast-105 transform group-hover:scale-110 transition-transform duration-700 ease-out"
+                    />
+
+                    {/* Rising Culinary Steam Effect */}
+                    <div className="absolute inset-x-0 top-1/4 h-32 pointer-events-none flex justify-center gap-6">
+                      <div className="w-8 h-20 bg-gradient-to-t from-white/30 to-transparent rounded-full blur-md animate-steam" />
+                      <div className="w-6 h-24 bg-gradient-to-t from-white/25 to-transparent rounded-full blur-md animate-steam" style={{ animationDelay: '0.9s' }} />
+                      <div className="w-10 h-16 bg-gradient-to-t from-white/30 to-transparent rounded-full blur-md animate-steam" style={{ animationDelay: '1.7s' }} />
+                    </div>
+
+                    {/* Dark gradient overlay for editorial depth */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-transparent to-dark/30 pointer-events-none" />
+
+                    {/* Prominent FlavorCraft Animated Brand Title Banner */}
+                    <div className="absolute bottom-5 inset-x-5 text-center p-3 rounded-2xl bg-dark/85 backdrop-blur-md border border-white/10 shadow-2xl">
+                      <h3 className="text-xl sm:text-2xl font-heading font-black tracking-widest uppercase text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">
+                        FLAVOR<span className="text-sage-400">CRAFT</span>
+                      </h3>
+                      <p className="text-[11px] font-semibold text-text-secondary tracking-wide mt-0.5">
+                        Fresh Ingredients • Smart Culinary Pot
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Floating Kitchen Animated Elements (Herbs, Spices, Utensils) */}
-                <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
-                  <span className="absolute top-8 right-10 text-xl animate-float-slow opacity-80 select-none">🌿</span>
-                  <span className="absolute bottom-14 left-8 text-xl animate-float-delayed opacity-75 select-none">🧄</span>
-                  <span className="absolute top-24 left-10 text-lg animate-float-slow opacity-70 select-none" style={{ animationDelay: '0.8s' }}>🍅</span>
-                  <span className="absolute bottom-20 right-10 text-lg animate-float-delayed opacity-80 select-none" style={{ animationDelay: '2.1s' }}>🌶️</span>
+                <div className="absolute inset-0 pointer-events-none z-20 overflow-hidden">
+                  <span className="absolute top-6 right-8 text-2xl animate-float-slow opacity-90 select-none drop-shadow-md">🌿</span>
+                  <span className="absolute bottom-20 left-6 text-xl animate-float-delayed opacity-85 select-none drop-shadow-md">🧄</span>
+                  <span className="absolute top-20 left-8 text-xl animate-float-slow opacity-85 select-none drop-shadow-md" style={{ animationDelay: '0.8s' }}>🍅</span>
+                  <span className="absolute top-36 right-6 text-xl animate-float-delayed opacity-90 select-none drop-shadow-md" style={{ animationDelay: '2.1s' }}>🌶️</span>
                 </div>
 
-                {/* Live ThreeUI TextAnimationCollection Wordmark */}
-                <TextAnimationCollection
-                  variant="threeui-intro"
-                  mode="dark"
-                  hue={0}
-                  saturation={1.0}
-                  brightness={1.0}
-                  className="w-full h-full relative z-5"
-                />
-
                 {/* Floating Culinary Badges */}
-                <div className="absolute top-4 left-4 p-2.5 rounded-2xl bg-dark-bg/90 backdrop-blur-md border border-white/10 shadow-lg text-left pointer-events-none z-20 transition-transform group-hover:scale-105">
+                <div className="absolute top-4 left-4 p-2.5 rounded-2xl bg-dark-bg/90 backdrop-blur-md border border-white/10 shadow-lg text-left pointer-events-none z-30 transition-transform group-hover:scale-105">
                   <p className="text-[10px] uppercase font-bold text-sage-400 tracking-wider flex items-center gap-1">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping inline-block" />
                     Kitchen Active
@@ -201,13 +221,13 @@ export const HomePage = () => {
                   <span className="text-[10px] font-bold text-emerald-400">100% Precision</span>
                 </div>
 
-                <div className="absolute bottom-4 right-4 p-2.5 rounded-2xl bg-dark-bg/90 backdrop-blur-md border border-white/10 shadow-lg text-left pointer-events-none z-20 transition-transform group-hover:scale-105">
+                <div className="absolute top-4 right-4 p-2.5 rounded-2xl bg-dark-bg/90 backdrop-blur-md border border-white/10 shadow-lg text-left pointer-events-none z-30 transition-transform group-hover:scale-105">
                   <p className="text-[10px] uppercase font-bold text-warm tracking-wider flex items-center gap-1">
                     <Flame className="w-3 h-3 text-warm inline" />
-                    Culinary Engine
+                    Fresh Pantry
                   </p>
-                  <p className="text-xs font-bold text-white">Interactive Cooking</p>
-                  <span className="text-[10px] font-medium text-text-secondary">Simmering Ready</span>
+                  <p className="text-xs font-bold text-white">Vegetables & Herbs</p>
+                  <span className="text-[10px] font-medium text-emerald-400">Ready to Cook</span>
                 </div>
               </div>
             </div>
