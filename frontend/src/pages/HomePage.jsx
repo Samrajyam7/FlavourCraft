@@ -11,7 +11,7 @@ import {
   ChefHat,
   Award,
 } from 'lucide-react';
-import { TextAnimationCollection, CharacterCarousel, LiquidMetalButton } from '@designcodeio/threeui';
+import { CharacterCarousel } from '@designcodeio/threeui';
 import '@designcodeio/threeui/style.css';
 
 import { recipeService } from '../services/recipeService';
@@ -120,15 +120,15 @@ export const HomePage = () => {
                 Choose your ingredients and discover recipes you can actually make right now. Exact percentage matching. Zero grocery stress. Zero food waste.
               </p>
 
-              {/* Hero Action Area featuring ThreeUI LiquidMetalButton */}
+              {/* Hero Action Area */}
               <div className="flex flex-wrap items-center gap-4 pt-2">
-                <div className="flex items-center min-w-[190px] h-[52px]">
-                  <LiquidMetalButton
-                    variant="pill"
-                    text="START COOKING"
-                    onClick={() => navigate('/matcher')}
-                  />
-                </div>
+                <Link
+                  to="/matcher"
+                  className="btn-primary !py-3.5 !px-6 rounded-2xl text-xs font-bold uppercase tracking-wider flex items-center gap-2 h-[52px] shadow-glow-green"
+                >
+                  <ChefHat className="w-4 h-4" />
+                  <span>Start Cooking</span>
+                </Link>
 
                 <Link
                   to="/recipes"
