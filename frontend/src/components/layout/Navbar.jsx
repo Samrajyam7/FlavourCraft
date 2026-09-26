@@ -20,6 +20,7 @@ import {
   Home,
   ChefHat,
 } from 'lucide-react';
+import logoEmblem from '../../assets/flavorcraft_logo_emblem.jpg';
 
 export const Navbar = () => {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
@@ -117,14 +118,18 @@ export const Navbar = () => {
         <div className="flex items-center justify-between gap-4">
           {/* Brand Logo */}
           <Link to="/" className="flex items-center gap-3 group focus:outline-none">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-light via-primary to-primary-dark flex items-center justify-center text-white shadow-glow-green group-hover:scale-105 group-hover:rotate-3 transition-transform duration-300">
-              <UtensilsCrossed className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 rounded-xl overflow-hidden shadow-glow-green border border-sage/40 group-hover:scale-105 group-hover:rotate-2 transition-transform duration-300 bg-dark-card flex items-center justify-center">
+              <img
+                src={logoEmblem}
+                alt="FlavorCraft Logo"
+                className="w-full h-full object-cover"
+              />
             </div>
             <div className="flex flex-col">
               <span className="font-heading font-black text-xl tracking-tight text-white flex items-center gap-1">
                 Flavor<span className="text-sage-400">Craft</span>
               </span>
-              <span className="text-[10px] text-sage-300/70 font-semibold tracking-widest uppercase -mt-1 hidden sm:block">
+              <span className="text-[10px] text-sage-300/80 font-bold tracking-widest uppercase -mt-1 hidden sm:block">
                 Digital Kitchen
               </span>
             </div>

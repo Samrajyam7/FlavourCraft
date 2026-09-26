@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { UtensilsCrossed, Heart, Sparkles, Compass, ShieldCheck, Mail, ChefHat } from 'lucide-react';
+import logoEmblem from '../../assets/flavorcraft_logo_emblem.jpg';
 
 export const Footer = () => {
   return (
@@ -10,12 +11,21 @@ export const Footer = () => {
           {/* Brand Col */}
           <div className="lg:col-span-2 space-y-4">
             <Link to="/" className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-sage-600 flex items-center justify-center text-white shadow-glow-green">
-                <UtensilsCrossed className="w-5 h-5" />
+              <div className="w-10 h-10 rounded-xl overflow-hidden border border-sage/40 shadow-glow-green bg-dark-card flex items-center justify-center">
+                <img
+                  src={logoEmblem}
+                  alt="FlavorCraft Digital Kitchen"
+                  className="w-full h-full object-cover"
+                />
               </div>
-              <span className="font-heading font-black text-2xl tracking-tight text-white">
-                Flavor<span className="text-sage-400">Craft</span>
-              </span>
+              <div className="flex flex-col">
+                <span className="font-heading font-black text-2xl tracking-tight text-white">
+                  Flavor<span className="text-sage-400">Craft</span>
+                </span>
+                <span className="text-[10px] text-sage-300/80 font-bold tracking-widest uppercase -mt-1">
+                  Digital Kitchen
+                </span>
+              </div>
             </Link>
             <p className="text-text-secondary text-xs sm:text-sm max-w-sm leading-relaxed">
               Transform whatever is in your fridge into mouthwatering, gourmet home-cooked meals. Stop food waste and unleash your inner culinary creator.
