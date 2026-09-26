@@ -267,6 +267,11 @@ export const HomePage = () => {
 
         <div className="rounded-3xl border border-dark-border bg-dark-card overflow-hidden h-[340px] sm:h-[400px] shadow-2xl relative">
           <CharacterCarousel
+            items={featuredRecipes && featuredRecipes.length > 0 ? featuredRecipes.slice(0, 8).map(r => ({
+              name: r.title,
+              role: `${r.cuisine || 'Culinary'} • ${r.difficulty || 'Popular'}`,
+              image: r.imageUrl
+            })) : undefined}
             variant="filmstrip"
             speed={1.0}
             scale={1.0}

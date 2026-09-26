@@ -262,48 +262,48 @@
 
       const defaultPortraits = {
         butter_chicken: {
-          src: "https://images.unsplash.com/photo-1603894584373-5ac82b2b3a98?w=600&auto=format&fit=crop&q=80",
+          src: "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=800&q=80",
           fallback: dishSvg('%23e65100', '%23ff9800', '🍗', '%23ffe0b2')
         },
         biryani: {
-          src: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=600&auto=format&fit=crop&q=80",
+          src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcThmLTMRCJGx-I5qL4lCn-cdpKkA6rHudyDfg-PnbeBdJTd6S--RFpgfvpt&s=10",
           fallback: dishSvg('%23f57f17', '%23ffb300', '🍛', '%23fff9c4')
         },
         pasta: {
-          src: "https://images.unsplash.com/photo-1612874742237-6526221469e3?w=600&auto=format&fit=crop&q=80",
+          src: "https://images.unsplash.com/photo-1612874742237-6526221588e3?w=800&q=80",
           fallback: dishSvg('%23c2185b', '%23f06292', '🍝', '%23f8bbd0')
         },
-        pizza: {
-          src: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&auto=format&fit=crop&q=80",
-          fallback: dishSvg('%23d32f2f', '%23ff5722', '🍕', '%23ffccbc')
-        },
         fried_rice: {
-          src: "https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=600&auto=format&fit=crop&q=80",
+          src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR2e94pTgkQgjm9gJi4Db-smefe_A5c7ItA9QRmGGUjw6PFLAhRWLjSrAUW&s=10",
           fallback: dishSvg('%23388e3c', '%238bc34a', '🍚', '%23dcedc8')
         },
         paneer_tikka: {
-          src: "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=600&auto=format&fit=crop&q=80",
+          src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjKI-TesyekHpoHOplJ9QkzusR0h8IrvkaeIbEu-r4GQ&s",
           fallback: dishSvg('%23e64a19', '%23ff7043', '🍢', '%23ffccbc')
         },
         palak_paneer: {
-          src: "https://images.unsplash.com/photo-1601050690597-df0568f6a7d5?w=600&auto=format&fit=crop&q=80",
+          src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZ3zucaxHuwmSymIQAM2FayuKvJlTWKXaIqTbxo2VTzFcCw10-z0GMQMzu&s=10",
           fallback: dishSvg('%231b5e20', '%234caf50', '🍲', '%23c8e6c9')
         },
         dal_makhani: {
-          src: "https://images.unsplash.com/photo-1546833999-b9f581a19902?w=600&auto=format&fit=crop&q=80",
+          src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSh1A8q-LDvG5h4eMHN2DRvI1G9JIISz4og4qhHDAN9G2Itle-7b1uhNOy&s=10",
           fallback: dishSvg('%234e342e', '%238d6e63', '🥣', '%23d7ccc8')
+        },
+        omelette: {
+          src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVJOUFM6ouh8pa4JxBVxWf1qGYwtZHbMdkfWIQ6C51--q5tTZ6zXpkk0Q&s=10",
+          fallback: dishSvg('%23f57f17', '%23ffb300', '🍳', '%23fff9c4')
         }
       };
 
       const profiles = (window.__FLAVORCRAFT_ITEMS || [
-        ["Butter Chicken", "Murgh Makhani", "butter_chicken"],
-        ["Hyderabadi Biryani", "Royal Dum Biryani", "biryani"],
+        ["Restaurant Style Butter Chicken", "Murgh Makhani", "butter_chicken"],
+        ["Hyderabadi Chicken Dum Biryani", "Royal Dum Biryani", "biryani"],
         ["Pasta Carbonara", "Italian Classic", "pasta"],
-        ["Artisan Pizza", "Wood-Fired Neapolitan", "pizza"],
         ["Vegetable Fried Rice", "Wok-Tossed Fragrant", "fried_rice"],
-        ["Paneer Tikka", "Tandoori Spiced", "paneer_tikka"],
-        ["Palak Paneer", "Spinach & Herb Curry", "palak_paneer"],
-        ["Dal Makhani", "Slow-Simmered Lentils", "dal_makhani"]
+        ["Paneer Tikka Masala", "Tandoori Spiced", "paneer_tikka"],
+        ["Palak Paneer", "Spinach Cottage Cheese Curry", "palak_paneer"],
+        ["Creamy Dal Makhani", "Slow-Simmered Lentils", "dal_makhani"],
+        ["Classic Omelette", "Golden Breakfast Classic", "omelette"]
       ]).map(([name, role, portrait]) => {
         const item = defaultPortraits[portrait] || { src: portrait, fallback: dishSvg('%23333333', '%23111111', '🍽️', '%23ffffff') };
         return {
