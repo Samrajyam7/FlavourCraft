@@ -105,13 +105,13 @@ export const HomePage = () => {
                 <span>The Intelligent Digital Kitchen</span>
               </div>
 
-              {/* Main Headline */}
+              {/* Main Headline with dynamic animated text shimmer */}
               <h1 className="text-4xl sm:text-6xl lg:text-7xl font-heading font-black tracking-tight text-white leading-[1.08]">
                 Turn What You Have Into{' '}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-sage-300 via-warm to-accent">
+                <span className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-sage-300 via-amber-300 via-warm to-accent animate-text-shimmer drop-shadow-[0_0_25px_rgba(154,179,166,0.35)]">
                   What You Crave
                 </span>
-                .
+                <span className="text-sage-400 inline-block animate-pulse">.</span>
               </h1>
 
               {/* Subtitle */}
@@ -160,29 +160,54 @@ export const HomePage = () => {
               </form>
             </div>
 
-            {/* Right Column: ThreeUI TextAnimationCollection Canvas */}
+            {/* Right Column: Hero Box with ThreeUI TextAnimationCollection & Kitchen Animation */}
             <div className="lg:col-span-5 relative flex items-center justify-center">
-              <div className="relative w-full aspect-square max-w-[460px] rounded-3xl bg-dark-card border border-dark-border shadow-2xl overflow-hidden flex items-center justify-center">
+              <div className="relative w-full aspect-square max-w-[460px] rounded-3xl bg-dark-card border border-dark-border shadow-2xl overflow-hidden flex items-center justify-center group">
+                
+                {/* Ambient Kitchen Aura & Steam Glow */}
+                <div className="absolute inset-0 pointer-events-none z-0">
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full bg-sage-500/10 blur-3xl animate-pulse-kitchen" />
+                  <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 rounded-full bg-warm/10 blur-2xl animate-pulse-kitchen" style={{ animationDelay: '1.5s' }} />
+                  
+                  {/* Subtle Kitchen Simmering Grid Lines */}
+                  <div className="absolute inset-0 bg-[radial-gradient(#9ab3a6_1px,transparent_1px)] [background-size:24px_24px] opacity-15" />
+                </div>
+
+                {/* Floating Kitchen Animated Elements (Herbs, Spices, Utensils) */}
+                <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden">
+                  <span className="absolute top-8 right-10 text-xl animate-float-slow opacity-80 select-none">🌿</span>
+                  <span className="absolute bottom-14 left-8 text-xl animate-float-delayed opacity-75 select-none">🧄</span>
+                  <span className="absolute top-24 left-10 text-lg animate-float-slow opacity-70 select-none" style={{ animationDelay: '0.8s' }}>🍅</span>
+                  <span className="absolute bottom-20 right-10 text-lg animate-float-delayed opacity-80 select-none" style={{ animationDelay: '2.1s' }}>🌶️</span>
+                </div>
+
+                {/* Live ThreeUI TextAnimationCollection Wordmark */}
                 <TextAnimationCollection
                   variant="threeui-intro"
                   mode="dark"
                   hue={0}
                   saturation={1.0}
                   brightness={1.0}
-                  className="w-full h-full"
+                  className="w-full h-full relative z-5"
                 />
 
                 {/* Floating Culinary Badges */}
-                <div className="absolute top-4 left-4 p-2.5 rounded-2xl bg-dark-bg/90 backdrop-blur-md border border-white/10 shadow-lg text-left pointer-events-none z-20">
-                  <p className="text-[10px] uppercase font-bold text-sage-400 tracking-wider">Live Matcher</p>
-                  <p className="text-xs font-bold text-white">Classic Omelette</p>
-                  <span className="text-[10px] font-bold text-emerald-400">100% Available</span>
+                <div className="absolute top-4 left-4 p-2.5 rounded-2xl bg-dark-bg/90 backdrop-blur-md border border-white/10 shadow-lg text-left pointer-events-none z-20 transition-transform group-hover:scale-105">
+                  <p className="text-[10px] uppercase font-bold text-sage-400 tracking-wider flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping inline-block" />
+                    Kitchen Active
+                  </p>
+                  <p className="text-xs font-bold text-white">Smart Match Radar</p>
+                  <span className="text-[10px] font-bold text-emerald-400">100% Precision</span>
                 </div>
 
-                <div className="absolute bottom-4 right-4 p-2.5 rounded-2xl bg-dark-bg/90 backdrop-blur-md border border-white/10 shadow-lg text-left pointer-events-none z-20">
-                  <p className="text-[10px] uppercase font-bold text-warm tracking-wider">Chef's Special</p>
-                  <p className="text-xs font-bold text-white">Butter Chicken</p>
-                  <span className="text-[10px] font-medium text-text-secondary">⭐ 4.9 Rating</span>
+                <div className="absolute bottom-4 right-4 p-2.5 rounded-2xl bg-dark-bg/90 backdrop-blur-md border border-white/10 shadow-lg text-left pointer-events-none z-20 transition-transform group-hover:scale-105">
+                  <p className="text-[10px] uppercase font-bold text-warm tracking-wider flex items-center gap-1">
+                    <Flame className="w-3 h-3 text-warm inline" />
+                    Culinary Engine
+                  </p>
+                  <p className="text-xs font-bold text-white">Interactive Cooking</p>
+                  <span className="text-[10px] font-medium text-text-secondary">Simmering Ready</span>
                 </div>
               </div>
             </div>

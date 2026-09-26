@@ -239,9 +239,6 @@
     var s=el('div','scene');
     var wrap=el('div','line',s);
     var tx=el('div','tx',wrap);
-    var fs=fitPx('FlavorCraft',678);
-    tx.style.fontSize=fs.toFixed(2)+'px';
-    var mk=el('span','mark',tx,APPLE);
     var chars=[], str='FlavorCraft';
     for(var i=0;i<str.length;i++){
       var sp=document.createElement('span');
@@ -250,8 +247,6 @@
     }
     var R=rng(7719), jit=chars.map(function(){return [R()*2-1,R()*2-1,R()]});
     return {node:s, update:function(t,p){
-      setO(mk,smooth(seg(p,.26,.5)));
-      setT(mk,'scale('+lerp(.55,1,eOut(seg(p,.26,.56))).toFixed(3)+')');
       for(var i=0;i<chars.length;i++){
         var j=jit[i];
         var a=eOut(clamp(seg(p,.02,.5)*1.5-j[2]*.5,0,1));

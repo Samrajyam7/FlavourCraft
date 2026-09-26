@@ -1601,7 +1601,7 @@ const EFFECTS = {
       fontSize: 104,
       endTime: 1.7,
       holdTime: 1.1,
-      logoSvg: THREEUI_MARK_SVG,
+      logoSvg: "",
     },
   },
   particleWordmark: {
@@ -1736,8 +1736,11 @@ ${introWordmarkStyle}
       var introScene = document.querySelector(introWordmark.sceneSelector);
       var introText = introScene && introScene.querySelector('.tx');
       var introMark = introText && introText.querySelector('.mark');
-      if (introText && introMark) {
-        introMark.innerHTML = introWordmark.logoSvg;
+      if (introText) {
+        if (introMark) {
+          if (introWordmark.logoSvg) introMark.innerHTML = introWordmark.logoSvg;
+          else introMark.remove();
+        }
         var introCharacters = Array.from(introText.children).filter(function (element) { return element !== introMark; });
         introCharacters.forEach(function (element, index) {
           element.textContent = introWordmark.text[index] === ' ' ? '\u00a0' : (introWordmark.text[index] || '');
