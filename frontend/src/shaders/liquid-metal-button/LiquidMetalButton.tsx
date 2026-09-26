@@ -61,9 +61,15 @@ const CIRCLE_RUNTIME_STYLE = `
   }
 </style>`;
 
-function sourceForVariant(variant: Exclude<LiquidMetalButtonVariant, "play">) {
+function sourceForVariant(variant: Exclude<LiquidMetalButtonVariant, "play">, initialText = "Start Cooking") {
+  const safeText = (initialText || "Start Cooking").slice(0, 24);
+  const pillWidthUnits = Math.min(3000, Math.max(1407, 820 + safeText.length * 94));
+
   if (variant === "pill") {
-    return liquidMetalButtonSource.replace("</body>", `${LIQUID_METAL_BUTTON_BRIDGE}\n</body>`);
+    return liquidMetalButtonSource
+      .replace(/<span class="lbl">.*?<\/span>/, `<span class="lbl">${safeText}</span>`)
+      .replace("--bw: calc(1407 * var(--u));", `--bw: calc(${pillWidthUnits} * var(--u));`)
+      .replace("</body>", `${LIQUID_METAL_BUTTON_BRIDGE}\n</body>`);
   }
 
   return liquidMetalButtonSource
@@ -102,15 +108,7 @@ const liquidMetalPlayButtonSource = liquidMetalButtonSource
 </style>`,
   )
   .replace(
-    `<button class="btn" id="btn" type="button">
-    <svg class="ico" viewBox="0 0 115 115" aria-hidden="true">
-      <g stroke="currentColor" stroke-width="17" stroke-linecap="round">
-        <path d="M57.5 8.5 V106.5"/>
-        <path d="M8.5 57.5 H106.5"/>
-      </g>
-    </svg>
-    <span class="lbl">Sign up</span>
-  </button>`,
+    /<button class="btn" id="btn" type="button">[\s\S]*?<\/button>/,
     `<button class="btn" id="btn" type="button" aria-label="Play">
     <svg class="ico" viewBox="0 0 48 48" aria-hidden="true">
       <path fill="currentColor" d="M15.5 10.75a2.2 2.2 0 0 1 3.32-1.9l18.04 13.25a2.35 2.35 0 0 1 0 3.8L18.82 39.15a2.2 2.2 0 0 1-3.32-1.9v-26.5Z"/>
@@ -168,14 +166,14 @@ export function LiquidMetalButton({
   const safeVariant: LiquidMetalButtonVariant =
     variant === "circle" || variant === "play" ? variant : "pill";
   const isPlayButton = safeVariant === "play";
-  const safeText = String(text ?? (safeVariant === "pill" ? "Sign up" : safeVariant === "circle" ? "Add" : "Play"))
+  const safeText = String(text ?? (safeVariant === "pill" ? "Start Cooking" : safeVariant === "circle" ? "Add" : "Play"))
     .slice(0, 24);
   const pillWidthUnits = safeVariant === "pill"
     ? Math.min(3000, Math.max(1407, 820 + safeText.length * 94))
     : undefined;
   const source = useMemo(
-    () => isPlayButton ? liquidMetalPlayButtonSource : sourceForVariant(safeVariant),
-    [isPlayButton, safeVariant],
+    () => isPlayButton ? liquidMetalPlayButtonSource : sourceForVariant(safeVariant, safeText),
+    [isPlayButton, safeVariant, safeText],
   );
   const playConfig = {
     diameter: clamp(diameter, 72, 160, 88),
