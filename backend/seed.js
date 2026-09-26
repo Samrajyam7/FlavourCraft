@@ -66,7 +66,7 @@ const buildRecipes = (ingMap) => [
   {
     title: 'Classic Omelette',
     description: 'A fluffy, golden omelette filled with melted cheese, fresh tomatoes, and caramelized onions. Perfect for a quick and satisfying breakfast or brunch.',
-    imageUrl: 'https://images.unsplash.com/photo-1612240498936-65f5101365d2?w=800&q=80',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTVJOUFM6ouh8pa4JxBVxWf1qGYwtZHbMdkfWIQ6C51--q5tTZ6zXpkk0Q&s=10',
     prepTimeMinutes: 5, cookTimeMinutes: 10, difficulty: 'Easy',
     cuisine: 'French', mealType: 'Breakfast', servings: 2,
     dietaryTags: ['vegetarian'],
@@ -92,7 +92,7 @@ const buildRecipes = (ingMap) => [
   {
     title: 'Vegetable Fried Rice',
     description: 'Vibrant fried rice loaded with colorful vegetables, scrambled egg, and aromatic garlic. A wholesome one-pan meal ready in under 20 minutes.',
-    imageUrl: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=800&q=80',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR2e94pTgkQgjm9gJi4Db-smefe_A5c7ItA9QRmGGUjw6PFLAhRWLjSrAUW&s=10',
     prepTimeMinutes: 10, cookTimeMinutes: 15, difficulty: 'Easy',
     cuisine: 'Chinese', mealType: 'Lunch', servings: 3,
     dietaryTags: ['vegetarian'],
@@ -122,7 +122,7 @@ const buildRecipes = (ingMap) => [
   {
     title: 'Chicken Fried Rice',
     description: 'Restaurant-style chicken fried rice with tender marinated chicken, aromatic ginger, and smoky wok-tossed rice. Better than takeout!',
-    imageUrl: 'https://images.unsplash.com/photo-1596560548464-f010549b84d7?w=800&q=80',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNIPugiAFAzWER_sc6u23Pu2fy2MVXQCkPgGrMjn4pcrJhaNAFrDyj5bg&s=10',
     prepTimeMinutes: 15, cookTimeMinutes: 20, difficulty: 'Medium',
     cuisine: 'Chinese', mealType: 'Dinner', servings: 4,
     dietaryTags: ['non-vegetarian'],
@@ -177,7 +177,7 @@ const buildRecipes = (ingMap) => [
   {
     title: 'Tomato Pasta',
     description: 'A vibrant Italian tomato pasta with garlic-infused olive oil sauce, fresh tomatoes, and a sprinkle of cheese. Simple, delicious, and ready in 20 minutes.',
-    imageUrl: 'https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?w=800&q=80',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRu75SRbL3_QAMWmteHgevCjG14_eursoTLegZsN_qf1ELgTpznd3NGTzM&s=10',
     prepTimeMinutes: 5, cookTimeMinutes: 20, difficulty: 'Easy',
     cuisine: 'Italian', mealType: 'Dinner', servings: 2,
     dietaryTags: ['vegetarian'],
@@ -203,7 +203,7 @@ const buildRecipes = (ingMap) => [
   {
     title: 'Tomato Soup',
     description: 'A warming, velvety tomato soup with a touch of cream, perfect for chilly days. Pairs beautifully with crusty garlic bread.',
-    imageUrl: 'https://images.unsplash.com/photo-1547592180-85f173990554?w=800&q=80',
+    imageUrl: 'https://www.indianhealthyrecipes.com/wp-content/uploads/2022/11/tomato-soup-recipe.jpg',
     prepTimeMinutes: 10, cookTimeMinutes: 25, difficulty: 'Easy',
     cuisine: 'American', mealType: 'Lunch', servings: 4,
     dietaryTags: ['vegetarian'],
@@ -228,7 +228,7 @@ const buildRecipes = (ingMap) => [
   {
     title: 'Garlic Butter Chicken',
     description: 'Succulent pan-seared chicken bathed in golden garlic butter with a squeeze of lemon. An impressive yet easy dinner that feels restaurant-worthy.',
-    imageUrl: 'https://images.unsplash.com/photo-1598103442097-8b74394b95c3?w=800&q=80',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ0fKmjU986fRxzhOWdsCUTqxb_XV-gB49vDXg4cJORx2kz9HpF3mt2hW4&s=10',
     prepTimeMinutes: 10, cookTimeMinutes: 20, difficulty: 'Medium',
     cuisine: 'American', mealType: 'Dinner', servings: 2,
     dietaryTags: ['non-vegetarian', 'gluten-free'],
@@ -253,7 +253,7 @@ const buildRecipes = (ingMap) => [
   {
     title: 'Vegetable Pasta',
     description: 'A garden-fresh pasta loaded with colorful vegetables, spinach, and a light garlic olive oil sauce. Healthy, vibrant, and ready in 25 minutes.',
-    imageUrl: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=800&q=80',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_5xRYT63qAj4Jurx9ej44cxZVgLpZxgDWY97Oyue6R-OifDVHF8J8Opw&s=10',
     prepTimeMinutes: 10, cookTimeMinutes: 20, difficulty: 'Easy',
     cuisine: 'Italian', mealType: 'Dinner', servings: 3,
     dietaryTags: ['vegetarian', 'vegan'],
@@ -281,7 +281,7 @@ const buildRecipes = (ingMap) => [
   {
     title: 'Paneer Curry',
     description: 'Tender cubes of paneer simmered in a rich, spiced tomato-onion gravy. This classic North Indian curry is aromatic, creamy, and absolutely soul-warming.',
-    imageUrl: 'https://images.unsplash.com/photo-1631452180539-96aca7d48617?w=800&q=80',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRGMcc4U5K2JmLwW54jWhMeDOXXUjA0MAp8FMrj6D0CbTe-2wnII00TajDS&s=10',
     prepTimeMinutes: 15, cookTimeMinutes: 25, difficulty: 'Medium',
     cuisine: 'Indian', mealType: 'Dinner', servings: 4,
     dietaryTags: ['vegetarian'],
@@ -310,7 +310,7 @@ const buildRecipes = (ingMap) => [
   {
     title: 'Paneer Fried Rice',
     description: 'A fusion delight — crispy paneer cubes tossed with fragrant basmati rice, colorful capsicum, and aromatic spices. A crowd-pleaser!',
-    imageUrl: 'https://images.unsplash.com/photo-1512058564366-18510be2db19?w=800&q=80',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSAVZ0z57x56tEajQ1PQG85cfwbOzBddO3Ui9_0ZbmyRKe-SNaIrXkGqAYY&s=10',
     prepTimeMinutes: 15, cookTimeMinutes: 20, difficulty: 'Medium',
     cuisine: 'Indo-Chinese', mealType: 'Lunch', servings: 3,
     dietaryTags: ['vegetarian'],
@@ -337,7 +337,7 @@ const buildRecipes = (ingMap) => [
   {
     title: 'Egg Curry',
     description: 'Hard-boiled eggs simmered in a bold, spiced tomato-onion masala. This Indian egg curry is hearty, flavorful, and pairs perfectly with rice or roti.',
-    imageUrl: 'https://images.unsplash.com/photo-1596797038530-2c107229654b?w=800&q=80',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9HPkAC9GWDMAum00TQxii98EkCdgtaBhVL0XJfi6LcbpO0DShMwGfcI&s=10',
     prepTimeMinutes: 10, cookTimeMinutes: 25, difficulty: 'Medium',
     cuisine: 'Indian', mealType: 'Dinner', servings: 3,
     dietaryTags: ['non-vegetarian'],
@@ -389,7 +389,7 @@ const buildRecipes = (ingMap) => [
   {
     title: 'Garlic Bread',
     description: 'Crispy on the outside, soft on the inside — this classic garlic bread with herb butter is the perfect side dish or snack. Ready in just 10 minutes!',
-    imageUrl: 'https://images.unsplash.com/photo-1573140247632-f8fd74997d5c?w=800&q=80',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSPIqReIuaxxLpsDtmaEh9pv1u7f6UvXv8OelTtqPZOyw&s',
     prepTimeMinutes: 5, cookTimeMinutes: 10, difficulty: 'Easy',
     cuisine: 'Italian', mealType: 'Snack', servings: 2,
     dietaryTags: ['vegetarian'],
@@ -459,7 +459,7 @@ const buildRecipes = (ingMap) => [
   {
     title: 'Mushroom Pasta',
     description: 'Earthy mushrooms sautéed in garlic butter tossed with al dente pasta. A simple yet deeply satisfying Italian pasta dish with umami richness.',
-    imageUrl: 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=800&q=80',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTsh-TiRdEa28DyNuGDbfX69IFnp0JuFjs01IwXpOfJw&s',
     prepTimeMinutes: 10, cookTimeMinutes: 20, difficulty: 'Easy',
     cuisine: 'Italian', mealType: 'Dinner', servings: 2,
     dietaryTags: ['vegetarian'],
@@ -485,7 +485,7 @@ const buildRecipes = (ingMap) => [
   {
     title: 'Chicken Pasta',
     description: 'Juicy grilled chicken pieces tossed with pasta in a garlicky tomato sauce. A complete, protein-packed meal that comes together in under 30 minutes.',
-    imageUrl: 'https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=800&q=80',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSOhuuSzuWnUQPlpNYtb-fCcZGcPTzDkI0nj-Jcb_xf2Vj1UAa1atRbSQ2m&s=10',
     prepTimeMinutes: 10, cookTimeMinutes: 25, difficulty: 'Medium',
     cuisine: 'Italian', mealType: 'Dinner', servings: 3,
     dietaryTags: ['non-vegetarian'],
@@ -512,7 +512,7 @@ const buildRecipes = (ingMap) => [
   {
     title: 'Classic Fried Rice',
     description: 'The ultimate comfort food — fluffy rice stir-fried with eggs, vegetables, and seasoning. A quick and satisfying meal using leftover rice.',
-    imageUrl: 'https://images.unsplash.com/photo-1645696301019-35adcc18cbb3?w=800&q=80',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzIWDjwpGJdXhVNO_MN1A7fbo9bBnL-BGOl5hzPiItGXoY0c8yDE1fRmY1&s=10',
     prepTimeMinutes: 5, cookTimeMinutes: 15, difficulty: 'Easy',
     cuisine: 'Asian', mealType: 'Lunch', servings: 2,
     dietaryTags: ['vegetarian'],
@@ -539,7 +539,7 @@ const buildRecipes = (ingMap) => [
   {
     title: 'Vegetable Soup',
     description: 'A comforting, chunky vegetable soup with root vegetables, spinach, and aromatic herbs. Light, nutritious, and perfect for a cold evening.',
-    imageUrl: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=800&q=80',
+    imageUrl: 'https://www.cookingclassy.com/wp-content/uploads/2014/10/vegetable-soup-7.jpg',
     prepTimeMinutes: 15, cookTimeMinutes: 30, difficulty: 'Easy',
     cuisine: 'International', mealType: 'Lunch', servings: 4,
     dietaryTags: ['vegetarian', 'vegan', 'gluten-free'],
@@ -566,7 +566,7 @@ const buildRecipes = (ingMap) => [
   {
     title: 'Potato Curry',
     description: 'Soft potatoes in a fragrant, spiced tomato gravy — a simple yet deeply satisfying Indian curry. Comfort food at its finest, best served with warm roti.',
-    imageUrl: 'https://images.unsplash.com/photo-1571197119733-a7e93f04c9b1?w=800&q=80',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnlZ67MB_ud8WDp1cRj-6Gbe4eOMiaGOox5Nlr-l2Nyj_FFRd0T1Tu8Irg&s=10',
     prepTimeMinutes: 10, cookTimeMinutes: 25, difficulty: 'Easy',
     cuisine: 'Indian', mealType: 'Dinner', servings: 3,
     dietaryTags: ['vegetarian', 'vegan', 'gluten-free'],
@@ -623,7 +623,7 @@ const buildRecipes = (ingMap) => [
   {
     title: 'Paneer Tikka Masala',
     description: 'Succulent cubes of paneer cooked with charred capsicum and onion in a rich, aromatic spiced gravy. A beloved vegetarian delicacy.',
-    imageUrl: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=800&q=80',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjKI-TesyekHpoHOplJ9QkzusR0h8IrvkaeIbEu-r4GQ&s',
     prepTimeMinutes: 15, cookTimeMinutes: 25, difficulty: 'Medium',
     cuisine: 'Indian', mealType: 'Dinner', servings: 4,
     dietaryTags: ['vegetarian', 'gluten-free'],
@@ -652,7 +652,7 @@ const buildRecipes = (ingMap) => [
   {
     title: 'Hyderabadi Chicken Dum Biryani',
     description: 'Royal aromatic basmati rice layered with spiced marinated chicken, saffron, caramelized fried onions, and fresh mint leaves, slow cooked under dum seal.',
-    imageUrl: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=800&q=80',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcThmLTMRCJGx-I5qL4lCn-cdpKkA6rHudyDfg-PnbeBdJTd6S--RFpgfvpt&s=10',
     prepTimeMinutes: 30, cookTimeMinutes: 45, difficulty: 'Hard',
     cuisine: 'Indian', mealType: 'Dinner', servings: 6,
     dietaryTags: ['gluten-free'],
@@ -681,7 +681,7 @@ const buildRecipes = (ingMap) => [
   {
     title: 'Creamy Dal Makhani',
     description: 'Slow-simmered whole black lentils cooked with butter, rich cream, and tomatoes. The pinnacle of Punjabi comfort dining.',
-    imageUrl: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=800&q=80',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSh1A8q-LDvG5h4eMHN2DRvI1G9JIISz4og4qhHDAN9G2Itle-7b1uhNOy&s=10',
     prepTimeMinutes: 15, cookTimeMinutes: 45, difficulty: 'Medium',
     cuisine: 'Indian', mealType: 'Dinner', servings: 4,
     dietaryTags: ['vegetarian', 'gluten-free'],
@@ -708,7 +708,7 @@ const buildRecipes = (ingMap) => [
   {
     title: 'Palak Paneer (Spinach Cottage Cheese Curry)',
     description: 'Smooth, vibrant spiced spinach puree infused with garlic, cumin, and tender paneer cubes. Nutrient-dense and deeply flavorful.',
-    imageUrl: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=800&q=80',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZ3zucaxHuwmSymIQAM2FayuKvJlTWKXaIqTbxo2VTzFcCw10-z0GMQMzu&s=10',
     prepTimeMinutes: 10, cookTimeMinutes: 20, difficulty: 'Easy',
     cuisine: 'Indian', mealType: 'Dinner', servings: 4,
     dietaryTags: ['vegetarian', 'gluten-free', 'keto'],
@@ -735,7 +735,7 @@ const buildRecipes = (ingMap) => [
   {
     title: 'Amritsari Chole (Spiced Chickpea Masala)',
     description: 'Hearty chickpeas braised in a robust, dark, spiced onion-tomato gravy with roasted cumin, ginger, and coriander. Delicious with rice or bhature.',
-    imageUrl: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=800&q=80',
+    imageUrl: 'https://i0.wp.com/kitchensavouries.com/wp-content/uploads/2025/09/amritsari-chole-23.jpg?fit=900%2C600&ssl=1',
     prepTimeMinutes: 15, cookTimeMinutes: 30, difficulty: 'Easy',
     cuisine: 'Indian', mealType: 'Lunch', servings: 4,
     dietaryTags: ['vegetarian', 'vegan', 'gluten-free'],
@@ -763,7 +763,7 @@ const buildRecipes = (ingMap) => [
   {
     title: 'Aloo Gobi Matar (Homestyle Spiced Potatoes & Cauliflower)',
     description: 'Classic North Indian sabzi of tender potato cubes, cauliflower florets, and sweet green peas spiced with turmeric, cumin, and fresh ginger.',
-    imageUrl: 'https://images.unsplash.com/photo-1645177628172-a94c1f96e6db?w=800&q=80',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdkheEwYyU_bJ_SdEaJCclEs7Tmfrze94Ls5g6S2o8rsTykRMnqoG53CY&s=10',
     prepTimeMinutes: 10, cookTimeMinutes: 20, difficulty: 'Easy',
     cuisine: 'Indian', mealType: 'Lunch', servings: 3,
     dietaryTags: ['vegetarian', 'vegan', 'gluten-free'],
@@ -791,8 +791,8 @@ const buildRecipes = (ingMap) => [
   {
     title: 'South Indian Sambar',
     description: 'Traditional lentil and mixed vegetable stew tempered with mustard seeds, curry leaves, and tangy tamarind broth. Perfect with rice or idli.',
-    imageUrl: 'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=800&q=80',
-    prepTimeMinutes: 15, cookTimeMinutes: 25, difficulty: 'Easy',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKwdEbGKmgFs4UxRLL8axmCXMDu73KrO740kgWSFDCig&s',
+    prepTimeMinutes: 15, cookTimeMinutes: 25, difficulty: 'Medium',
     cuisine: 'Indian', mealType: 'Lunch', servings: 4,
     dietaryTags: ['vegetarian', 'vegan', 'gluten-free'],
     nutrition: { calories: 210, protein: 9, carbs: 38, fat: 3, fiber: 8 },
@@ -819,8 +819,8 @@ const buildRecipes = (ingMap) => [
   {
     title: 'Dhaba Style Egg Curry',
     description: 'Golden pan-fried boiled eggs steeped in a spicy, rustic onion, garlic, and tomato masala gravy. A classic highway dhaba favorite.',
-    imageUrl: 'https://images.unsplash.com/photo-1613844237701-8f3664fc2eff?w=800&q=80',
     prepTimeMinutes: 10, cookTimeMinutes: 20, difficulty: 'Easy',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQqYIoDTAiShAsQ4VF3MeCcLtATNAczFJGVS4wMtbHJLTrfBpFryrD1N5PD&s=10',
     cuisine: 'Indian', mealType: 'Dinner', servings: 3,
     dietaryTags: ['gluten-free'],
     nutrition: { calories: 290, protein: 18, carbs: 12, fat: 19, fiber: 2 },
@@ -847,7 +847,7 @@ const buildRecipes = (ingMap) => [
   {
     title: 'Goan Coconut Fish Curry',
     description: 'Fresh fish fillets poached gently in a spiced coconut milk gravy infused with mustard seeds, curry leaves, and green chillies.',
-    imageUrl: 'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=800&q=80',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRt5MZky6ijb9TowlaBLf6sskZSOdBY-KzFecl3fYBJlA&s=10',
     prepTimeMinutes: 15, cookTimeMinutes: 20, difficulty: 'Medium',
     cuisine: 'Indian', mealType: 'Dinner', servings: 4,
     dietaryTags: ['gluten-free', 'dairy-free'],
@@ -874,7 +874,7 @@ const buildRecipes = (ingMap) => [
   {
     title: 'Punjabi Rajma Masala (Red Kidney Bean Curry)',
     description: 'Slow-cooked red kidney beans in a luscious spiced onion-tomato gravy. The ultimate soul food of North India.',
-    imageUrl: 'https://images.unsplash.com/photo-1546833998-877b37c2e5c6?w=800&q=80',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpSukbP2Sh_JN1eHqBuGVgeqhWWmUwEwPEyBoA8e2zzg&s=10',
     prepTimeMinutes: 15, cookTimeMinutes: 35, difficulty: 'Easy',
     cuisine: 'Indian', mealType: 'Lunch', servings: 4,
     dietaryTags: ['vegetarian', 'vegan', 'gluten-free'],
@@ -902,7 +902,7 @@ const buildRecipes = (ingMap) => [
   {
     title: 'Tadka Dal & Jeera Rice Combo',
     description: 'Golden yellow lentils tempered with sizzling garlic, cumin, and dried red chilli, paired with fragrant cumin-infused basmati rice.',
-    imageUrl: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=800&q=80',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOYKZKOo9Fa-8yE7MTxCNyLcrhZiXu6DJ2WDz2IsBLCw&s=10',
     prepTimeMinutes: 10, cookTimeMinutes: 20, difficulty: 'Easy',
     cuisine: 'Indian', mealType: 'Lunch', servings: 3,
     dietaryTags: ['vegetarian', 'gluten-free'],
