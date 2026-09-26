@@ -5,7 +5,14 @@ import characterWaveSource from "./sources/character-wave.html?raw";
 
 export type CharacterCarouselVariant = "filmstrip" | "wave";
 
+export type FoodItem = {
+  name: string;
+  role?: string;
+  image: string;
+};
+
 export type CharacterCarouselProps = {
+  items?: FoodItem[];
   variant?: CharacterCarouselVariant;
   speed?: number;
   scale?: number;
@@ -36,7 +43,11 @@ function clamp(value: number, minimum: number, maximum: number) {
   return Math.min(maximum, Math.max(minimum, value));
 }
 
-function buildFocusedDocument(variant: CharacterCarouselVariant) {
+function buildFocusedDocument(variant: CharacterCarouselVariant, items?: FoodItem[]) {
+  const itemsScript = items && items.length > 0
+    ? `<script>window.__FLAVORCRAFT_ITEMS = ${JSON.stringify(items.map(i => [i.name, i.role || 'Signature Dish', i.image]))};</script>`
+    : '';
+
   const focusStyles = `<style data-character-carousel-focus>
 :root { --character-carousel-scale: 1; }
 html, body, .stage { width: 100%; height: 100%; margin: 0; overflow: hidden; }
@@ -83,10 +94,11 @@ html, body, .stage { width: 100%; height: 100%; margin: 0; overflow: hidden; }
 
   return focusedSource
     .replace(/<script[^>]+cloudflareinsights\.com[^>]*><\/script>/gi, "")
-    .replace("</head>", `${focusStyles}${controls}</head>`);
+    .replace("</head>", `${itemsScript}${focusStyles}${controls}</head>`);
 }
 
 export function CharacterCarousel({
+  items,
   variant = CHARACTER_CAROUSEL_DEFAULTS.variant,
   speed = CHARACTER_CAROUSEL_DEFAULTS.speed,
   scale = CHARACTER_CAROUSEL_DEFAULTS.scale,
@@ -103,7 +115,7 @@ export function CharacterCarousel({
   const safeSpeed = clamp(speed, 0, 2.5);
   const safeScale = clamp(scale, 0.7, 1.3);
   const paused = !hostVisible || !documentVisible || safeSpeed === 0;
-  const source = useMemo(() => buildFocusedDocument(variant), [variant]);
+  const source = useMemo(() => buildFocusedDocument(variant, items), [variant, items]);
 
   const postControls = useCallback(() => {
     iframeRef.current?.contentWindow?.postMessage({

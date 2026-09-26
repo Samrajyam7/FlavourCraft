@@ -124,7 +124,7 @@ export const HomePage = () => {
                 <div className="h-12 flex items-center min-w-[160px]">
                   <LiquidMetalButton
                     variant="pill"
-                    text="Start Cooking"
+                    text="START COOKING"
                     onClick={() => navigate('/matcher')}
                   />
                 </div>
@@ -160,7 +160,7 @@ export const HomePage = () => {
               </form>
             </div>
 
-            {/* Right Column: ThreeUI TextAnimationCollection Canvas */}
+            {/* Right Column: ThreeUI TextAnimationCollection Canvas with Readable Brand DOM Layer */}
             <div className="lg:col-span-5 relative flex items-center justify-center">
               <div className="relative w-full aspect-square max-w-[460px] rounded-3xl bg-dark-card border border-dark-border shadow-2xl overflow-hidden flex items-center justify-center">
                 <TextAnimationCollection
@@ -172,14 +172,26 @@ export const HomePage = () => {
                   className="w-full h-full"
                 />
 
+                {/* Central Prominent Brand Layer over WebGL animation */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none p-6 text-center z-10 bg-gradient-to-t from-dark/70 via-transparent to-dark/30">
+                  <div className="px-5 py-3 rounded-2xl bg-dark-card/85 backdrop-blur-md border border-white/10 shadow-2xl space-y-1.5 transform hover:scale-105 transition-transform">
+                    <h2 className="text-2xl sm:text-3xl font-heading font-black tracking-widest uppercase text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+                      FLAVOR<span className="text-sage-400">CRAFT</span>
+                    </h2>
+                    <p className="text-[11px] sm:text-xs font-semibold text-text-secondary tracking-wide">
+                      Turn What You Have Into What You Crave.
+                    </p>
+                  </div>
+                </div>
+
                 {/* Floating Culinary Badges */}
-                <div className="absolute top-4 left-4 p-2.5 rounded-2xl bg-dark-bg/90 backdrop-blur-md border border-white/10 shadow-lg text-left pointer-events-none">
+                <div className="absolute top-4 left-4 p-2.5 rounded-2xl bg-dark-bg/90 backdrop-blur-md border border-white/10 shadow-lg text-left pointer-events-none z-20">
                   <p className="text-[10px] uppercase font-bold text-sage-400 tracking-wider">Live Matcher</p>
                   <p className="text-xs font-bold text-white">Classic Omelette</p>
                   <span className="text-[10px] font-bold text-emerald-400">100% Available</span>
                 </div>
 
-                <div className="absolute bottom-4 right-4 p-2.5 rounded-2xl bg-dark-bg/90 backdrop-blur-md border border-white/10 shadow-lg text-left pointer-events-none">
+                <div className="absolute bottom-4 right-4 p-2.5 rounded-2xl bg-dark-bg/90 backdrop-blur-md border border-white/10 shadow-lg text-left pointer-events-none z-20">
                   <p className="text-[10px] uppercase font-bold text-warm tracking-wider">Chef's Special</p>
                   <p className="text-xs font-bold text-white">Butter Chicken</p>
                   <span className="text-[10px] font-medium text-text-secondary">⭐ 4.9 Rating</span>
@@ -249,18 +261,18 @@ export const HomePage = () => {
       </section>
 
       {/* ============================================================
-          CULINARY STORIES & FEATURED COLLECTION (THREEUI CHARACTER CAROUSEL)
+          EXPLORE FLAVORS / DISCOVER YOUR NEXT DISH (FILMSTRIP CAROUSEL)
           ============================================================ */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-left">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
           <div>
             <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-sage-400 mb-1">
               <Sparkles className="w-4 h-4 text-sage-400" />
-              <span>Culinary Stories & Studio</span>
+              <span>Culinary Discovery Showcase</span>
             </div>
-            <h2 className="text-3xl font-heading font-bold text-white">Discover New Flavors</h2>
-            <p className="text-xs text-text-secondary mt-1">
-              Explore dishes from different culinary traditions, master chef techniques, and artisanal recipes.
+            <h2 className="text-3xl font-heading font-bold text-white tracking-tight">EXPLORE FLAVORS & DISCOVER YOUR NEXT DISH</h2>
+            <p className="text-xs sm:text-sm text-text-secondary mt-1">
+              Browse signature dishes and chef-crafted culinary masterpieces from world cuisines — from slow-simmered curries to wood-fired classics.
             </p>
           </div>
         </div>

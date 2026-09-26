@@ -1584,7 +1584,7 @@ const EFFECTS = {
     hiddenTargets: ["#badge", ".sr"],
   },
   threeUIIntro: {
-    title: "ThreeUI chromatic wordmark intro",
+    title: "FlavorCraft chromatic wordmark intro",
     source: creatorStudioIntroSource,
     background: "#000000",
     theme: {
@@ -1597,8 +1597,8 @@ const EFFECTS = {
     hiddenTargets: [".sr"],
     introWordmark: {
       sceneSelector: "#comp .scene:first-child",
-      text: "ThreeUI",
-      fontSize: 130,
+      text: "FlavorCraft",
+      fontSize: 104,
       endTime: 1.7,
       holdTime: 1.1,
       logoSvg: THREEUI_MARK_SVG,
