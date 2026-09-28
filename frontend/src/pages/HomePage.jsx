@@ -195,16 +195,16 @@ export const HomePage = () => {
         />
 
         {/* Increased Visibility Background Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-dark-bg/60 via-dark-bg/35 to-dark-bg/75" />
+        <div className="absolute inset-0 bg-gradient-to-b from-dark-bg/50 via-dark-bg/20 to-dark-bg/65" />
 
-        {/* Localized Center Blur & FlavorCraft Brand Watermark to cleanly conceal stock text */}
-        <div className="absolute top-[52%] left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none flex flex-col items-center justify-center z-[2]">
-          <div className="px-8 py-3.5 rounded-3xl bg-dark-bg/85 backdrop-blur-2xl border border-sage/30 shadow-[0_0_60px_rgba(0,0,0,0.9)] flex flex-col items-center justify-center scale-90 sm:scale-100">
-            <span className="text-xl sm:text-2xl font-heading font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-sage-300 via-white to-accent uppercase drop-shadow-[0_0_20px_rgba(154,179,166,0.6)]">
-              Flavor<span className="text-sage-400">Craft</span>
+        {/* Large Visible FlavorCraft Watermark (replaces stock text with FlavorCraft watermark) */}
+        <div className="absolute top-[52%] left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none flex flex-col items-center justify-center z-[2] select-none text-center px-4">
+          <div className="relative py-4 px-8 rounded-3xl backdrop-blur-md bg-dark-bg/40 flex flex-col items-center justify-center">
+            <span className="text-5xl sm:text-7xl md:text-8xl font-heading font-black tracking-tight text-white/60 drop-shadow-[0_4px_25px_rgba(0,0,0,0.9)]">
+              Flavor<span className="text-sage-400/80">Craft</span>
             </span>
-            <span className="text-[9px] text-sage-300/90 font-bold tracking-[0.35em] uppercase -mt-0.5">
-              Digital Culinary Studio
+            <span className="text-sm sm:text-xl md:text-2xl font-sans font-extrabold tracking-[0.3em] text-white/45 drop-shadow-[0_2px_15px_rgba(0,0,0,0.9)] uppercase mt-1 sm:mt-2">
+              by Digital Kitchen
             </span>
           </div>
         </div>
