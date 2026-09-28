@@ -197,16 +197,14 @@ export const HomePage = () => {
         {/* Increased Visibility Background Overlay */}
         <div className="absolute inset-0 bg-gradient-to-b from-dark-bg/50 via-dark-bg/20 to-dark-bg/65" />
 
-        {/* Large Visible FlavorCraft Watermark (replaces stock text with FlavorCraft watermark) */}
-        <div className="absolute top-[52%] left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none flex flex-col items-center justify-center z-[2] select-none text-center px-4">
-          <div className="relative py-4 px-8 rounded-3xl backdrop-blur-md bg-dark-bg/40 flex flex-col items-center justify-center">
-            <span className="text-5xl sm:text-7xl md:text-8xl font-heading font-black tracking-tight text-white/60 drop-shadow-[0_4px_25px_rgba(0,0,0,0.9)]">
-              Flavor<span className="text-sage-400/80">Craft</span>
-            </span>
-            <span className="text-sm sm:text-xl md:text-2xl font-sans font-extrabold tracking-[0.3em] text-white/45 drop-shadow-[0_2px_15px_rgba(0,0,0,0.9)] uppercase mt-1 sm:mt-2">
-              by Digital Kitchen
-            </span>
-          </div>
+        {/* Large Visible FlavorCraft Watermark (pure seamless watermark text without black box) */}
+        <div className="absolute top-[52%] left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none flex flex-col items-center justify-center z-[2] select-none text-center px-4 w-full">
+          <span className="text-5xl sm:text-7xl md:text-8xl font-heading font-black tracking-tight text-white/55 drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)]">
+            Flavor<span className="text-sage-400/80">Craft</span>
+          </span>
+          <span className="text-sm sm:text-xl md:text-2xl font-sans font-extrabold tracking-[0.3em] text-white/40 drop-shadow-[0_2px_20px_rgba(0,0,0,0.95)] uppercase mt-1 sm:mt-2">
+            by Digital Kitchen
+          </span>
         </div>
       </div>
 
