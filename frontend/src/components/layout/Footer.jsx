@@ -5,7 +5,7 @@ import logoEmblem from '../../assets/flavorcraft_logo_emblem.jpg';
 
 export const Footer = () => {
   return (
-    <footer className="border-t border-dark-border bg-dark-surface/80 mt-20 text-left">
+    <footer className="relative z-20 border-t border-dark-border bg-dark-card/95 backdrop-blur-xl mt-20 text-left shadow-2xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10">
           {/* Brand Col */}
