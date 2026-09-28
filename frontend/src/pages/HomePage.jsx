@@ -321,15 +321,45 @@ export const HomePage = () => {
       </section>
 
       {/* ============================================================
-          DASHBOARD SUMMARY METRICS BAR
+          CHEF COMMAND HUB & DASHBOARD SUMMARY METRICS BAR
           ============================================================ */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-left">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-left space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-dark-border/40 pb-4">
+          <div>
+            <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-sage-400 mb-1">
+              <ChefHat className="w-4 h-4 text-sage-400" />
+              <span>Chef Command Center</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-heading font-black text-white tracking-tight">
+              Live Kitchen Dashboard
+            </h2>
+          </div>
+
+          <div className="flex items-center gap-2 flex-wrap">
+            <Link
+              to="/matcher"
+              className="btn-primary !py-2 !px-4 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-glow-green"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Match Ingredients</span>
+            </Link>
+            <Link
+              to="/inventory"
+              className="btn-outline !py-2 !px-4 text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 bg-dark-surface/40 backdrop-blur-md"
+            >
+              <Refrigerator className="w-3.5 h-3.5" />
+              <span>Manage Pantry</span>
+            </Link>
+          </div>
+        </div>
+
+        {/* 5 Real-Time Summary Cards with Glassmorphic Translucency */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
           <Link
             to="/inventory"
-            className="card p-4 bg-dark-card border-dark-border hover:border-sage/40 transition-all flex items-center gap-3.5 group"
+            className="card p-4 bg-dark-card/65 backdrop-blur-lg border-dark-border/80 hover:border-sage/50 transition-all flex items-center gap-3.5 group shadow-xl hover:-translate-y-0.5"
           >
-            <div className="w-10 h-10 rounded-xl bg-sage/15 text-sage-400 border border-sage/30 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
+            <div className="w-10 h-10 rounded-xl bg-sage/20 text-sage-400 border border-sage/40 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
               🥕
             </div>
             <div>
@@ -340,9 +370,9 @@ export const HomePage = () => {
 
           <Link
             to="/recipes"
-            className="card p-4 bg-dark-card border-dark-border hover:border-warm/40 transition-all flex items-center gap-3.5 group"
+            className="card p-4 bg-dark-card/65 backdrop-blur-lg border-dark-border/80 hover:border-warm/50 transition-all flex items-center gap-3.5 group shadow-xl hover:-translate-y-0.5"
           >
-            <div className="w-10 h-10 rounded-xl bg-warm/15 text-warm border border-warm/30 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
+            <div className="w-10 h-10 rounded-xl bg-warm/20 text-warm border border-warm/40 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
               🍳
             </div>
             <div>
@@ -353,9 +383,9 @@ export const HomePage = () => {
 
           <Link
             to="/grocery"
-            className="card p-4 bg-dark-card border-dark-border hover:border-sky-500/40 transition-all flex items-center gap-3.5 group"
+            className="card p-4 bg-dark-card/65 backdrop-blur-lg border-dark-border/80 hover:border-sky-500/50 transition-all flex items-center gap-3.5 group shadow-xl hover:-translate-y-0.5"
           >
-            <div className="w-10 h-10 rounded-xl bg-sky-500/15 text-sky-400 border border-sky-500/30 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
+            <div className="w-10 h-10 rounded-xl bg-sky-500/20 text-sky-400 border border-sky-500/40 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
               🛒
             </div>
             <div>
@@ -366,9 +396,9 @@ export const HomePage = () => {
 
           <Link
             to="/meal-planner"
-            className="card p-4 bg-dark-card border-dark-border hover:border-indigo-500/40 transition-all flex items-center gap-3.5 group"
+            className="card p-4 bg-dark-card/65 backdrop-blur-lg border-dark-border/80 hover:border-indigo-500/50 transition-all flex items-center gap-3.5 group shadow-xl hover:-translate-y-0.5"
           >
-            <div className="w-10 h-10 rounded-xl bg-indigo-500/15 text-indigo-400 border border-indigo-500/30 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
+            <div className="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/40 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
               📅
             </div>
             <div>
@@ -379,9 +409,9 @@ export const HomePage = () => {
 
           <Link
             to="/inventory"
-            className="card p-4 bg-dark-card border-dark-border hover:border-rose-500/40 transition-all flex items-center gap-3.5 group col-span-2 sm:col-span-1"
+            className="card p-4 bg-dark-card/65 backdrop-blur-lg border-dark-border/80 hover:border-rose-500/50 transition-all flex items-center gap-3.5 group col-span-2 sm:col-span-1 shadow-xl hover:-translate-y-0.5"
           >
-            <div className="w-10 h-10 rounded-xl bg-rose-500/15 text-rose-400 border border-rose-500/30 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
+            <div className="w-10 h-10 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/40 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
               ⏰
             </div>
             <div>
@@ -451,7 +481,7 @@ export const HomePage = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-left">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Card 1: 📅 This Week's Planned Meals */}
-          <div className="card p-5 bg-dark-card border-dark-border space-y-4 flex flex-col justify-between">
+          <div className="card p-5 bg-dark-card/65 backdrop-blur-lg border-dark-border/80 space-y-4 flex flex-col justify-between shadow-xl">
             <div className="space-y-3">
               <div className="flex items-center justify-between border-b border-dark-border pb-2.5">
                 <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
@@ -487,9 +517,9 @@ export const HomePage = () => {
           </div>
 
           {/* Card 2: ⏰ Expiring Soon Alerts */}
-          <div className="card p-5 bg-dark-card border-dark-border space-y-4 flex flex-col justify-between">
+          <div className="card p-5 bg-dark-card/65 backdrop-blur-lg border-dark-border/80 space-y-4 flex flex-col justify-between shadow-xl">
             <div className="space-y-3">
-              <div className="flex items-center justify-between border-b border-dark-border pb-2.5">
+              <div className="flex items-center justify-between border-b border-dark-border/60 pb-2.5">
                 <span className="text-xs font-bold text-warm uppercase tracking-wider flex items-center gap-1.5">
                   <AlertTriangle className="w-3.5 h-3.5 text-warm" /> Expiring Soon
                 </span>
@@ -501,7 +531,7 @@ export const HomePage = () => {
               {expiringItems.length > 0 ? (
                 <div className="space-y-2">
                   {expiringItems.map((item, idx) => (
-                    <div key={idx} className="p-2.5 rounded-xl bg-amber-950/20 border border-amber-500/30 text-xs flex items-center justify-between">
+                    <div key={idx} className="p-2.5 rounded-xl bg-amber-950/30 border border-amber-500/40 text-xs flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <span>{item.ingredientId?.icon || '🥫'}</span>
                         <div>
@@ -534,9 +564,9 @@ export const HomePage = () => {
           </div>
 
           {/* Card 3: 🛒 Weekly Grocery Summary */}
-          <div className="card p-5 bg-dark-card border-dark-border space-y-4 flex flex-col justify-between">
+          <div className="card p-5 bg-dark-card/65 backdrop-blur-lg border-dark-border/80 space-y-4 flex flex-col justify-between shadow-xl">
             <div className="space-y-3">
-              <div className="flex items-center justify-between border-b border-dark-border pb-2.5">
+              <div className="flex items-center justify-between border-b border-dark-border/60 pb-2.5">
                 <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
                   <ShoppingCart className="w-3.5 h-3.5 text-sky-400" /> Grocery Checklist
                 </span>
@@ -548,7 +578,7 @@ export const HomePage = () => {
               {grocerySummary.length > 0 ? (
                 <div className="space-y-2">
                   {grocerySummary.map((item, idx) => (
-                    <div key={idx} className="p-2.5 rounded-xl bg-dark-surface border border-dark-border/80 text-xs flex items-center justify-between">
+                    <div key={idx} className="p-2.5 rounded-xl bg-dark-surface/60 border border-dark-border/60 text-xs flex items-center justify-between">
                       <div>
                         <span className="font-bold text-white block">{item.name}</span>
                         <span className="text-[10px] text-text-muted">{item.category}</span>
@@ -572,9 +602,9 @@ export const HomePage = () => {
           </div>
 
           {/* Card 4: 📊 Nutrition Summary */}
-          <div className="card p-5 bg-dark-card border-dark-border space-y-4 flex flex-col justify-between">
+          <div className="card p-5 bg-dark-card/65 backdrop-blur-lg border-dark-border/80 space-y-4 flex flex-col justify-between shadow-xl">
             <div className="space-y-3">
-              <div className="flex items-center justify-between border-b border-dark-border pb-2.5">
+              <div className="flex items-center justify-between border-b border-dark-border/60 pb-2.5">
                 <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
                   <Flame className="w-3.5 h-3.5 text-emerald-400" /> Nutrition Profile
                 </span>
@@ -582,19 +612,19 @@ export const HomePage = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-2 text-center text-xs">
-                <div className="p-2.5 rounded-xl bg-dark-surface border border-dark-border">
+                <div className="p-2.5 rounded-xl bg-dark-surface/60 border border-dark-border/60">
                   <span className="text-[10px] text-text-muted uppercase block">Calories</span>
                   <span className="text-sm font-bold text-warm">~420 kcal</span>
                 </div>
-                <div className="p-2.5 rounded-xl bg-dark-surface border border-dark-border">
+                <div className="p-2.5 rounded-xl bg-dark-surface/60 border border-dark-border/60">
                   <span className="text-[10px] text-text-muted uppercase block">Protein</span>
                   <span className="text-sm font-bold text-emerald-400">~25g</span>
                 </div>
-                <div className="p-2.5 rounded-xl bg-dark-surface border border-dark-border">
+                <div className="p-2.5 rounded-xl bg-dark-surface/60 border border-dark-border/60">
                   <span className="text-[10px] text-text-muted uppercase block">Carbs</span>
                   <span className="text-sm font-bold text-sky-400">~48g</span>
                 </div>
-                <div className="p-2.5 rounded-xl bg-dark-surface border border-dark-border">
+                <div className="p-2.5 rounded-xl bg-dark-surface/60 border border-dark-border/60">
                   <span className="text-[10px] text-text-muted uppercase block">Fats</span>
                   <span className="text-sm font-bold text-rose-400">~15g</span>
                 </div>
