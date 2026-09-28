@@ -190,7 +190,7 @@ export const HomePage = () => {
           loop
           muted
           playsInline
-          className="w-full h-full object-cover object-center scale-105"
+          className="w-full h-full object-cover object-center scale-125 transform origin-center"
           src="/background.mp4"
         />
         {/* Subtle dark transparent overlay for crisp text readability */}
