@@ -8,6 +8,7 @@ const {
   updateRecipe,
   deleteRecipe,
   getRecommendations,
+  recordCooking,
 } = require('../controllers/recipeController');
 const { getReviews, createReview } = require('../controllers/reviewController');
 const { protect } = require('../middleware/authMiddleware');
@@ -27,6 +28,9 @@ router.get('/:id', getRecipeById);
 router.post('/', protect, createRecipe);
 router.put('/:id', protect, updateRecipe);
 router.delete('/:id', protect, deleteRecipe);
+
+// Recipe cooking history
+router.post('/:id/cook', protect, recordCooking);
 
 // Recipe reviews (nested)
 router.get('/:recipeId/reviews', getReviews);

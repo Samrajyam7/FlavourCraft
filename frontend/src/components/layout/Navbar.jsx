@@ -227,6 +227,13 @@ export const Navbar = () => {
                           <span>My Kitchen Profile</span>
                         </Link>
                         <Link
+                          to="/profile?tab=preferences"
+                          className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-text-secondary hover:text-white hover:bg-dark-hover transition-colors"
+                        >
+                          <ChefHat className="w-3.5 h-3.5 text-warm" />
+                          <span>Dietary & Preferences</span>
+                        </Link>
+                        <Link
                           to="/profile?tab=favorites"
                           className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-text-secondary hover:text-white hover:bg-dark-hover transition-colors"
                         >

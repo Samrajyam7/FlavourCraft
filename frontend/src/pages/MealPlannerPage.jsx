@@ -95,17 +95,24 @@ export const MealPlannerPage = () => {
 
           <div className="flex flex-wrap items-center gap-3">
             <button
-              onClick={handleGenerateWeeklyGroceries}
+              onClick={() => handleGenerateWeeklyGroceries(false)}
               className="btn-primary text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-glow-green"
             >
               <ShoppingCart className="w-4 h-4" />
-              <span>Sync Week to Grocery List</span>
+              <span>🛒 Generate Weekly Grocery List</span>
+            </button>
+            <button
+              onClick={() => handleGenerateWeeklyGroceries(true)}
+              className="btn-secondary text-xs font-bold uppercase tracking-wider flex items-center gap-2"
+            >
+              <RotateCcw className="w-3.5 h-3.5 text-sage-400" />
+              <span>🔄 Regenerate Grocery List</span>
             </button>
             <button
               onClick={handleClearWeek}
               className="btn-outline text-xs flex items-center gap-1.5 border-accent/30 text-accent hover:bg-accent/10"
             >
-              <RotateCcw className="w-3.5 h-3.5" />
+              <Trash2 className="w-3.5 h-3.5" />
               <span>Clear Week</span>
             </button>
           </div>

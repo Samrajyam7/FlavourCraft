@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#d8c9ad">
+  <meta name="theme-color" content="#0c0d12">
   <title>FlavorCraft — Discover Your Next Dish</title>
   <style>
     :root {
-      color-scheme: light;
+      color-scheme: dark;
       font-family: "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
-      background: #d8c9ad;
+      background: #0c0d12;
     }
 
     * {
@@ -22,7 +22,7 @@
       height: 100%;
       margin: 0;
       overflow: hidden;
-      background: #d8c9ad;
+      background: #0c0d12;
     }
 
     body {
@@ -46,16 +46,16 @@
       cursor: ew-resize;
       touch-action: none;
       background:
-        linear-gradient(90deg, rgba(80, 58, 31, 0.08) 1px, transparent 1px) 50% 0 / 25% 100%,
+        radial-gradient(circle at var(--pointer-x) 48%, rgba(30, 70, 56, 0.4), transparent 45%),
+        linear-gradient(90deg, rgba(154, 179, 166, 0.05) 1px, transparent 1px) 50% 0 / 25% 100%,
         repeating-linear-gradient(
           0deg,
           transparent 0,
           transparent 109px,
-          rgba(72, 52, 30, 0.13) 110px,
+          rgba(154, 179, 166, 0.04) 110px,
           transparent 111px
         ),
-        radial-gradient(circle at var(--pointer-x) 48%, rgba(255, 246, 220, 0.78), transparent 34%),
-        #d8c9ad;
+        #0c0d12;
     }
 
     .stage::before {
@@ -64,11 +64,10 @@
       inset: 0;
       z-index: 5;
       pointer-events: none;
-      opacity: 0.27;
+      opacity: 0.2;
       background:
-        repeating-radial-gradient(circle at 12% 18%, rgba(71, 51, 30, 0.17) 0 0.5px, transparent 0.7px 4px),
-        repeating-radial-gradient(circle at 78% 71%, rgba(255, 255, 255, 0.35) 0 0.5px, transparent 0.8px 5px);
-      mix-blend-mode: multiply;
+        repeating-radial-gradient(circle at 12% 18%, rgba(154, 179, 166, 0.15) 0 0.5px, transparent 0.7px 4px),
+        repeating-radial-gradient(circle at 78% 71%, rgba(255, 255, 255, 0.15) 0 0.5px, transparent 0.8px 5px);
     }
 
     .stage::after {
@@ -79,10 +78,10 @@
       pointer-events: none;
       background: linear-gradient(
         90deg,
-        rgba(84, 58, 29, 0.19),
-        transparent 14%,
-        transparent 86%,
-        rgba(84, 58, 29, 0.19)
+        rgba(12, 13, 18, 0.95),
+        transparent 16%,
+        transparent 84%,
+        rgba(12, 13, 18, 0.95)
       );
     }
 
@@ -102,14 +101,14 @@
       aspect-ratio: 0.72;
       padding: 7px;
       overflow: hidden;
-      border: 1px solid rgba(47, 34, 19, 0.42);
-      border-radius: 4px;
-      color: #f3e7ce;
-      background: #e7d9bd;
+      border: 1px solid rgba(154, 179, 166, 0.3);
+      border-radius: 16px;
+      color: #ffffff;
+      background: #151822;
       box-shadow:
         0 calc(10px + var(--focus) * 24px) calc(18px + var(--focus) * 36px)
-          rgba(57, 38, 19, calc(0.2 + var(--focus) * 0.26)),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.64);
+          rgba(0, 0, 0, calc(0.5 + var(--focus) * 0.35)),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.1);
       appearance: none;
       outline: none;
       transform-style: preserve-3d;
@@ -122,21 +121,23 @@
       position: absolute;
       inset: 5px;
       z-index: 3;
-      border: 1px solid rgba(28, 22, 14, calc(0.12 + var(--focus) * 0.12));
+      border: 1px solid rgba(154, 179, 166, calc(0.08 + var(--focus) * 0.15));
+      border-radius: 12px;
       pointer-events: none;
     }
 
     .card:focus-visible {
       box-shadow:
-        0 26px 50px rgba(57, 38, 19, 0.42),
-        0 0 0 4px rgba(197, 79, 25, 0.34);
+        0 26px 50px rgba(0, 0, 0, 0.6),
+        0 0 0 4px rgba(154, 179, 166, 0.4);
     }
 
     .portrait {
       position: absolute;
       inset: 7px 7px 25%;
       overflow: hidden;
-      background: #766a58;
+      border-radius: 10px;
+      background: #1b1f2c;
     }
 
     .portrait img {
@@ -146,9 +147,8 @@
       object-fit: cover;
       transform: scale(calc(1.04 + (1 - var(--focus)) * 0.06));
       filter:
-        sepia(calc((1 - var(--focus)) * 0.12))
-        saturate(calc(0.85 + var(--focus) * 0.25))
-        contrast(1.04);
+        saturate(calc(0.95 + var(--focus) * 0.2))
+        contrast(1.06);
     }
 
     .footer {
@@ -162,8 +162,10 @@
       align-items: center;
       gap: clamp(6px, 0.7vw, 11px);
       padding: clamp(7px, 0.8vw, 12px);
-      color: #f0dfc2;
-      background: #171612;
+      color: #ffffff;
+      background: #0e1118;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
       text-align: left;
     }
 
@@ -172,9 +174,9 @@
       width: clamp(23px, 2.7vw, 37px);
       aspect-ratio: 1;
       place-items: center;
-      border: 1px solid #ce5d20;
+      border: 1px solid rgba(154, 179, 166, 0.5);
       border-radius: 50%;
-      color: #d86724;
+      color: #9ab3a6;
       font: 600 clamp(7px, 0.68vw, 11px)/1 ui-monospace, "SFMono-Regular", monospace;
     }
 
@@ -192,7 +194,7 @@
     }
 
     .name {
-      color: #f3e6cc;
+      color: #ffffff;
       font-size: clamp(8px, 0.86vw, 13px);
       font-weight: 800;
       letter-spacing: 0.08em;
@@ -201,7 +203,7 @@
 
     .role {
       margin-top: clamp(3px, 0.35vw, 5px);
-      color: #d46a27;
+      color: #9ab3a6;
       font-size: clamp(5px, 0.48vw, 7px);
       font-weight: 700;
       letter-spacing: 0.15em;
@@ -225,16 +227,16 @@
         min-height: 560px;
         cursor: ns-resize;
         background:
-          linear-gradient(90deg, rgba(80, 58, 31, 0.08) 1px, transparent 1px) 50% 0 / 50% 100%,
+          radial-gradient(circle at 50% 50%, rgba(30, 70, 56, 0.4), transparent 45%),
+          linear-gradient(90deg, rgba(154, 179, 166, 0.05) 1px, transparent 1px) 50% 0 / 50% 100%,
           repeating-linear-gradient(
             0deg,
             transparent 0,
             transparent 87px,
-            rgba(72, 52, 30, 0.13) 88px,
+            rgba(154, 179, 166, 0.04) 88px,
             transparent 89px
           ),
-          radial-gradient(circle at 50% 50%, rgba(255, 246, 220, 0.78), transparent 35%),
-          #d8c9ad;
+          #0c0d12;
       }
 
       .card {

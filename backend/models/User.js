@@ -33,6 +33,24 @@ const userSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
+    preferredCookingTime: {
+      type: String,
+      default: 'Any',
+    },
+    favoriteCategories: {
+      type: [String],
+      default: [],
+    },
+    cookingPreferences: {
+      type: mongoose.Schema.Types.Mixed,
+      default: {},
+    },
+    favoriteRecipes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Recipe',
+      },
+    ],
     allergies: {
       type: [String],
       default: [],

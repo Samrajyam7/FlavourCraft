@@ -25,6 +25,16 @@ export const authService = {
     const res = await API.put('/auth/change-password', passwordData);
     return res.data;
   },
+
+  async getPreferences() {
+    const res = await API.get('/preferences');
+    return res.data;
+  },
+
+  async updatePreferences(prefData) {
+    const res = await API.put('/preferences', prefData);
+    return res.data;
+  },
 };
 
 export default authService;

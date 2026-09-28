@@ -11,6 +11,8 @@ import {
   ArrowRight,
   Filter,
   Flame,
+  Clock,
+  Zap,
 } from 'lucide-react';
 import { recipeService } from '../services/recipeService';
 import { ingredientService } from '../services/ingredientService';
@@ -38,9 +40,29 @@ export const RecipeMatcherPage = () => {
   const [mealType, setMealType] = useState('');
   const [cuisine, setCuisine] = useState('');
   const [dietary, setDietary] = useState('');
-  const [maxReadyTime, setMaxReadyTime] = useState('');
+  const [cookingTime, setCookingTime] = useState('');
+  const [difficulty, setDifficulty] = useState('');
 
-  // Handle initial ingredients passed via navigation (e.g. from Hero)
+  const dietaryOptions = [
+    { label: 'All Diets', value: '' },
+    { label: '🥗 Vegetarian', value: 'Vegetarian' },
+    { label: '🌱 Vegan', value: 'Vegan' },
+    { label: '💪 High Protein', value: 'High Protein' },
+    { label: '🥑 Low Carb', value: 'Low Carb' },
+    { label: '⚡ Low Calorie', value: 'Low Calorie' },
+    { label: '🌾 Gluten Free', value: 'Gluten Free' },
+    { label: '🥛 Dairy Free', value: 'Dairy Free' },
+  ];
+
+  const cookingTimeOptions = [
+    { label: 'All Times', value: '' },
+    { label: '⚡ Under 15 min', value: 'under-15' },
+    { label: '⏱️ 15–30 min', value: '15-30' },
+    { label: '🍳 30–60 min', value: '30-60' },
+    { label: '🍲 60+ min', value: '60-plus' },
+  ];
+
+  // Handle initial ingredients passed via navigation (e.g. from Hero or Expiry Alerts)
   useEffect(() => {
     const handleInitial = async () => {
       if (location.state?.initialIngredients?.length > 0) {
@@ -80,6 +102,8 @@ export const RecipeMatcherPage = () => {
     const currentMealType = overrides.mealType !== undefined ? overrides.mealType : mealType;
     const currentCuisine = overrides.cuisine !== undefined ? overrides.cuisine : cuisine;
     const currentDietary = overrides.dietary !== undefined ? overrides.dietary : dietary;
+    const currentTime = overrides.cookingTime !== undefined ? overrides.cookingTime : cookingTime;
+    const currentDifficulty = overrides.difficulty !== undefined ? overrides.difficulty : difficulty;
 
     setLoading(true);
     setSearched(true);
@@ -92,7 +116,8 @@ export const RecipeMatcherPage = () => {
         mealType: currentMealType || undefined,
         cuisine: currentCuisine || undefined,
         dietary: currentDietary || undefined,
-        maxReadyTime: maxReadyTime ? Number(maxReadyTime) : undefined,
+        cookingTime: currentTime || undefined,
+        difficulty: currentDifficulty || undefined,
       };
 
       const res = await recipeService.matchRecipes(ids, filters);
@@ -124,17 +149,41 @@ export const RecipeMatcherPage = () => {
         });
       }
       if (currentDietary) {
+        const dTarget = currentDietary.toLowerCase();
         filtered = filtered.filter((r) => {
-          const tags = r.dietaryTags || r.recipe?.dietaryTags || [];
-          return tags.some((t) => t.toLowerCase() === currentDietary.toLowerCase());
+          const tags = (r.dietaryTags || r.recipe?.dietaryTags || []).map((t) => t.toLowerCase());
+          if (dTarget === 'vegetarian') return tags.includes('vegetarian') || tags.includes('vegan');
+          if (dTarget === 'vegan') return tags.includes('vegan');
+          if (dTarget === 'high protein') return (r.nutrition?.protein || 0) >= 20 || tags.includes('high protein') || tags.includes('high-protein');
+          if (dTarget === 'low carb') return (r.nutrition?.carbs || 0) <= 20 || tags.includes('low carb') || tags.includes('low-carb') || tags.includes('keto');
+          if (dTarget === 'low calorie') return (r.nutrition?.calories || 0) <= 400 || tags.includes('low calorie') || tags.includes('low-calorie');
+          if (dTarget === 'gluten free') return tags.includes('gluten-free') || tags.includes('gluten free');
+          if (dTarget === 'dairy free') return tags.includes('dairy-free') || tags.includes('dairy free');
+          return tags.includes(dTarget);
+        });
+      }
+      if (currentTime) {
+        filtered = filtered.filter((r) => {
+          const total = (r.prepTimeMinutes || r.prepTime || 0) + (r.cookTimeMinutes || r.cookTime || 0);
+          if (currentTime === 'under-15') return total <= 15;
+          if (currentTime === '15-30') return total >= 15 && total <= 30;
+          if (currentTime === '30-60') return total >= 30 && total <= 60;
+          if (currentTime === '60-plus') return total >= 60;
+          return true;
+        });
+      }
+      if (currentDifficulty) {
+        filtered = filtered.filter((r) => {
+          const diff = r.difficulty || r.recipe?.difficulty;
+          return diff && diff.toLowerCase() === currentDifficulty.toLowerCase();
         });
       }
 
       setMatchedRecipes(filtered);
     } catch (err) {
       if (currentReqId === requestIdRef.current) {
-        console.error('Match error:', err);
-        toastError(err.response?.data?.message || 'Failed to match recipes');
+        console.error('Match failed:', err);
+        toastError('Failed to match recipes. Please try again.');
       }
     } finally {
       if (currentReqId === requestIdRef.current) {
@@ -143,109 +192,81 @@ export const RecipeMatcherPage = () => {
     }
   };
 
-  const handleSelectIngredient = (ing) => {
-    const exists = selectedIngredients.some((item) => (item._id || item) === (ing._id || ing));
-    if (exists) return;
-    const updated = [...selectedIngredients, ing];
-    setSelectedIngredients(updated);
-    triggerMatch(updated);
-  };
-
-  const handleRemoveIngredient = (ing) => {
-    const updated = selectedIngredients.filter(
-      (item) => (item._id || item) !== (ing._id || ing)
-    );
-    setSelectedIngredients(updated);
-    if (updated.length > 0) {
-      triggerMatch(updated);
-    } else {
-      setMatchedRecipes([]);
-      setSearched(false);
-    }
-  };
-
   const handleClearAll = () => {
-    requestIdRef.current++;
     setSelectedIngredients([]);
     setMatchedRecipes([]);
     setSearched(false);
-    setLoading(false);
-  };
-
-  const handleAddAllMissingToGrocery = async (recipe) => {
-    if (!isAuthenticated) {
-      warning('Please sign in to add missing ingredients to your grocery list');
-      navigate('/login');
-      return;
-    }
-
-    try {
-      const missing = recipe.missingIngredients || [];
-      if (missing.length === 0) {
-        warning('No missing ingredients to add!');
-        return;
-      }
-
-      const itemsToAdd = missing.map((i) => ({
-        name: i.name || (typeof i === 'string' ? i : 'Ingredient'),
-        quantity: i.amount || '1',
-        unit: i.unit || 'unit',
-        category: i.category || 'Produce',
-        ingredientId: i.id || i._id,
-      }));
-
-      await groceryService.addGroceryItem({ items: itemsToAdd });
-      success(`Added ${itemsToAdd.length} missing items for "${recipe.title}" to your grocery list! 🛒`);
-    } catch (err) {
-      toastError(err.response?.data?.message || 'Failed to add items to grocery list');
-    }
+    setMinMatchPercentage(0);
+    setMealType('');
+    setCuisine('');
+    setDietary('');
+    setCookingTime('');
+    setDifficulty('');
   };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header Banner */}
-      <div className="card p-6 sm:p-8 bg-gradient-to-r from-primary-900/50 via-dark-card to-dark-surface border-sage/30 relative overflow-hidden">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
-          <div className="space-y-2 text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sage/15 text-sage-300 text-xs font-bold uppercase tracking-widest border border-sage/30">
-              <Sparkles className="w-3.5 h-3.5 text-sage-400" />
-              <span>Smart Match Engine</span>
-            </div>
-            <h1 className="text-2xl sm:text-4xl font-heading font-black text-white">
-              What can I make with my kitchen ingredients?
-            </h1>
-            <p className="text-xs sm:text-sm text-text-secondary max-w-xl">
-              Select what is currently in your fridge or pantry. FlavorCraft computes recipe matches in real-time, highlights missing elements, and suggests what you can cook right now.
-            </p>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-dark-border pb-6 text-left">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sage/15 text-sage-300 text-xs font-bold uppercase tracking-widest border border-sage/30">
+            <Sparkles className="w-3.5 h-3.5 text-sage-400" />
+            <span>Intelligent Recipe Matcher</span>
           </div>
-
-          <button
-            onClick={() => triggerMatch()}
-            disabled={loading || selectedIngredients.length === 0}
-            className="btn-primary btn-lg shadow-glow-green self-start md:self-center flex items-center gap-2"
-          >
-            {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-            <span>Find Recipes ({selectedIngredients.length})</span>
-          </button>
+          <h1 className="text-3xl sm:text-4xl font-heading font-black text-white">
+            What's In Your Kitchen?
+          </h1>
+          <p className="text-xs sm:text-sm text-text-secondary max-w-2xl leading-relaxed">
+            Select what you have in your fridge or pantry. Combine with dietary preferences and cooking time to instantly discover dishes you can cook right now.
+          </p>
         </div>
+
+        {selectedIngredients.length > 0 && (
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleClearAll}
+              className="btn-outline text-xs !py-2.5 flex items-center gap-2"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              <span>Reset Ingredients</span>
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* Grid: Ingredient Picker (Left) & Controls/Filters (Right) */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Ingredient Picker Area */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="card p-6 bg-dark-card border-dark-border text-left">
-            <h2 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-              <ChefHat className="w-5 h-5 text-sage-400" />
-              <span>Step 1: Pick Available Kitchen Ingredients</span>
-            </h2>
+      {/* Interactive Cooking Pot Preview */}
+      <div className="py-2">
+        <CookingPotInteractive
+          selectedIngredients={selectedIngredients}
+          onRemoveIngredient={(item) => {
+            const next = selectedIngredients.filter(
+              (i) => (i._id || i.id || i.name) !== (item._id || item.id || item.name)
+            );
+            setSelectedIngredients(next);
+            triggerMatch(next);
+          }}
+          onFindRecipes={() => triggerMatch()}
+        />
+      </div>
+
+      {/* Main Ingredient Picking & Filtering Interface */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        {/* Ingredient Picker Column (Left) */}
+        <div className="lg:col-span-2 space-y-6 text-left">
+          <div className="card p-6 sm:p-8 bg-dark-card border-dark-border space-y-6">
+            <div className="flex items-center justify-between border-b border-dark-border pb-4">
+              <h2 className="text-base font-bold text-white flex items-center gap-2">
+                <ChefHat className="w-5 h-5 text-sage-400" />
+                <span>Step 1: Choose Available Ingredients</span>
+              </h2>
+              <span className="text-xs font-semibold text-text-muted">
+                {selectedIngredients.length} Selected
+              </span>
+            </div>
 
             <IngredientPicker
               selectedIngredients={selectedIngredients}
-              onSelectIngredient={handleSelectIngredient}
-              onRemoveIngredient={handleRemoveIngredient}
-              onClearAll={handleClearAll}
-              onBatchSelect={(ings) => {
+              onChange={(ings) => {
                 setSelectedIngredients(ings);
                 triggerMatch(ings);
               }}
@@ -253,12 +274,12 @@ export const RecipeMatcherPage = () => {
           </div>
         </div>
 
-        {/* Filter & Matching Criteria */}
+        {/* Filter & Matching Criteria (Right) */}
         <div className="space-y-6">
-          <div className="card p-6 bg-dark-card border-dark-border space-y-5 text-left">
+          <div className="card p-6 bg-dark-card border-dark-border space-y-5 text-left sticky top-24">
             <h2 className="text-base font-bold text-white flex items-center gap-2 border-b border-dark-border pb-3">
               <SlidersHorizontal className="w-4 h-4 text-warm" />
-              <span>Step 2: Match Threshold & Filters</span>
+              <span>Step 2: Preference Filters</span>
             </h2>
 
             {/* Min Match % Slider */}
@@ -287,6 +308,71 @@ export const RecipeMatcherPage = () => {
                 <span>Balanced (50%)</span>
                 <span>Exact (100%)</span>
               </div>
+            </div>
+
+            {/* Dietary Preference */}
+            <div>
+              <label className="input-label">Dietary Preference</label>
+              <select
+                value={dietary}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setDietary(val);
+                  if (selectedIngredients.length > 0) {
+                    triggerMatch(selectedIngredients, minMatchPercentage, { dietary: val });
+                  }
+                }}
+                className="select text-xs"
+              >
+                {dietaryOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Cooking Time */}
+            <div>
+              <label className="input-label">Cooking Time</label>
+              <select
+                value={cookingTime}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setCookingTime(val);
+                  if (selectedIngredients.length > 0) {
+                    triggerMatch(selectedIngredients, minMatchPercentage, { cookingTime: val });
+                  }
+                }}
+                className="select text-xs"
+              >
+                {cookingTimeOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Difficulty */}
+            <div>
+              <label className="input-label">Difficulty</label>
+              <select
+                value={difficulty}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setDifficulty(val);
+                  if (selectedIngredients.length > 0) {
+                    triggerMatch(selectedIngredients, minMatchPercentage, { difficulty: val });
+                  }
+                }}
+                className="select text-xs"
+              >
+                <option value="">Any Difficulty</option>
+                <option value="Easy">Easy</option>
+                <option value="Medium">Medium</option>
+                <option value="Hard">Hard / Advanced</option>
+              </select>
             </div>
 
             {/* Meal Type */}
@@ -330,32 +416,10 @@ export const RecipeMatcherPage = () => {
                 <option value="Italian">Italian</option>
                 <option value="Mexican">Mexican</option>
                 <option value="Asian">Asian</option>
+                <option value="Chinese">Chinese</option>
                 <option value="Mediterranean">Mediterranean</option>
                 <option value="Indian">Indian</option>
                 <option value="American">American</option>
-              </select>
-            </div>
-
-            {/* Dietary */}
-            <div>
-              <label className="input-label">Dietary Preference</label>
-              <select
-                value={dietary}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  setDietary(val);
-                  if (selectedIngredients.length > 0) {
-                    triggerMatch(selectedIngredients, minMatchPercentage, { dietary: val });
-                  }
-                }}
-                className="select text-xs"
-              >
-                <option value="">No Dietary Restriction</option>
-                <option value="Vegetarian">Vegetarian</option>
-                <option value="Vegan">Vegan</option>
-                <option value="Gluten-Free">Gluten-Free</option>
-                <option value="Dairy-Free">Dairy-Free</option>
-                <option value="Keto">Keto / Low-Carb</option>
               </select>
             </div>
 
@@ -401,74 +465,27 @@ export const RecipeMatcherPage = () => {
             </div>
             <h3 className="text-lg font-bold text-white">No Direct Matches Found</h3>
             <p className="text-xs text-text-secondary leading-relaxed">
-              Try selecting a few more staple ingredients (like olive oil, garlic, salt, or pasta) or lowering the match threshold slider.
+              Try selecting a few more staple ingredients (like olive oil, garlic, salt, or pasta) or adjusting your dietary/cooking time filters.
             </p>
             <button
               onClick={() => {
-                setMinMatchPercentage(20);
-                triggerMatch(selectedIngredients, 20);
+                setMinMatchPercentage(0);
+                setDietary('');
+                setCookingTime('');
+                triggerMatch(selectedIngredients, 0, { dietary: '', cookingTime: '' });
               }}
-              className="btn-outline text-xs !py-2 !px-4"
+              className="btn-primary text-xs !py-2.5 !px-5 shadow-glow-green"
             >
-              Lower Match Threshold to 20%
+              Reset Filters & Try Again
             </button>
           </div>
-        ) : !searched ? (
-          <div className="card p-12 text-center max-w-lg mx-auto bg-dark-card border-dashed border-dark-border space-y-3">
-            <Sparkles className="w-10 h-10 text-sage-400 mx-auto opacity-70 animate-pulse" />
-            <h3 className="text-base font-bold text-white">Select Ingredients to Begin Simmering</h3>
-            <p className="text-xs text-text-secondary">
-              Pick ingredients from the categories above or tap "Use My Pantry" to discover matching dishes.
-            </p>
-          </div>
-        ) : (
+        ) : matchedRecipes.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {matchedRecipes.map((match, idx) => {
-              const recipe = match.recipe || match;
-              const recipeId = recipe._id || recipe.recipeId || recipe.id || `match-${idx}`;
-              const matchPercent =
-                match.matchPercentage !== undefined ? match.matchPercentage : recipe.matchPercentage ?? 0;
-              const missingList = match.missingIngredients || recipe.missingIngredients || [];
-              const missingCount =
-                match.missingCount !== undefined ? match.missingCount : missingList.length;
-              const matchedCount =
-                match.matchedCount !== undefined
-                  ? match.matchedCount
-                  : match.matchedIngredients?.length || recipe.matchedCount || 0;
-
-              return (
-                <div key={recipeId} className="flex flex-col justify-between">
-                  <RecipeCard
-                    recipe={{
-                      ...recipe,
-                      _id: recipeId,
-                      matchPercentage: matchPercent,
-                      missingCount,
-                      matchedCount,
-                      missingIngredients: missingList,
-                    }}
-                    showMatchDetails={true}
-                  />
-
-                  {missingCount > 0 && (
-                    <button
-                      onClick={() =>
-                        handleAddAllMissingToGrocery({
-                          ...recipe,
-                          missingIngredients: missingList,
-                        })
-                      }
-                      className="mt-2.5 btn-secondary !py-2 text-xs flex items-center justify-center gap-1.5"
-                    >
-                      <ShoppingCart className="w-3.5 h-3.5" />
-                      <span>Add {missingCount} Missing Items to Grocery List</span>
-                    </button>
-                  )}
-                </div>
-              );
-            })}
+            {matchedRecipes.map((recipe) => (
+              <RecipeCard key={recipe._id || recipe.id} recipe={recipe} showMatchDetails={true} />
+            ))}
           </div>
-        )}
+        ) : null}
       </div>
     </div>
   );

@@ -20,6 +20,11 @@ export const inventoryService = {
     const res = await API.delete(`/inventory/${id}`);
     return res.data;
   },
+
+  async getExpiryAlerts() {
+    const res = await API.get('/inventory/expiry-alerts');
+    return res.data;
+  },
 };
 
 export default inventoryService;

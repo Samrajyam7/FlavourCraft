@@ -218,7 +218,26 @@ const deleteGroceryItem = async (req, res) => {
   }
 };
 
-// @desc    Clear purchased items
+// @desc    Generate weekly grocery list from meal plan with pantry deductions
+// @route   POST /api/grocery/generate or POST /api/grocery-list/generate
+const generateGrocery = async (req, res) => {
+  try {
+    const { generateOptimizedWeeklyGrocery } = require('../utils/groceryOptimizer');
+    const result = await generateOptimizedWeeklyGrocery(req.user._id, {
+      replaceAll: Boolean(req.body.regenerate),
+    });
+
+    if (!result.success) {
+      return res.status(400).json({ success: false, message: result.message });
+    }
+
+    res.json(result);
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Clear purchased grocery items
 // @route   DELETE /api/grocery/clear-purchased
 const clearPurchased = async (req, res) => {
   try {
@@ -238,6 +257,7 @@ module.exports = {
   getGroceryList,
   addToGroceryList,
   generateFromRecipe,
+  generateGrocery,
   updateGroceryItem,
   deleteGroceryItem,
   clearPurchased,

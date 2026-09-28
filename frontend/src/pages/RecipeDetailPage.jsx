@@ -402,40 +402,126 @@ export const RecipeDetailPage = () => {
             </ul>
           </div>
 
-          {/* Nutrition Info */}
-          {(recipe.nutrition || recipe.caloriesPerServing) && (
-            <div className="card p-6 bg-dark-card border-dark-border">
-              <h3 className="text-xs font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
-                <Flame className="w-4 h-4 text-warm" /> Estimated Nutrition (Per Serving)
+          {/* Nutrition & Calorie Insights */}
+          <div className="card p-6 bg-dark-card border-dark-border space-y-4">
+            <div className="flex items-center justify-between border-b border-dark-border pb-3">
+              <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                <Flame className="w-4 h-4 text-warm" />
+                <span>Nutrition & Calorie Insights</span>
               </h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-center">
-                <div className="p-3 bg-dark-surface rounded-xl border border-dark-border">
-                  <span className="text-[11px] text-text-muted block">Calories</span>
-                  <span className="text-sm font-bold text-white">{recipe.nutrition?.calories ?? recipe.caloriesPerServing ?? 0} kcal</span>
+              <span className="text-[10px] font-semibold text-sage-300 bg-sage/10 px-2 py-0.5 rounded-lg border border-sage/20">
+                Per Serving ({recipe.nutrition?.servingSize || 1} serving)
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-center">
+              {/* Calories Card */}
+              <div className="p-3 bg-dark-surface/90 rounded-2xl border border-dark-border/80 flex flex-col justify-between group hover:border-warm/40 transition-colors">
+                <span className="text-[10px] text-text-muted uppercase font-bold tracking-wider">Calories</span>
+                <div className="my-1">
+                  <span className="text-lg sm:text-xl font-heading font-black text-warm">
+                    {recipe.nutrition?.calories ?? recipe.caloriesPerServing ?? 380}
+                  </span>
+                  <span className="text-[10px] text-text-muted ml-0.5 font-normal">kcal</span>
                 </div>
-                <div className="p-3 bg-dark-surface rounded-xl border border-dark-border">
-                  <span className="text-[11px] text-text-muted block">Protein</span>
-                  <span className="text-sm font-bold text-white">{recipe.nutrition?.protein ?? 0}g</span>
+                <div className="w-full bg-dark-card h-1.5 rounded-full overflow-hidden">
+                  <div
+                    className="bg-gradient-to-r from-amber-500 to-warm h-full rounded-full"
+                    style={{ width: `${Math.min(100, (((recipe.nutrition?.calories ?? 380) / 800) * 100))}%` }}
+                  />
                 </div>
-                <div className="p-3 bg-dark-surface rounded-xl border border-dark-border">
-                  <span className="text-[11px] text-text-muted block">Carbs</span>
-                  <span className="text-sm font-bold text-white">{recipe.nutrition?.carbs ?? 0}g</span>
+              </div>
+
+              {/* Protein Card */}
+              <div className="p-3 bg-dark-surface/90 rounded-2xl border border-dark-border/80 flex flex-col justify-between group hover:border-emerald-500/40 transition-colors">
+                <span className="text-[10px] text-text-muted uppercase font-bold tracking-wider">Protein</span>
+                <div className="my-1">
+                  <span className="text-lg sm:text-xl font-heading font-black text-emerald-400">
+                    {recipe.nutrition?.protein ?? 22}
+                  </span>
+                  <span className="text-[10px] text-text-muted ml-0.5 font-normal">g</span>
                 </div>
-                <div className="p-3 bg-dark-surface rounded-xl border border-dark-border">
-                  <span className="text-[11px] text-text-muted block">Fat</span>
-                  <span className="text-sm font-bold text-white">{recipe.nutrition?.fat ?? 0}g</span>
+                <div className="w-full bg-dark-card h-1.5 rounded-full overflow-hidden">
+                  <div
+                    className="bg-gradient-to-r from-emerald-600 to-emerald-400 h-full rounded-full"
+                    style={{ width: `${Math.min(100, (((recipe.nutrition?.protein ?? 22) / 50) * 100))}%` }}
+                  />
                 </div>
-                <div className="p-3 bg-dark-surface rounded-xl border border-dark-border">
-                  <span className="text-[11px] text-text-muted block">Fiber</span>
-                  <span className="text-sm font-bold text-white">{recipe.nutrition?.fiber ?? 0}g</span>
+              </div>
+
+              {/* Carbohydrates Card */}
+              <div className="p-3 bg-dark-surface/90 rounded-2xl border border-dark-border/80 flex flex-col justify-between group hover:border-sky-500/40 transition-colors">
+                <span className="text-[10px] text-text-muted uppercase font-bold tracking-wider">Carbohydrates</span>
+                <div className="my-1">
+                  <span className="text-lg sm:text-xl font-heading font-black text-sky-400">
+                    {recipe.nutrition?.carbohydrates ?? recipe.nutrition?.carbs ?? 42}
+                  </span>
+                  <span className="text-[10px] text-text-muted ml-0.5 font-normal">g</span>
                 </div>
-                <div className="p-3 bg-dark-surface rounded-xl border border-dark-border">
-                  <span className="text-[11px] text-text-muted block">Difficulty</span>
-                  <span className="text-sm font-bold text-white">{recipe.difficulty || 'Easy'}</span>
+                <div className="w-full bg-dark-card h-1.5 rounded-full overflow-hidden">
+                  <div
+                    className="bg-gradient-to-r from-sky-600 to-sky-400 h-full rounded-full"
+                    style={{ width: `${Math.min(100, ((((recipe.nutrition?.carbohydrates ?? recipe.nutrition?.carbs ?? 42)) / 80) * 100))}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Fats Card */}
+              <div className="p-3 bg-dark-surface/90 rounded-2xl border border-dark-border/80 flex flex-col justify-between group hover:border-rose-500/40 transition-colors">
+                <span className="text-[10px] text-text-muted uppercase font-bold tracking-wider">Fats</span>
+                <div className="my-1">
+                  <span className="text-lg sm:text-xl font-heading font-black text-rose-400">
+                    {recipe.nutrition?.fats ?? recipe.nutrition?.fat ?? 14}
+                  </span>
+                  <span className="text-[10px] text-text-muted ml-0.5 font-normal">g</span>
+                </div>
+                <div className="w-full bg-dark-card h-1.5 rounded-full overflow-hidden">
+                  <div
+                    className="bg-gradient-to-r from-rose-600 to-rose-400 h-full rounded-full"
+                    style={{ width: `${Math.min(100, ((((recipe.nutrition?.fats ?? recipe.nutrition?.fat ?? 14)) / 40) * 100))}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Fiber Card */}
+              <div className="p-3 bg-dark-surface/90 rounded-2xl border border-dark-border/80 flex flex-col justify-between group hover:border-indigo-500/40 transition-colors">
+                <span className="text-[10px] text-text-muted uppercase font-bold tracking-wider">Fiber</span>
+                <div className="my-1">
+                  <span className="text-lg sm:text-xl font-heading font-black text-indigo-400">
+                    {recipe.nutrition?.fiber ?? 5}
+                  </span>
+                  <span className="text-[10px] text-text-muted ml-0.5 font-normal">g</span>
+                </div>
+                <div className="w-full bg-dark-card h-1.5 rounded-full overflow-hidden">
+                  <div
+                    className="bg-gradient-to-r from-indigo-600 to-indigo-400 h-full rounded-full"
+                    style={{ width: `${Math.min(100, (((recipe.nutrition?.fiber ?? 5) / 15) * 100))}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Sugar Card */}
+              <div className="p-3 bg-dark-surface/90 rounded-2xl border border-dark-border/80 flex flex-col justify-between group hover:border-teal-500/40 transition-colors">
+                <span className="text-[10px] text-text-muted uppercase font-bold tracking-wider">Sugar</span>
+                <div className="my-1">
+                  <span className="text-lg sm:text-xl font-heading font-black text-teal-400">
+                    {recipe.nutrition?.sugar ?? 4}
+                  </span>
+                  <span className="text-[10px] text-text-muted ml-0.5 font-normal">g</span>
+                </div>
+                <div className="w-full bg-dark-card h-1.5 rounded-full overflow-hidden">
+                  <div
+                    className="bg-gradient-to-r from-teal-600 to-teal-400 h-full rounded-full"
+                    style={{ width: `${Math.min(100, (((recipe.nutrition?.sugar ?? 4) / 25) * 100))}%` }}
+                  />
                 </div>
               </div>
             </div>
-          )}
+
+            <p className="text-[10px] text-text-muted italic text-center pt-1">
+              Estimated nutrition per serving based on recipe ingredients. Not intended as medical or health advice.
+            </p>
+          </div>
         </div>
 
         {/* Step-by-Step Instructions Column */}
@@ -562,6 +648,16 @@ export const RecipeDetailPage = () => {
         <CookingModeModal
           recipe={recipe}
           onClose={() => setCookingModeOpen(false)}
+          onComplete={async () => {
+            if (isAuthenticated && recipe?._id) {
+              try {
+                await recipeService.recordCooking(recipe._id);
+                success(`Delicious! Cooking completion recorded for ${recipe.title} 👨‍🍳✨`);
+              } catch (e) {
+                // ignore
+              }
+            }
+          }}
         />
       )}
 

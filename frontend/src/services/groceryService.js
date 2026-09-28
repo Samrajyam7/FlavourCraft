@@ -30,6 +30,11 @@ export const groceryService = {
     const res = await API.post('/grocery/clear-purchased');
     return res.data;
   },
+
+  async generateWeeklyGrocery(regenerate = false) {
+    const res = await API.post('/grocery/generate', { regenerate });
+    return res.data;
+  },
 };
 
 export default groceryService;

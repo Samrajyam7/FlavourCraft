@@ -21,9 +21,18 @@ const inventorySchema = new mongoose.Schema(
       type: String,
       default: 'piece',
     },
+    purchaseDate: {
+      type: Date,
+      default: Date.now,
+    },
     expiryDate: {
       type: Date,
       default: null,
+    },
+    status: {
+      type: String,
+      enum: ['Available', 'Low Stock', 'Finished', 'Expired'],
+      default: 'Available',
     },
     notes: {
       type: String,

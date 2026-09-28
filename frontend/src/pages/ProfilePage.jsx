@@ -12,12 +12,50 @@ import {
   ShieldCheck,
   CheckCircle2,
   Sparkles,
+  Sliders,
+  Clock,
+  Flame,
+  Utensils,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { favoriteService } from '../services/favoriteService';
 import { recipeService } from '../services/recipeService';
+import { authService } from '../services/authService';
 import { RecipeCard } from '../components/recipe/RecipeCard';
+
+const DIETARY_OPTIONS = [
+  { id: 'Vegetarian', label: '🥗 Vegetarian', desc: 'No meat or poultry' },
+  { id: 'Vegan', label: '🌱 Vegan', desc: '100% plant-based' },
+  { id: 'High Protein', label: '💪 High Protein', desc: '20g+ protein focus' },
+  { id: 'Low Carb', label: '🥑 Low Carb', desc: 'Minimal carbohydrates' },
+  { id: 'Low Calorie', label: '⚡ Low Calorie', desc: 'Under 450 kcal' },
+  { id: 'Gluten Free', label: '🌾 Gluten Free', desc: 'No wheat / gluten' },
+  { id: 'Dairy Free', label: '🥛 Dairy Free', desc: 'Lactose free' },
+];
+
+const TIME_OPTIONS = [
+  { id: 'Under 15 min', label: '⚡ Under 15 min', desc: 'Lightning fast meals' },
+  { id: '15-30 min', label: '⏱️ 15–30 min', desc: 'Standard weeknight dinner' },
+  { id: '30-60 min', label: '🍳 30–60 min', desc: 'Medium simmer & bake' },
+  { id: '60+ min', label: '🍲 60+ min', desc: 'Slow roasts & feasts' },
+  { id: '', label: '✨ Any Time', desc: 'No time constraints' },
+];
+
+const CATEGORY_OPTIONS = [
+  'Italian',
+  'Mexican',
+  'Asian',
+  'Indian',
+  'Mediterranean',
+  'American',
+  'Breakfast',
+  'Dinner',
+  'Soup',
+  'Salad',
+  'Dessert',
+  'Healthy',
+];
 
 export const ProfilePage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -42,6 +80,12 @@ export const ProfilePage = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [savingPassword, setSavingPassword] = useState(false);
 
+  // Preferences State
+  const [dietaryPreferences, setDietaryPreferences] = useState(user?.dietaryPreferences || []);
+  const [preferredCookingTime, setPreferredCookingTime] = useState(user?.preferredCookingTime || '');
+  const [favoriteCategories, setFavoriteCategories] = useState(user?.favoriteCategories || []);
+  const [savingPrefs, setSavingPrefs] = useState(false);
+
   useEffect(() => {
     fetchUserData();
   }, [activeTab]);
@@ -56,6 +100,13 @@ export const ProfilePage = () => {
       } else if (activeTab === 'my-recipes') {
         const recData = await recipeService.getRecipes({ author: user?._id });
         setMyRecipes(recData.recipes || recData || []);
+      } else if (activeTab === 'preferences') {
+        const prefRes = await authService.getPreferences();
+        if (prefRes?.data) {
+          setDietaryPreferences(prefRes.data.dietaryPreferences || []);
+          setPreferredCookingTime(prefRes.data.preferredCookingTime || '');
+          setFavoriteCategories(prefRes.data.favoriteCategories || []);
+        }
       }
     } catch (err) {
       console.error('Failed to fetch user data:', err);
@@ -98,6 +149,35 @@ export const ProfilePage = () => {
     }
   };
 
+  const handleSavePreferences = async (e) => {
+    e.preventDefault();
+    setSavingPrefs(true);
+    try {
+      await authService.updatePreferences({
+        dietaryPreferences,
+        preferredCookingTime,
+        favoriteCategories,
+      });
+      success('Kitchen preferences saved! Recipe recommendations updated ✨');
+    } catch (err) {
+      toastError(err.response?.data?.message || 'Failed to save preferences');
+    } finally {
+      setSavingPrefs(false);
+    }
+  };
+
+  const toggleDietaryPreference = (pref) => {
+    setDietaryPreferences((prev) =>
+      prev.includes(pref) ? prev.filter((p) => p !== pref) : [...prev, pref]
+    );
+  };
+
+  const toggleCategory = (cat) => {
+    setFavoriteCategories((prev) =>
+      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
+    );
+  };
+
   const handleDeleteRecipe = async (id) => {
     if (!window.confirm('Are you sure you want to delete this recipe?')) return;
     try {
@@ -129,6 +209,17 @@ export const ProfilePage = () => {
             </div>
             <p className="text-xs sm:text-sm text-text-secondary">{user?.email}</p>
             {user?.bio && <p className="text-xs text-text-muted italic max-w-lg">{user.bio}</p>}
+
+            {/* Quick badges of user dietary prefs */}
+            {user?.dietaryPreferences?.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 pt-1 justify-center sm:justify-start">
+                {user.dietaryPreferences.map((p) => (
+                  <span key={p} className="px-2 py-0.5 rounded-md bg-sage/15 border border-sage/30 text-sage-300 text-[10px] font-bold">
+                    {p}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
 
           <Link to="/recipes/new" className="btn-primary text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-glow-green">
@@ -168,6 +259,21 @@ export const ProfilePage = () => {
         >
           <ChefHat className="w-4 h-4 text-warm" />
           <span>My Published Recipes</span>
+        </button>
+
+        <button
+          onClick={() => {
+            setActiveTab('preferences');
+            setSearchParams({ tab: 'preferences' });
+          }}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all whitespace-nowrap ${
+            activeTab === 'preferences'
+              ? 'bg-primary text-white shadow-glow-green'
+              : 'text-text-secondary hover:text-white hover:bg-dark-hover'
+          }`}
+        >
+          <Sliders className="w-4 h-4 text-sage-400" />
+          <span>Dietary & Kitchen Preferences</span>
         </button>
 
         <button
@@ -264,6 +370,120 @@ export const ProfilePage = () => {
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {activeTab === 'preferences' && (
+          <div className="card p-6 sm:p-8 bg-dark-card border-dark-border space-y-8 max-w-3xl">
+            <div className="border-b border-dark-border pb-4">
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <Sliders className="w-5 h-5 text-sage-400" />
+                <span>Personalized Kitchen & Dietary Preferences</span>
+              </h2>
+              <p className="text-xs text-text-secondary mt-1">
+                Customize your nutrition goals, dietary tags, and cooking pace. These transparently fuel our smart recipe recommendations.
+              </p>
+            </div>
+
+            <form onSubmit={handleSavePreferences} className="space-y-8">
+              {/* Dietary Preferences Multi-Select */}
+              <div className="space-y-3">
+                <label className="text-sm font-bold text-white flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-warm" /> Dietary Preferences (Multi-Select)
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {DIETARY_OPTIONS.map((opt) => {
+                    const selected = dietaryPreferences.includes(opt.id);
+                    return (
+                      <button
+                        type="button"
+                        key={opt.id}
+                        onClick={() => toggleDietaryPreference(opt.id)}
+                        className={`p-3.5 rounded-xl border text-left transition-all flex items-start justify-between ${
+                          selected
+                            ? 'bg-primary/20 border-sage text-white shadow-glow-green'
+                            : 'bg-dark-surface/50 border-dark-border text-text-secondary hover:border-sage/40 hover:text-white'
+                        }`}
+                      >
+                        <div>
+                          <div className="font-bold text-xs sm:text-sm text-white">{opt.label}</div>
+                          <div className="text-[11px] text-text-muted mt-0.5">{opt.desc}</div>
+                        </div>
+                        <span
+                          className={`w-5 h-5 rounded-md flex items-center justify-center text-xs font-bold transition-colors ${
+                            selected ? 'bg-primary text-white' : 'border border-dark-border'
+                          }`}
+                        >
+                          {selected ? '✓' : ''}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Preferred Cooking Time */}
+              <div className="space-y-3">
+                <label className="text-sm font-bold text-white flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-sage-400" /> Preferred Cooking Time
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
+                  {TIME_OPTIONS.map((opt) => {
+                    const selected = preferredCookingTime === opt.id;
+                    return (
+                      <button
+                        type="button"
+                        key={opt.id}
+                        onClick={() => setPreferredCookingTime(opt.id)}
+                        className={`p-3 rounded-xl border text-center transition-all ${
+                          selected
+                            ? 'bg-primary/25 border-sage text-white shadow-glow-green font-bold'
+                            : 'bg-dark-surface/50 border-dark-border text-text-secondary hover:border-sage/40 hover:text-white'
+                        }`}
+                      >
+                        <div className="text-xs">{opt.label}</div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Favorite Categories */}
+              <div className="space-y-3">
+                <label className="text-sm font-bold text-white flex items-center gap-2">
+                  <Utensils className="w-4 h-4 text-accent-400" /> Favorite Cuisines & Meal Types
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {CATEGORY_OPTIONS.map((cat) => {
+                    const selected = favoriteCategories.includes(cat);
+                    return (
+                      <button
+                        type="button"
+                        key={cat}
+                        onClick={() => toggleCategory(cat)}
+                        className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all border ${
+                          selected
+                            ? 'bg-accent/20 border-accent text-accent-300'
+                            : 'bg-dark-surface/50 border-dark-border text-text-secondary hover:text-white hover:border-dark-border/80'
+                        }`}
+                      >
+                        {selected ? `✓ ${cat}` : cat}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-dark-border flex items-center justify-end gap-4">
+                <button
+                  type="submit"
+                  disabled={savingPrefs}
+                  className="btn-primary text-xs font-bold uppercase tracking-wider !py-3 !px-6 shadow-glow-green"
+                >
+                  {savingPrefs ? 'Saving Preferences...' : 'Save Kitchen Preferences'}
+                </button>
+              </div>
+            </form>
           </div>
         )}
 

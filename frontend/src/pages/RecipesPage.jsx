@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, SlidersHorizontal, X, RefreshCw, ChefHat, Filter, Sparkles, Flame, Clock } from 'lucide-react';
+import { Search, SlidersHorizontal, X, RefreshCw, ChefHat, Filter, Sparkles, Flame, Clock, Heart, Zap } from 'lucide-react';
 import { recipeService } from '../services/recipeService';
 import { RecipeCard } from '../components/recipe/RecipeCard';
 
@@ -9,33 +9,44 @@ export const RecipesPage = () => {
 
   const initialSearch = searchParams.get('search') || searchParams.get('q') || '';
   const initialCuisine = searchParams.get('cuisine') || '';
-  const initialDiet = searchParams.get('diet') || '';
+  const initialDiet = searchParams.get('diet') || searchParams.get('dietary') || '';
+  const initialTime = searchParams.get('time') || searchParams.get('cookingTime') || '';
 
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [cuisine, setCuisine] = useState(initialCuisine);
   const [dietary, setDietary] = useState(initialDiet);
+  const [cookingTime, setCookingTime] = useState(initialTime);
   const [mealType, setMealType] = useState('');
   const [difficulty, setDifficulty] = useState('');
   const [sortBy, setSortBy] = useState('rating');
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
-  // Universe-style quick discovery filter pills
-  const discoveryChips = [
-    { label: 'All Recipes', action: () => handleResetFilters() },
-    { label: 'Quick Meals (<30m)', action: () => { setDifficulty('Easy'); setSortBy('quickest'); } },
-    { label: 'Breakfast', action: () => setMealType('Breakfast') },
-    { label: 'Lunch', action: () => setMealType('Lunch') },
-    { label: 'Dinner', action: () => setMealType('Dinner') },
-    { label: 'Vegetarian', action: () => setDietary('Vegetarian') },
-    { label: 'Indian Flavors', action: () => setCuisine('Indian') },
-    { label: 'Italian Pasta', action: () => setCuisine('Italian') },
+  // Supported dietary options
+  const dietaryOptions = [
+    { label: 'All Diets', value: '' },
+    { label: '🥗 Vegetarian', value: 'Vegetarian' },
+    { label: '🌱 Vegan', value: 'Vegan' },
+    { label: '💪 High Protein', value: 'High Protein' },
+    { label: '🥑 Low Carb', value: 'Low Carb' },
+    { label: '⚡ Low Calorie', value: 'Low Calorie' },
+    { label: '🌾 Gluten Free', value: 'Gluten Free' },
+    { label: '🥛 Dairy Free', value: 'Dairy Free' },
+  ];
+
+  // Cooking time options
+  const cookingTimeOptions = [
+    { label: 'All Times', value: '' },
+    { label: '⚡ Under 15 min', value: 'under-15' },
+    { label: '⏱️ 15–30 min', value: '15-30' },
+    { label: '🍳 30–60 min', value: '30-60' },
+    { label: '🍲 60+ min', value: '60-plus' },
   ];
 
   useEffect(() => {
     fetchRecipes();
-  }, [cuisine, dietary, mealType, difficulty, sortBy]);
+  }, [cuisine, dietary, cookingTime, mealType, difficulty, sortBy]);
 
   const fetchRecipes = async (query = searchQuery) => {
     try {
@@ -44,6 +55,7 @@ export const RecipesPage = () => {
         search: query ? query.trim() : undefined,
         cuisine: cuisine || undefined,
         dietaryTags: dietary || undefined,
+        cookingTime: cookingTime || undefined,
         mealType: mealType || undefined,
         difficulty: difficulty || undefined,
         sort: sortBy,
@@ -67,6 +79,7 @@ export const RecipesPage = () => {
     setSearchQuery('');
     setCuisine('');
     setDietary('');
+    setCookingTime('');
     setMealType('');
     setDifficulty('');
     setSortBy('rating');
@@ -87,7 +100,7 @@ export const RecipesPage = () => {
             Explore Handcrafted Recipes
           </h1>
           <p className="text-xs sm:text-sm text-text-secondary mt-1">
-            Browse our full catalog of authentic, chef-curated dishes from around the world.
+            Browse our full catalog with precision dietary preferences, preparation times, and nutritional insights.
           </p>
         </div>
 
@@ -118,21 +131,78 @@ export const RecipesPage = () => {
         </form>
       </div>
 
-      {/* Universe-style Discovery Chips */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide text-xs">
-        {discoveryChips.map((chip, idx) => (
-          <button
-            key={idx}
-            onClick={chip.action}
-            className="px-3.5 py-2 rounded-xl font-semibold transition-all whitespace-nowrap bg-dark-card hover:bg-dark-hover text-text-secondary hover:text-white border border-dark-border hover:border-sage/40 active:scale-95"
-          >
-            {chip.label}
-          </button>
-        ))}
+      {/* Primary Dietary Filter Pills Bar */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-bold text-text-secondary uppercase tracking-wider flex items-center gap-1.5">
+            <Flame className="w-3.5 h-3.5 text-sage-400" /> Dietary Preferences
+          </span>
+          {dietary && (
+            <button
+              onClick={() => setDietary('')}
+              className="text-xs text-sage-400 hover:text-white transition-colors"
+            >
+              Clear Diet Filter
+            </button>
+          )}
+        </div>
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide text-xs">
+          {dietaryOptions.map((opt) => {
+            const isSelected = (!dietary && opt.value === '') || (dietary && dietary.toLowerCase() === opt.value.toLowerCase());
+            return (
+              <button
+                key={opt.value}
+                onClick={() => setDietary(opt.value)}
+                className={`px-3.5 py-2 rounded-xl font-semibold transition-all whitespace-nowrap border text-xs active:scale-95 ${
+                  isSelected
+                    ? 'bg-gradient-to-r from-primary to-primary-dark text-white border-primary shadow-glow-green'
+                    : 'bg-dark-card hover:bg-dark-hover text-text-secondary hover:text-white border-dark-border hover:border-sage/40'
+                }`}
+              >
+                {opt.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Cooking Time Quick Selection Bar */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-bold text-text-secondary uppercase tracking-wider flex items-center gap-1.5">
+            <Clock className="w-3.5 h-3.5 text-warm" /> Cooking Time
+          </span>
+          {cookingTime && (
+            <button
+              onClick={() => setCookingTime('')}
+              className="text-xs text-warm hover:text-white transition-colors"
+            >
+              Clear Time Filter
+            </button>
+          )}
+        </div>
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide text-xs">
+          {cookingTimeOptions.map((opt) => {
+            const isSelected = (!cookingTime && opt.value === '') || cookingTime === opt.value;
+            return (
+              <button
+                key={opt.value}
+                onClick={() => setCookingTime(opt.value)}
+                className={`px-3.5 py-2 rounded-xl font-semibold transition-all whitespace-nowrap border text-xs active:scale-95 ${
+                  isSelected
+                    ? 'bg-warm/20 text-warm border-warm shadow-glow-accent'
+                    : 'bg-dark-card hover:bg-dark-hover text-text-secondary hover:text-white border-dark-border hover:border-warm/40'
+                }`}
+              >
+                {opt.label}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Mobile filter toggle */}
-      <div className="lg:hidden flex items-center justify-between">
+      <div className="lg:hidden flex items-center justify-between pt-2">
         <button
           onClick={() => setShowMobileFilters((prev) => !prev)}
           className="btn-outline text-xs flex items-center gap-2"
@@ -140,7 +210,7 @@ export const RecipesPage = () => {
           <Filter className="w-4 h-4" />
           <span>{showMobileFilters ? 'Hide Filters' : 'Filter & Sort'}</span>
         </button>
-        <span className="text-xs text-text-secondary">{recipes.length} recipes</span>
+        <span className="text-xs text-text-secondary">{recipes.length} recipes found</span>
       </div>
 
       {/* Layout: Filters Sidebar (Left) & Recipe Grid (Right) */}
@@ -156,7 +226,7 @@ export const RecipesPage = () => {
                 onClick={handleResetFilters}
                 className="text-xs text-text-muted hover:text-sage-300 transition-colors"
               >
-                Reset
+                Reset All
               </button>
             </div>
 
@@ -203,27 +273,11 @@ export const RecipesPage = () => {
                 <option value="">All Cuisines</option>
                 <option value="Italian">Italian</option>
                 <option value="Asian">Asian</option>
+                <option value="Chinese">Chinese</option>
                 <option value="Mexican">Mexican</option>
                 <option value="Mediterranean">Mediterranean</option>
                 <option value="Indian">Indian</option>
                 <option value="American">American</option>
-              </select>
-            </div>
-
-            {/* Dietary */}
-            <div>
-              <label className="input-label">Dietary Preference</label>
-              <select
-                value={dietary}
-                onChange={(e) => setDietary(e.target.value)}
-                className="select text-xs"
-              >
-                <option value="">Any Diet</option>
-                <option value="Vegetarian">Vegetarian</option>
-                <option value="Vegan">Vegan</option>
-                <option value="Gluten-Free">Gluten-Free</option>
-                <option value="Dairy-Free">Dairy-Free</option>
-                <option value="Keto">Keto / Low-Carb</option>
               </select>
             </div>
 
@@ -247,7 +301,9 @@ export const RecipesPage = () => {
         {/* Recipes Grid */}
         <div className="lg:col-span-3 space-y-6">
           <div className="hidden lg:flex items-center justify-between text-xs text-text-secondary pb-2">
-            <span>Showing <strong className="text-white">{recipes.length}</strong> recipes</span>
+            <span>
+              Showing <strong className="text-white">{recipes.length}</strong> handcrafted dishes
+            </span>
             {searchQuery && <span>Search results for "{searchQuery}"</span>}
           </div>
 
@@ -260,9 +316,9 @@ export const RecipesPage = () => {
           ) : recipes.length === 0 ? (
             <div className="card p-12 text-center bg-dark-card border-dark-border space-y-4">
               <ChefHat className="w-12 h-12 text-text-muted mx-auto" />
-              <h3 className="text-lg font-bold text-white">No Recipes Match Your Filters</h3>
+              <h3 className="text-lg font-bold text-white">No Recipes Match These Preferences</h3>
               <p className="text-xs text-text-secondary max-w-sm mx-auto">
-                We couldn't find any recipes matching your chosen filters. Try resetting the filters or searching a different keyword.
+                No recipes match your combined dietary, cooking time, and keyword criteria. Try adjusting or resetting your filters.
               </p>
               <button onClick={handleResetFilters} className="btn-primary text-xs !py-2 !px-4">
                 Reset All Filters

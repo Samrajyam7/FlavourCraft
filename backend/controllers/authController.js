@@ -145,4 +145,62 @@ const changePassword = async (req, res) => {
   }
 };
 
-module.exports = { register, login, getMe, updateProfile, changePassword };
+// @desc    Get user preferences
+// @route   GET /api/preferences or GET /api/auth/preferences
+const getPreferences = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select('dietaryPreferences preferredCookingTime favoriteCategories cookingPreferences allergies');
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found.' });
+    }
+    res.json({
+      success: true,
+      preferences: {
+        dietaryPreferences: user.dietaryPreferences || [],
+        preferredCookingTime: user.preferredCookingTime || 'Any',
+        favoriteCategories: user.favoriteCategories || [],
+        cookingPreferences: user.cookingPreferences || {},
+        allergies: user.allergies || [],
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Update user preferences
+// @route   PUT /api/preferences or PUT /api/auth/preferences
+const updatePreferences = async (req, res) => {
+  try {
+    const { dietaryPreferences, preferredCookingTime, favoriteCategories, cookingPreferences, allergies } = req.body;
+    const updateData = {};
+    if (dietaryPreferences !== undefined) updateData.dietaryPreferences = dietaryPreferences;
+    if (preferredCookingTime !== undefined) updateData.preferredCookingTime = preferredCookingTime;
+    if (favoriteCategories !== undefined) updateData.favoriteCategories = favoriteCategories;
+    if (cookingPreferences !== undefined) updateData.cookingPreferences = cookingPreferences;
+    if (allergies !== undefined) updateData.allergies = allergies;
+
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { $set: updateData },
+      { new: true, runValidators: false }
+    ).select('dietaryPreferences preferredCookingTime favoriteCategories cookingPreferences allergies name email');
+
+    res.json({
+      success: true,
+      message: 'Preferences updated successfully!',
+      preferences: {
+        dietaryPreferences: user.dietaryPreferences,
+        preferredCookingTime: user.preferredCookingTime,
+        favoriteCategories: user.favoriteCategories,
+        cookingPreferences: user.cookingPreferences,
+        allergies: user.allergies,
+      },
+      user,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+module.exports = { register, login, getMe, updateProfile, changePassword, getPreferences, updatePreferences };

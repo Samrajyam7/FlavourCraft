@@ -66,10 +66,18 @@ const recipeSchema = new mongoose.Schema(
       enum: ['Breakfast', 'Lunch', 'Dinner', 'Snack', 'Dessert', 'Any'],
       default: 'Any',
     },
+    category: {
+      type: String,
+      default: 'Main Course',
+    },
     servings: {
       type: Number,
       default: 2,
       min: 1,
+    },
+    totalTimeMinutes: {
+      type: Number,
+      default: 0,
     },
     ingredients: [recipeIngredientSchema],
     instructions: [
@@ -84,15 +92,18 @@ const recipeSchema = new mongoose.Schema(
     ],
     dietaryTags: {
       type: [String],
-      enum: ['vegetarian', 'vegan', 'gluten-free', 'dairy-free', 'nut-free', 'non-vegetarian', 'egg-free', 'keto', 'low-carb'],
       default: [],
     },
     nutrition: {
       calories: { type: Number, default: 0 },
       protein: { type: Number, default: 0 },
+      carbohydrates: { type: Number, default: 0 },
       carbs: { type: Number, default: 0 },
+      fats: { type: Number, default: 0 },
       fat: { type: Number, default: 0 },
       fiber: { type: Number, default: 0 },
+      sugar: { type: Number, default: 0 },
+      servingSize: { type: Number, default: 1 },
     },
     rating: {
       type: Number,
@@ -113,8 +124,33 @@ const recipeSchema = new mongoose.Schema(
       ref: 'User',
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
 );
+
+// Pre-save hook to calculate totalTimeMinutes and synchronize nutrition aliases
+recipeSchema.pre('save', function (next) {
+  this.totalTimeMinutes = (this.prepTimeMinutes || 0) + (this.cookTimeMinutes || 0);
+
+  if (this.nutrition) {
+    if (this.nutrition.carbohydrates && !this.nutrition.carbs) {
+      this.nutrition.carbs = this.nutrition.carbohydrates;
+    } else if (this.nutrition.carbs && !this.nutrition.carbohydrates) {
+      this.nutrition.carbohydrates = this.nutrition.carbs;
+    }
+
+    if (this.nutrition.fats && !this.nutrition.fat) {
+      this.nutrition.fat = this.nutrition.fats;
+    } else if (this.nutrition.fat && !this.nutrition.fats) {
+      this.nutrition.fats = this.nutrition.fat;
+    }
+  }
+
+  next();
+});
 
 // Index for fast search
 recipeSchema.index({ title: 'text', description: 'text' });

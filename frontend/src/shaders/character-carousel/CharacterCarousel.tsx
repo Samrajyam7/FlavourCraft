@@ -148,7 +148,7 @@ export function CharacterCarousel({
   return (
     <div
       className={`threeui-background character-carousel character-carousel--${variant}${className ? ` ${className}` : ""}`}
-      style={{ background: isFilmstrip ? "#d8c9ad" : "#121212", pointerEvents: "auto", ...style }}
+      style={{ background: "#0c0d12", pointerEvents: "auto", ...style }}
     >
       <iframe
         ref={iframeRef}
@@ -163,7 +163,7 @@ export function CharacterCarousel({
           width: "100%",
           height: "100%",
           border: 0,
-          background: isFilmstrip ? "#d8c9ad" : "#121212",
+          background: "#0c0d12",
           opacity: clamp(opacity, 0.05, 1),
           filter: `hue-rotate(${clamp(hue, -180, 180)}deg) saturate(${clamp(saturation, 0, 2)}) brightness(${clamp(brightness, 0.35, 1.65)})`,
         }}

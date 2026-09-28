@@ -3,6 +3,7 @@ const {
   getGroceryList,
   addToGroceryList,
   generateFromRecipe,
+  generateGrocery,
   updateGroceryItem,
   deleteGroceryItem,
   clearPurchased,
@@ -14,6 +15,7 @@ const router = express.Router();
 router.use(protect);
 router.get('/', getGroceryList);
 router.post('/', addToGroceryList);
+router.post('/generate', generateGrocery);
 router.post('/from-recipe', generateFromRecipe);
 router.delete('/clear-purchased', clearPurchased);
 router.post('/clear-purchased', clearPurchased);

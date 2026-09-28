@@ -40,6 +40,11 @@ export const recipeService = {
     const res = await API.delete(`/recipes/${id}`);
     return res.data;
   },
+
+  async recordCooking(id) {
+    const res = await API.post(`/recipes/${id}/cook`);
+    return res.data;
+  },
 };
 
 export default recipeService;

@@ -129,72 +129,20 @@ const clearEntireMealPlan = async (req, res) => {
   }
 };
 
-// @desc    Generate grocery list from weekly meal plan
+// @desc    Generate grocery list from weekly meal plan with pantry deductions
 // @route   POST /api/mealplan/generate-grocery
 const generateGroceryFromPlan = async (req, res) => {
   try {
-    const plan = await MealPlan.findOne({ userId: req.user._id }).lean();
-    if (!plan || !plan.meals) {
-      return res.status(400).json({ success: false, message: 'Meal plan is empty.' });
-    }
-
-    const recipeIds = new Set();
-    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
-    for (const day of days) {
-      const daySlots = plan.meals[day] || {};
-      for (const slot of ['breakfast', 'lunch', 'dinner', 'snack']) {
-        if (daySlots[slot]) {
-          recipeIds.add(daySlots[slot].toString());
-        }
-      }
-    }
-
-    if (recipeIds.size === 0) {
-      return res.json({ success: true, message: 'No recipes in meal plan to generate groceries for.', items: [] });
-    }
-
-    const recipes = await Recipe.find({ _id: { $in: Array.from(recipeIds) } }).populate('ingredients.ingredientId');
-    let grocery = await GroceryList.findOne({ userId: req.user._id });
-    if (!grocery) {
-      grocery = new GroceryList({ userId: req.user._id, items: [] });
-    }
-
-    let addedCount = 0;
-    for (const recipe of recipes) {
-      if (recipe.ingredients) {
-        for (const ri of recipe.ingredients) {
-          const ingName = ri.ingredientId?.name || 'Ingredient';
-          const existingIdx = grocery.items.findIndex(
-            (i) => i.name && i.name.toLowerCase() === ingName.toLowerCase()
-          );
-          if (existingIdx >= 0) {
-            const curVal = parseFloat(grocery.items[existingIdx].quantity) || 0;
-            const newVal = parseFloat(ri.amount) || 1;
-            if (curVal > 0 && newVal > 0) {
-              grocery.items[existingIdx].quantity = String(curVal + newVal);
-            }
-          } else {
-            grocery.items.push({
-              name: ingName,
-              quantity: ri.amount || '1',
-              unit: ri.ingredientId?.unit || 'unit',
-              category: ri.ingredientId?.category || 'Produce',
-              ingredientId: ri.ingredientId?._id || ri.ingredientId,
-              purchased: false,
-            });
-            addedCount++;
-          }
-        }
-      }
-    }
-
-    await grocery.save();
-    res.json({
-      success: true,
-      message: `Generated grocery list with ${addedCount} items.`,
-      list: grocery,
-      items: grocery.items,
+    const { generateOptimizedWeeklyGrocery } = require('../utils/groceryOptimizer');
+    const result = await generateOptimizedWeeklyGrocery(req.user._id, {
+      replaceAll: Boolean(req.body.regenerate),
     });
+
+    if (!result.success) {
+      return res.status(400).json({ success: false, message: result.message });
+    }
+
+    res.json(result);
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

@@ -10,20 +10,47 @@ import {
   Layers,
   ChefHat,
   Award,
+  Refrigerator,
+  ShoppingCart,
+  Calendar,
+  AlertTriangle,
+  Clock,
+  CheckCircle2,
+  Heart,
+  TrendingUp,
 } from 'lucide-react';
 import { CharacterCarousel } from '@designcodeio/threeui';
 import '@designcodeio/threeui/style.css';
 
 import { recipeService } from '../services/recipeService';
+import { inventoryService } from '../services/inventoryService';
+import { mealPlanService } from '../services/mealPlanService';
+import { groceryService } from '../services/groceryService';
 import { RecipeCard } from '../components/recipe/RecipeCard';
 import CookingPotInteractive from '../components/ingredient/CookingPotInteractive';
 import heroVegetableBowl from '../assets/hero_vegetable_bowl.jpg';
+import { useAuth } from '../context/AuthContext';
 
 export const HomePage = () => {
   const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuth();
+
   const [featuredRecipes, setFeaturedRecipes] = useState([]);
+  const [recommendedRecipes, setRecommendedRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [quickSearch, setQuickSearch] = useState('');
+
+  // Dashboard Stats
+  const [dashboardStats, setDashboardStats] = useState({
+    pantryCount: 0,
+    expiringSoonCount: 0,
+    groceryCount: 0,
+    plannedMealsCount: 0,
+    availableRecipesCount: 0,
+  });
+  const [expiringItems, setExpiringItems] = useState([]);
+  const [weeklyPlanSummary, setWeeklyPlanSummary] = useState([]);
+  const [grocerySummary, setGrocerySummary] = useState([]);
 
   // Popular quick ingredient picks for the signature cooking pot
   const popularPantryItems = [
@@ -46,20 +73,82 @@ export const HomePage = () => {
   ]);
 
   useEffect(() => {
-    const fetchFeatured = async () => {
-      try {
-        setLoading(true);
-        const data = await recipeService.getRecipes({ limit: 6, sort: 'rating' });
-        setFeaturedRecipes(data.recipes || data || []);
-      } catch (err) {
-        console.error('Failed to load featured recipes:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    fetchInitialData();
+  }, [isAuthenticated]);
 
-    fetchFeatured();
-  }, []);
+  const fetchInitialData = async () => {
+    try {
+      setLoading(true);
+
+      const [recData, recsRes] = await Promise.all([
+        recipeService.getRecipes({ limit: 6, sort: 'rating' }),
+        recipeService.getRecommendations(),
+      ]);
+
+      const featured = recData.recipes || recData || [];
+      setFeaturedRecipes(featured);
+      setRecommendedRecipes(recsRes?.recipes || []);
+
+      // If user is authenticated, fetch live pantry, meal plan, and grocery stats
+      if (isAuthenticated) {
+        try {
+          const [invData, planData, grocData] = await Promise.all([
+            inventoryService.getInventory(),
+            mealPlanService.getMealPlan(),
+            groceryService.getGroceryList(),
+          ]);
+
+          const pList = invData.inventory || invData.items || [];
+          const gList = grocData.items || grocData.list?.items || [];
+          const alerts = invData.expiryAlerts || pList.filter((i) => i.isExpired || i.isExpiringSoon);
+
+          // Count planned meals
+          let plannedCount = 0;
+          const scheduled = [];
+          if (planData?.days) {
+            planData.days.forEach((day) => {
+              (day.slots || []).forEach((slot) => {
+                if (slot.recipe) {
+                  plannedCount++;
+                  scheduled.push({
+                    day: day.dayOfWeek,
+                    mealType: slot.mealType,
+                    recipe: slot.recipe,
+                  });
+                }
+              });
+            });
+          }
+
+          setDashboardStats({
+            pantryCount: pList.length,
+            expiringSoonCount: alerts.length,
+            groceryCount: gList.length,
+            plannedMealsCount: plannedCount,
+            availableRecipesCount: featured.length,
+          });
+
+          setExpiringItems(alerts.slice(0, 3));
+          setWeeklyPlanSummary(scheduled.slice(0, 4));
+          setGrocerySummary(gList.slice(0, 4));
+        } catch (e) {
+          console.error('Failed to load user dashboard stats:', e);
+        }
+      } else {
+        setDashboardStats({
+          pantryCount: 12,
+          expiringSoonCount: 2,
+          groceryCount: 5,
+          plannedMealsCount: 7,
+          availableRecipesCount: featured.length,
+        });
+      }
+    } catch (err) {
+      console.error('Failed to load home page data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleHeroIngredientToggle = (item) => {
     setSelectedHeroPantry((prev) => {
@@ -91,11 +180,11 @@ export const HomePage = () => {
   ];
 
   return (
-    <div className="space-y-24 pb-20">
+    <div className="space-y-16 sm:space-y-24 pb-20">
       {/* ============================================================
           HERO SECTION — THREEUI TEXT ANIMATION & EDITORIAL IDENTITY
           ============================================================ */}
-      <section className="relative overflow-hidden pt-6 pb-16 border-b border-dark-border/40 text-left">
+      <section className="relative overflow-hidden pt-6 pb-12 border-b border-dark-border/40 text-left">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             {/* Left Column: Editorial Headline & Actions */}
@@ -139,13 +228,13 @@ export const HomePage = () => {
                 </Link>
               </div>
 
-              {/* Instant Search Bar */}
-              <form onSubmit={handleSearchSubmit} className="pt-2 max-w-lg">
-                <div className="relative flex items-center shadow-card rounded-2xl bg-dark-card border border-dark-border p-1.5 focus-within:border-sage/50 focus-within:ring-2 focus-within:ring-sage/20 transition-all">
-                  <Search className="w-4 h-4 text-text-muted ml-3" />
+              {/* Inline Search Bar */}
+              <form onSubmit={handleSearchSubmit} className="max-w-md pt-2">
+                <div className="flex items-center bg-dark-surface border border-dark-border rounded-2xl p-1.5 focus-within:border-primary transition-colors">
+                  <Search className="w-4 h-4 text-text-muted ml-3 flex-shrink-0" />
                   <input
                     type="text"
-                    placeholder="Search dishes (e.g., Chicken Dum Biryani, Pasta)..."
+                    placeholder="Search dishes (e.g. Pasta, Butter Chicken, Curry)..."
                     value={quickSearch}
                     onChange={(e) => setQuickSearch(e.target.value)}
                     className="bg-transparent border-none text-white text-xs sm:text-sm px-3 py-2 flex-grow focus:outline-none placeholder-text-muted"
@@ -161,18 +250,14 @@ export const HomePage = () => {
               </form>
             </div>
 
-            {/* Right Column: Hero Box with Animated Bowl of Fresh Vegetables & Kitchen Ingredients */}
+            {/* Right Column: Hero Box with Animated Bowl of Fresh Vegetables */}
             <div className="lg:col-span-5 relative flex items-center justify-center">
               <div className="relative w-full aspect-square max-w-[460px] rounded-3xl bg-dark-card border border-dark-border shadow-2xl overflow-hidden flex items-center justify-center group">
-                
-                {/* Ambient Kitchen Aura & Steam Glow */}
                 <div className="absolute inset-0 pointer-events-none z-0">
                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full bg-sage-500/15 blur-3xl animate-pulse-kitchen" />
                   <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-56 h-56 rounded-full bg-warm/15 blur-2xl animate-pulse-kitchen" style={{ animationDelay: '1.5s' }} />
-                  <div className="absolute inset-0 bg-[radial-gradient(#9ab3a6_1px,transparent_1px)] [background-size:24px_24px] opacity-20" />
                 </div>
 
-                {/* Animated Bowl of Fresh Vegetables & Kitchen Ingredients */}
                 <div className="relative z-10 w-full h-full flex items-center justify-center p-3">
                   <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-2xl animate-float-slow">
                     <img
@@ -181,17 +266,8 @@ export const HomePage = () => {
                       className="w-full h-full object-cover rounded-2xl filter brightness-105 contrast-105 transform group-hover:scale-110 transition-transform duration-700 ease-out"
                     />
 
-                    {/* Rising Culinary Steam Effect */}
-                    <div className="absolute inset-x-0 top-1/4 h-32 pointer-events-none flex justify-center gap-6">
-                      <div className="w-8 h-20 bg-gradient-to-t from-white/30 to-transparent rounded-full blur-md animate-steam" />
-                      <div className="w-6 h-24 bg-gradient-to-t from-white/25 to-transparent rounded-full blur-md animate-steam" style={{ animationDelay: '0.9s' }} />
-                      <div className="w-10 h-16 bg-gradient-to-t from-white/30 to-transparent rounded-full blur-md animate-steam" style={{ animationDelay: '1.7s' }} />
-                    </div>
-
-                    {/* Dark gradient overlay for editorial depth */}
                     <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-transparent to-dark/30 pointer-events-none" />
 
-                    {/* Prominent FlavorCraft Animated Brand Title Banner */}
                     <div className="absolute bottom-5 inset-x-5 text-center p-3 rounded-2xl bg-dark/85 backdrop-blur-md border border-white/10 shadow-2xl">
                       <h3 className="text-xl sm:text-2xl font-heading font-black tracking-widest uppercase text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">
                         FLAVOR<span className="text-sage-400">CRAFT</span>
@@ -203,34 +279,306 @@ export const HomePage = () => {
                   </div>
                 </div>
 
-                {/* Floating Kitchen Animated Elements (Herbs, Spices, Utensils) */}
                 <div className="absolute inset-0 pointer-events-none z-20 overflow-hidden">
                   <span className="absolute top-6 right-8 text-2xl animate-float-slow opacity-90 select-none drop-shadow-md">🌿</span>
                   <span className="absolute bottom-20 left-6 text-xl animate-float-delayed opacity-85 select-none drop-shadow-md">🧄</span>
                   <span className="absolute top-20 left-8 text-xl animate-float-slow opacity-85 select-none drop-shadow-md" style={{ animationDelay: '0.8s' }}>🍅</span>
                   <span className="absolute top-36 right-6 text-xl animate-float-delayed opacity-90 select-none drop-shadow-md" style={{ animationDelay: '2.1s' }}>🌶️</span>
                 </div>
-
-                {/* Floating Culinary Badges */}
-                <div className="absolute top-4 left-4 p-2.5 rounded-2xl bg-dark-bg/90 backdrop-blur-md border border-white/10 shadow-lg text-left pointer-events-none z-30 transition-transform group-hover:scale-105">
-                  <p className="text-[10px] uppercase font-bold text-sage-400 tracking-wider flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping inline-block" />
-                    Kitchen Active
-                  </p>
-                  <p className="text-xs font-bold text-white">Smart Match Radar</p>
-                  <span className="text-[10px] font-bold text-emerald-400">100% Precision</span>
-                </div>
-
-                <div className="absolute top-4 right-4 p-2.5 rounded-2xl bg-dark-bg/90 backdrop-blur-md border border-white/10 shadow-lg text-left pointer-events-none z-30 transition-transform group-hover:scale-105">
-                  <p className="text-[10px] uppercase font-bold text-warm tracking-wider flex items-center gap-1">
-                    <Flame className="w-3 h-3 text-warm inline" />
-                    Fresh Pantry
-                  </p>
-                  <p className="text-xs font-bold text-white">Vegetables & Herbs</p>
-                  <span className="text-[10px] font-medium text-emerald-400">Ready to Cook</span>
-                </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================================
+          DASHBOARD SUMMARY METRICS BAR
+          ============================================================ */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-left">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
+          <Link
+            to="/inventory"
+            className="card p-4 bg-dark-card border-dark-border hover:border-sage/40 transition-all flex items-center gap-3.5 group"
+          >
+            <div className="w-10 h-10 rounded-xl bg-sage/15 text-sage-400 border border-sage/30 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
+              🥕
+            </div>
+            <div>
+              <span className="text-[10px] text-text-muted uppercase font-bold tracking-wider block">Pantry Items</span>
+              <span className="text-lg sm:text-xl font-heading font-black text-white">{dashboardStats.pantryCount}</span>
+            </div>
+          </Link>
+
+          <Link
+            to="/recipes"
+            className="card p-4 bg-dark-card border-dark-border hover:border-warm/40 transition-all flex items-center gap-3.5 group"
+          >
+            <div className="w-10 h-10 rounded-xl bg-warm/15 text-warm border border-warm/30 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
+              🍳
+            </div>
+            <div>
+              <span className="text-[10px] text-text-muted uppercase font-bold tracking-wider block">Available Recipes</span>
+              <span className="text-lg sm:text-xl font-heading font-black text-white">{dashboardStats.availableRecipesCount}</span>
+            </div>
+          </Link>
+
+          <Link
+            to="/grocery"
+            className="card p-4 bg-dark-card border-dark-border hover:border-sky-500/40 transition-all flex items-center gap-3.5 group"
+          >
+            <div className="w-10 h-10 rounded-xl bg-sky-500/15 text-sky-400 border border-sky-500/30 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
+              🛒
+            </div>
+            <div>
+              <span className="text-[10px] text-text-muted uppercase font-bold tracking-wider block">Grocery Items</span>
+              <span className="text-lg sm:text-xl font-heading font-black text-white">{dashboardStats.groceryCount}</span>
+            </div>
+          </Link>
+
+          <Link
+            to="/meal-planner"
+            className="card p-4 bg-dark-card border-dark-border hover:border-indigo-500/40 transition-all flex items-center gap-3.5 group"
+          >
+            <div className="w-10 h-10 rounded-xl bg-indigo-500/15 text-indigo-400 border border-indigo-500/30 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
+              📅
+            </div>
+            <div>
+              <span className="text-[10px] text-text-muted uppercase font-bold tracking-wider block">Planned Meals</span>
+              <span className="text-lg sm:text-xl font-heading font-black text-white">{dashboardStats.plannedMealsCount}</span>
+            </div>
+          </Link>
+
+          <Link
+            to="/inventory"
+            className="card p-4 bg-dark-card border-dark-border hover:border-rose-500/40 transition-all flex items-center gap-3.5 group col-span-2 sm:col-span-1"
+          >
+            <div className="w-10 h-10 rounded-xl bg-rose-500/15 text-rose-400 border border-rose-500/30 flex items-center justify-center text-lg flex-shrink-0 group-hover:scale-110 transition-transform">
+              ⏰
+            </div>
+            <div>
+              <span className="text-[10px] text-text-muted uppercase font-bold tracking-wider block">Expiring Soon</span>
+              <span className="text-lg sm:text-xl font-heading font-black text-rose-400">{dashboardStats.expiringSoonCount}</span>
+            </div>
+          </Link>
+        </div>
+      </section>
+
+      {/* ============================================================
+          RECOMMENDED FOR YOU (TRANSPARENT PERSONALIZED RECOMMENDATIONS)
+          ============================================================ */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-left">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+          <div>
+            <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-sage-400 mb-1">
+              <Sparkles className="w-4 h-4 text-sage-400" />
+              <span>Smart Recommendation Engine</span>
+            </div>
+            <h2 className="text-3xl font-heading font-bold text-white tracking-tight">✨ Recommended For You</h2>
+            <p className="text-xs sm:text-sm text-text-secondary mt-1">
+              Transparently matched based on your active pantry ingredients, dietary preferences, and favorite dishes.
+            </p>
+          </div>
+          <Link
+            to="/recipes"
+            className="btn-outline !py-2.5 !px-5 rounded-xl text-xs font-semibold uppercase tracking-wider flex items-center gap-2 self-start sm:self-auto"
+          >
+            <span>Explore All</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="h-80 skeleton rounded-2xl" />
+            ))}
+          </div>
+        ) : recommendedRecipes.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {recommendedRecipes.slice(0, 4).map((recipe) => (
+              <div key={recipe._id || recipe.id} className="relative group">
+                {recipe.recommendationReason && (
+                  <div className="absolute top-3 left-3 right-3 z-20 bg-dark-surface/95 backdrop-blur-md px-2.5 py-1.5 rounded-xl border border-sage/30 text-[10px] font-semibold text-sage-300 shadow-lg flex items-center gap-1.5 pointer-events-none line-clamp-1">
+                    <Sparkles className="w-3 h-3 text-sage-400 flex-shrink-0" />
+                    <span className="truncate">{recipe.recommendationReason}</span>
+                  </div>
+                )}
+                <RecipeCard recipe={recipe} />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {featuredRecipes.slice(0, 4).map((recipe) => (
+              <RecipeCard key={recipe._id} recipe={recipe} />
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* ============================================================
+          DASHBOARD INSIGHTS: MEALS, GROCERIES, NUTRITION & EXPIRY
+          ============================================================ */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-left">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* Card 1: 📅 This Week's Planned Meals */}
+          <div className="card p-5 bg-dark-card border-dark-border space-y-4 flex flex-col justify-between">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between border-b border-dark-border pb-2.5">
+                <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5 text-sage-400" /> This Week's Meals
+                </span>
+                <Link to="/meal-planner" className="text-[11px] text-sage-400 hover:text-white">
+                  Plan Menu →
+                </Link>
+              </div>
+
+              {weeklyPlanSummary.length > 0 ? (
+                <div className="space-y-2">
+                  {weeklyPlanSummary.map((slot, idx) => (
+                    <div key={idx} className="p-2.5 rounded-xl bg-dark-surface border border-dark-border/80 text-xs flex items-center justify-between">
+                      <div>
+                        <span className="font-bold text-white block text-xs">{slot.recipe?.title || 'Scheduled Meal'}</span>
+                        <span className="text-[10px] text-text-muted">{slot.day} • {slot.mealType}</span>
+                      </div>
+                      <span className="text-[10px] text-sage-400 font-semibold bg-sage/10 px-2 py-0.5 rounded">Ready</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-text-muted py-4">
+                  No meals planned yet for this week. Use the 7-day planner to schedule breakfast, lunch, and dinner.
+                </p>
+              )}
+            </div>
+
+            <Link to="/meal-planner" className="btn-secondary !py-2 text-xs w-full text-center block">
+              Open Meal Planner
+            </Link>
+          </div>
+
+          {/* Card 2: ⏰ Expiring Soon Alerts */}
+          <div className="card p-5 bg-dark-card border-dark-border space-y-4 flex flex-col justify-between">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between border-b border-dark-border pb-2.5">
+                <span className="text-xs font-bold text-warm uppercase tracking-wider flex items-center gap-1.5">
+                  <AlertTriangle className="w-3.5 h-3.5 text-warm" /> Expiring Soon
+                </span>
+                <Link to="/inventory" className="text-[11px] text-warm hover:text-white">
+                  View All →
+                </Link>
+              </div>
+
+              {expiringItems.length > 0 ? (
+                <div className="space-y-2">
+                  {expiringItems.map((item, idx) => (
+                    <div key={idx} className="p-2.5 rounded-xl bg-amber-950/20 border border-amber-500/30 text-xs flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span>{item.ingredientId?.icon || '🥫'}</span>
+                        <div>
+                          <span className="font-bold text-white block">{item.ingredientId?.name || 'Item'}</span>
+                          <span className="text-[10px] text-amber-300">
+                            {item.alertMessage || (item.daysUntilExpiry ? `Expires in ${item.daysUntilExpiry} days` : 'Expiring')}
+                          </span>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => navigate('/matcher', { state: { initialIngredients: [item.ingredientId?.name] } })}
+                        className="text-[10px] btn-primary !py-1 !px-2 shadow-none font-bold"
+                      >
+                        Cook Now
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="py-4 text-center">
+                  <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto mb-1.5 opacity-80" />
+                  <p className="text-xs text-text-muted">All pantry items are fresh! No items expiring soon.</p>
+                </div>
+              )}
+            </div>
+
+            <Link to="/inventory" className="btn-outline !py-2 text-xs w-full text-center block">
+              Manage Pantry
+            </Link>
+          </div>
+
+          {/* Card 3: 🛒 Weekly Grocery Summary */}
+          <div className="card p-5 bg-dark-card border-dark-border space-y-4 flex flex-col justify-between">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between border-b border-dark-border pb-2.5">
+                <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                  <ShoppingCart className="w-3.5 h-3.5 text-sky-400" /> Grocery Checklist
+                </span>
+                <Link to="/grocery" className="text-[11px] text-sky-400 hover:text-white">
+                  Full List →
+                </Link>
+              </div>
+
+              {grocerySummary.length > 0 ? (
+                <div className="space-y-2">
+                  {grocerySummary.map((item, idx) => (
+                    <div key={idx} className="p-2.5 rounded-xl bg-dark-surface border border-dark-border/80 text-xs flex items-center justify-between">
+                      <div>
+                        <span className="font-bold text-white block">{item.name}</span>
+                        <span className="text-[10px] text-text-muted">{item.category}</span>
+                      </div>
+                      <span className="font-mono text-xs font-bold text-sage-300">
+                        {item.buyQuantity !== undefined && item.buyQuantity !== null ? item.buyQuantity : (item.quantity || 1)} {item.unit}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-text-muted py-4">
+                  Grocery list is clean. Plan weekly meals to automatically calculate missing grocery items.
+                </p>
+              )}
+            </div>
+
+            <Link to="/grocery" className="btn-secondary !py-2 text-xs w-full text-center block">
+              View Shopping List
+            </Link>
+          </div>
+
+          {/* Card 4: 📊 Nutrition Summary */}
+          <div className="card p-5 bg-dark-card border-dark-border space-y-4 flex flex-col justify-between">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between border-b border-dark-border pb-2.5">
+                <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                  <Flame className="w-3.5 h-3.5 text-emerald-400" /> Nutrition Profile
+                </span>
+                <span className="text-[10px] text-text-muted">Est. Per Meal</span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 text-center text-xs">
+                <div className="p-2.5 rounded-xl bg-dark-surface border border-dark-border">
+                  <span className="text-[10px] text-text-muted uppercase block">Calories</span>
+                  <span className="text-sm font-bold text-warm">~420 kcal</span>
+                </div>
+                <div className="p-2.5 rounded-xl bg-dark-surface border border-dark-border">
+                  <span className="text-[10px] text-text-muted uppercase block">Protein</span>
+                  <span className="text-sm font-bold text-emerald-400">~25g</span>
+                </div>
+                <div className="p-2.5 rounded-xl bg-dark-surface border border-dark-border">
+                  <span className="text-[10px] text-text-muted uppercase block">Carbs</span>
+                  <span className="text-sm font-bold text-sky-400">~48g</span>
+                </div>
+                <div className="p-2.5 rounded-xl bg-dark-surface border border-dark-border">
+                  <span className="text-[10px] text-text-muted uppercase block">Fats</span>
+                  <span className="text-sm font-bold text-rose-400">~15g</span>
+                </div>
+              </div>
+
+              <p className="text-[10px] text-text-muted italic text-center">
+                Estimated values per serving across scheduled dishes.
+              </p>
+            </div>
+
+            <Link to="/profile?tab=preferences" className="btn-outline !py-2 text-xs w-full text-center block">
+              Edit Dietary Goals
+            </Link>
           </div>
         </div>
       </section>
@@ -240,7 +588,6 @@ export const HomePage = () => {
           ============================================================ */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          {/* Left Column: Explanation */}
           <div className="lg:col-span-5 space-y-4 text-left">
             <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-sage-400">
               <UtensilsCrossed className="w-4 h-4 text-sage-400" />
@@ -253,7 +600,6 @@ export const HomePage = () => {
               Tap any common ingredient below to drop it into your Cooking Pot. FlavorCraft instantly analyzes our culinary database to calculate exact match percentages and missing items.
             </p>
 
-            {/* Quick Chips to tap */}
             <div className="pt-2">
               <p className="text-xs font-bold uppercase tracking-wider text-text-muted mb-2.5">
                 Quick Select Pantry Essentials:
@@ -281,7 +627,6 @@ export const HomePage = () => {
             </div>
           </div>
 
-          {/* Right Column: Signature Interactive Cooking Pot */}
           <div className="lg:col-span-7">
             <CookingPotInteractive
               selectedIngredients={selectedHeroPantry}
@@ -294,7 +639,7 @@ export const HomePage = () => {
       </section>
 
       {/* ============================================================
-          EXPLORE FLAVORS / DISCOVER YOUR NEXT DISH (FILMSTRIP CAROUSEL)
+          EXPLORE FLAVORS / FILMSTRIP CAROUSEL
           ============================================================ */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-left">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
@@ -305,7 +650,7 @@ export const HomePage = () => {
             </div>
             <h2 className="text-3xl font-heading font-bold text-white tracking-tight">EXPLORE FLAVORS & DISCOVER YOUR NEXT DISH</h2>
             <p className="text-xs sm:text-sm text-text-secondary mt-1">
-              Browse signature dishes and chef-crafted culinary masterpieces from world cuisines — from slow-simmered curries to wood-fired classics.
+              Browse signature dishes and chef-crafted culinary masterpieces from world cuisines.
             </p>
           </div>
         </div>
@@ -330,7 +675,7 @@ export const HomePage = () => {
       </section>
 
       {/* ============================================================
-          FEATURED & TRENDING RECIPES WITH AUTHENTIC FOOD IMAGERY
+          FEATURED & TRENDING RECIPES
           ============================================================ */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 text-left">

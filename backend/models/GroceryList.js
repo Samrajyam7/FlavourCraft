@@ -19,6 +19,18 @@ const groceryItemSchema = new mongoose.Schema(
       type: String,
       default: '1',
     },
+    requiredQuantity: {
+      type: Number,
+      default: null,
+    },
+    availableQuantity: {
+      type: Number,
+      default: null,
+    },
+    buyQuantity: {
+      type: Number,
+      default: null,
+    },
     unit: {
       type: String,
       default: 'piece',

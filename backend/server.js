@@ -17,6 +17,8 @@ const groceryRoutes = require('./routes/groceryRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const mealPlanRoutes = require('./routes/mealPlanRoutes');
+const preferenceRoutes = require('./routes/preferenceRoutes');
+const recommendationRoutes = require('./routes/recommendationRoutes');
 
 const app = express();
 
@@ -140,10 +142,15 @@ app.use('/api/ingredients', ingredientRoutes);
 app.use('/api/recipes', recipeRoutes);
 app.use('/api/favorites', favoriteRoutes);
 app.use('/api/inventory', inventoryRoutes);
+app.use('/api/pantry', inventoryRoutes);
 app.use('/api/grocery', groceryRoutes);
+app.use('/api/grocery-list', groceryRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/mealplan', mealPlanRoutes);
+app.use('/api/meal-plan', mealPlanRoutes);
+app.use('/api/preferences', preferenceRoutes);
+app.use('/api/recommendations', recommendationRoutes);
 
 // Error handling middleware (must be last)
 app.use(notFound);

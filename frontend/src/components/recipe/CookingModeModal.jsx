@@ -14,7 +14,9 @@ import {
   Timer,
 } from 'lucide-react';
 
-export const CookingModeModal = ({ recipe, isOpen = true, onClose }) => {
+import confetti from 'canvas-confetti';
+
+export const CookingModeModal = ({ recipe, isOpen = true, onClose, onComplete }) => {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [completedSteps, setCompletedSteps] = useState(new Set());
   const [timerSeconds, setTimerSeconds] = useState(0);
@@ -326,6 +328,16 @@ export const CookingModeModal = ({ recipe, isOpen = true, onClose }) => {
             <button
               onClick={() => {
                 toggleStepCompleted(safeIndex);
+                try {
+                  confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                  });
+                } catch (e) {}
+                if (onComplete) {
+                  onComplete(recipe);
+                }
                 onClose();
               }}
               className="btn-accent text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-glow-accent"
