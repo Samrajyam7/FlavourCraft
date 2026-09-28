@@ -180,11 +180,29 @@ export const HomePage = () => {
   ];
 
   return (
-    <div className="space-y-16 sm:space-y-24 pb-20">
+    <div className="relative min-h-screen">
       {/* ============================================================
-          HERO SECTION — THREEUI TEXT ANIMATION & EDITORIAL IDENTITY
+          FULL-SCREEN BACKGROUND VIDEO LAYER WITH DARK OVERLAY
           ============================================================ */}
-      <section className="relative overflow-hidden pt-6 pb-12 border-b border-dark-border/40 text-left">
+      <div className="fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover object-center scale-105"
+          src="/background.mp4"
+        />
+        {/* Subtle dark transparent overlay for crisp text readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-dark-bg/85 via-dark-bg/75 to-dark-bg/95 backdrop-blur-[1px]" />
+      </div>
+
+      {/* Main Content Layer (Z-Indexed above background video) */}
+      <div className="relative z-10 space-y-16 sm:space-y-24 pb-20">
+        {/* ============================================================
+            HERO SECTION — THREEUI TEXT ANIMATION & EDITORIAL IDENTITY
+            ============================================================ */}
+        <section className="relative overflow-hidden pt-6 pb-12 border-b border-dark-border/40 text-left">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             {/* Left Column: Editorial Headline & Actions */}
@@ -738,6 +756,7 @@ export const HomePage = () => {
           ))}
         </div>
       </section>
+      </div>
     </div>
   );
 };
