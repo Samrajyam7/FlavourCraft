@@ -182,7 +182,7 @@ export const HomePage = () => {
   return (
     <div className="relative min-h-screen">
       {/* ============================================================
-          FULL-SCREEN BACKGROUND VIDEO LAYER WITH DARK OVERLAY
+          FULL-SCREEN BACKGROUND VIDEO LAYER WITH FLAVORCRAFT BRANDING
           ============================================================ */}
       <div className="fixed inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
         <video
@@ -190,11 +190,24 @@ export const HomePage = () => {
           loop
           muted
           playsInline
-          className="w-full h-full object-cover object-center scale-125 transform origin-center"
+          className="w-full h-full object-cover object-center scale-110"
           src="/background.mp4"
         />
-        {/* Subtle dark transparent overlay for crisp text readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-dark-bg/85 via-dark-bg/75 to-dark-bg/95 backdrop-blur-[1px]" />
+
+        {/* Increased Visibility Background Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-dark-bg/60 via-dark-bg/35 to-dark-bg/75" />
+
+        {/* Localized Center Blur & FlavorCraft Brand Watermark to cleanly conceal stock text */}
+        <div className="absolute top-[52%] left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none flex flex-col items-center justify-center z-[2]">
+          <div className="px-8 py-3.5 rounded-3xl bg-dark-bg/85 backdrop-blur-2xl border border-sage/30 shadow-[0_0_60px_rgba(0,0,0,0.9)] flex flex-col items-center justify-center scale-90 sm:scale-100">
+            <span className="text-xl sm:text-2xl font-heading font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-sage-300 via-white to-accent uppercase drop-shadow-[0_0_20px_rgba(154,179,166,0.6)]">
+              Flavor<span className="text-sage-400">Craft</span>
+            </span>
+            <span className="text-[9px] text-sage-300/90 font-bold tracking-[0.35em] uppercase -mt-0.5">
+              Digital Culinary Studio
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Main Content Layer (Z-Indexed above background video) */}
