@@ -481,40 +481,68 @@ export const HomePage = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-left">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Card 1: 📅 This Week's Planned Meals */}
-          <div className="group relative overflow-hidden rounded-2xl p-5 bg-gradient-to-b from-dark-card/90 via-dark-card/75 to-dark-surface/90 backdrop-blur-xl border border-dark-border/80 hover:border-sage-500/50 shadow-xl hover:shadow-2xl hover:shadow-sage-950/40 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between">
-            {/* Ambient hover glow & top accent line */}
-            <div className="absolute -top-20 -right-20 w-40 h-40 bg-sage-500/10 rounded-full blur-3xl group-hover:bg-sage-500/25 group-hover:scale-125 transition-all duration-500 pointer-events-none" />
-            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-sage-400 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="group relative overflow-hidden rounded-3xl p-6 bg-gradient-to-b from-dark-card/95 via-dark-card/85 to-dark-surface/95 backdrop-blur-2xl border border-white/10 hover:border-sage-500/60 shadow-2xl hover:shadow-[0_20px_50px_rgba(45,106,79,0.3)] transition-all duration-500 hover:-translate-y-2 flex flex-col justify-between">
+            {/* Ambient Background Aura & Animated Light Streak */}
+            <div className="absolute -top-24 -right-24 w-48 h-48 bg-sage-500/15 rounded-full blur-3xl group-hover:bg-sage-500/30 group-hover:scale-150 transition-all duration-700 pointer-events-none" />
+            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-sage-400 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-            <div className="space-y-3 relative z-10">
-              <div className="flex items-center justify-between border-b border-dark-border/60 pb-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-sage-500/15 border border-sage-500/30 flex items-center justify-center text-sage-400 group-hover:scale-110 group-hover:bg-sage-500/25 transition-all duration-300 shadow-sm">
-                    <Calendar className="w-4 h-4 text-sage-400" />
+            <div className="space-y-4 relative z-10">
+              {/* Header */}
+              <div className="flex items-center justify-between border-b border-white/10 pb-3.5">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-2xl bg-sage-500/20 border border-sage-500/40 flex items-center justify-center text-sage-300 group-hover:scale-110 group-hover:bg-sage-500/30 transition-all duration-300 shadow-glow-green">
+                    <Calendar className="w-4 h-4 text-sage-300" />
                   </div>
-                  <span className="text-xs font-bold text-white uppercase tracking-wider">
-                    This Week's Meals
-                  </span>
+                  <div>
+                    <span className="text-xs font-heading font-black text-white tracking-wider uppercase block">
+                      This Week's Meals
+                    </span>
+                    <span className="text-[10px] text-sage-400 font-semibold tracking-wide flex items-center gap-1">
+                      <span className="inline-block w-1.5 h-1.5 rounded-full bg-sage-400 animate-pulse" />
+                      7-Day Kitchen Schedule
+                    </span>
+                  </div>
                 </div>
-                <Link to="/meal-planner" className="text-[11px] font-semibold text-sage-400 hover:text-white inline-flex items-center gap-1 group/link transition-colors">
-                  Plan Menu <ArrowRight className="w-3 h-3 group-hover/link:translate-x-0.5 transition-transform" />
+                <Link
+                  to="/meal-planner"
+                  className="text-[11px] font-bold text-sage-400 hover:text-white inline-flex items-center gap-1 group/link transition-colors bg-sage-500/10 hover:bg-sage-500/20 px-2.5 py-1 rounded-lg border border-sage-500/20"
+                >
+                  Plan <ArrowRight className="w-3 h-3 group-hover/link:translate-x-1 transition-transform" />
                 </Link>
               </div>
 
+              {/* 7-Day Quick Visualizer Strip */}
+              <div className="grid grid-cols-7 gap-1 p-1.5 rounded-xl bg-dark-bg/60 border border-white/5 text-center">
+                {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, dIdx) => (
+                  <div
+                    key={dIdx}
+                    className={`py-1 rounded-lg text-[10px] font-bold transition-all duration-200 cursor-default ${
+                      dIdx === 1 || dIdx === 3
+                        ? 'bg-sage-500/25 text-sage-300 border border-sage-500/40 shadow-sm'
+                        : 'text-text-muted hover:bg-white/5 hover:text-white'
+                    }`}
+                  >
+                    <span>{day}</span>
+                    <span className={`block w-1 h-1 rounded-full mx-auto mt-0.5 ${dIdx === 1 || dIdx === 3 ? 'bg-sage-400' : 'bg-transparent'}`} />
+                  </div>
+                ))}
+              </div>
+
+              {/* Active Meals or Animated Empty State */}
               {weeklyPlanSummary.length > 0 ? (
                 <div className="space-y-2">
                   {weeklyPlanSummary.map((slot, idx) => (
                     <div
                       key={idx}
-                      className="p-2.5 rounded-xl bg-dark-surface/80 border border-dark-border/70 hover:border-sage-500/40 hover:bg-dark-surface transition-all duration-200 text-xs flex items-center justify-between group/slot hover:shadow-md"
+                      className="p-3 rounded-2xl bg-dark-surface/80 border border-white/5 hover:border-sage-500/50 hover:bg-dark-surface transition-all duration-200 text-xs flex items-center justify-between group/slot hover:shadow-lg hover:-translate-x-0.5"
                     >
-                      <div>
-                        <span className="font-bold text-white block text-xs group-hover/slot:text-sage-300 transition-colors">
-                          {slot.recipe?.title || 'Scheduled Meal'}
+                      <div className="min-w-0 pr-2">
+                        <span className="font-bold text-white block text-xs truncate group-hover/slot:text-sage-300 transition-colors">
+                          {slot.recipe?.title || 'Scheduled Dish'}
                         </span>
-                        <span className="text-[10px] text-text-muted">{slot.day} • {slot.mealType}</span>
+                        <span className="text-[10px] text-text-muted font-medium">{slot.day} • {slot.mealType}</span>
                       </div>
-                      <span className="text-[10px] text-sage-400 font-semibold bg-sage-500/10 border border-sage-500/20 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+                      <span className="text-[10px] text-sage-300 font-bold bg-sage-500/15 border border-sage-500/30 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1.5 shrink-0 shadow-sm">
                         <span className="relative flex h-1.5 w-1.5">
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sage-400 opacity-75"></span>
                           <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-sage-400"></span>
@@ -525,56 +553,68 @@ export const HomePage = () => {
                   ))}
                 </div>
               ) : (
-                <div className="py-4 text-center space-y-1">
-                  <Calendar className="w-7 h-7 text-text-muted/60 mx-auto mb-1 group-hover:text-sage-400/80 transition-colors" />
-                  <p className="text-xs text-text-muted">
-                    No meals scheduled yet. Use the 7-day planner to craft breakfast, lunch, and dinner.
-                  </p>
+                <div className="py-3 px-3 rounded-2xl bg-dark-bg/40 border border-white/5 text-center space-y-1.5 group-hover:border-sage-500/20 transition-colors">
+                  <div className="w-10 h-10 rounded-2xl bg-sage-500/10 border border-sage-500/20 flex items-center justify-center mx-auto text-sage-400 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                    <UtensilsCrossed className="w-4 h-4" />
+                  </div>
+                  <p className="text-xs font-semibold text-white/90">No meals scheduled yet</p>
+                  <p className="text-[11px] text-text-muted leading-relaxed">Schedule your weekly breakfast, lunch & dinner with 1-click.</p>
                 </div>
               )}
             </div>
 
             <Link
               to="/meal-planner"
-              className="btn-secondary !py-2 text-xs w-full text-center block relative z-10 mt-4 group-hover:border-sage-500/50 transition-all font-semibold"
+              className="btn-secondary !py-2.5 text-xs w-full text-center block relative z-10 mt-5 group-hover:border-sage-500/50 group-hover:shadow-glow-green transition-all duration-300 font-bold tracking-wide uppercase"
             >
-              Open Meal Planner
+              Open Meal Planner →
             </Link>
           </div>
 
           {/* Card 2: ⏰ Expiring Soon Alerts */}
-          <div className="group relative overflow-hidden rounded-2xl p-5 bg-gradient-to-b from-dark-card/90 via-dark-card/75 to-dark-surface/90 backdrop-blur-xl border border-dark-border/80 hover:border-warm/50 shadow-xl hover:shadow-2xl hover:shadow-amber-950/40 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between">
-            {/* Ambient hover glow & top accent line */}
-            <div className="absolute -top-20 -right-20 w-40 h-40 bg-warm/10 rounded-full blur-3xl group-hover:bg-warm/25 group-hover:scale-125 transition-all duration-500 pointer-events-none" />
-            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-warm to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="group relative overflow-hidden rounded-3xl p-6 bg-gradient-to-b from-dark-card/95 via-dark-card/85 to-dark-surface/95 backdrop-blur-2xl border border-white/10 hover:border-warm/60 shadow-2xl hover:shadow-[0_20px_50px_rgba(233,196,106,0.2)] transition-all duration-500 hover:-translate-y-2 flex flex-col justify-between">
+            {/* Ambient Background Aura & Animated Light Streak */}
+            <div className="absolute -top-24 -right-24 w-48 h-48 bg-warm/15 rounded-full blur-3xl group-hover:bg-warm/30 group-hover:scale-150 transition-all duration-700 pointer-events-none" />
+            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-warm to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-            <div className="space-y-3 relative z-10">
-              <div className="flex items-center justify-between border-b border-dark-border/60 pb-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-warm/15 border border-warm/30 flex items-center justify-center text-warm group-hover:scale-110 group-hover:bg-warm/25 transition-all duration-300 shadow-sm">
+            <div className="space-y-4 relative z-10">
+              {/* Header */}
+              <div className="flex items-center justify-between border-b border-white/10 pb-3.5">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-2xl bg-warm/20 border border-warm/40 flex items-center justify-center text-warm group-hover:scale-110 group-hover:bg-warm/30 transition-all duration-300 shadow-glow-gold">
                     <AlertTriangle className="w-4 h-4 text-warm animate-pulse" />
                   </div>
-                  <span className="text-xs font-bold text-warm uppercase tracking-wider">
-                    Expiring Soon
-                  </span>
+                  <div>
+                    <span className="text-xs font-heading font-black text-warm tracking-wider uppercase block">
+                      Expiring Soon
+                    </span>
+                    <span className="text-[10px] text-amber-300/80 font-semibold tracking-wide flex items-center gap-1">
+                      <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
+                      Freshness & Expiry Alerts
+                    </span>
+                  </div>
                 </div>
-                <Link to="/inventory" className="text-[11px] font-semibold text-warm hover:text-white inline-flex items-center gap-1 group/link transition-colors">
-                  View All <ArrowRight className="w-3 h-3 group-hover/link:translate-x-0.5 transition-transform" />
+                <Link
+                  to="/inventory"
+                  className="text-[11px] font-bold text-warm hover:text-white inline-flex items-center gap-1 group/link transition-colors bg-warm/10 hover:bg-warm/20 px-2.5 py-1 rounded-lg border border-warm/20"
+                >
+                  View <ArrowRight className="w-3 h-3 group-hover/link:translate-x-1 transition-transform" />
                 </Link>
               </div>
 
+              {/* Status Visualizer */}
               {expiringItems.length > 0 ? (
                 <div className="space-y-2">
                   {expiringItems.map((item, idx) => (
                     <div
                       key={idx}
-                      className="p-2.5 rounded-xl bg-gradient-to-r from-amber-950/40 to-dark-surface/80 border border-amber-500/35 hover:border-amber-400/60 hover:shadow-md transition-all duration-200 text-xs flex items-center justify-between group/item"
+                      className="p-2.5 rounded-2xl bg-gradient-to-r from-amber-950/50 via-dark-surface/90 to-dark-surface/90 border border-amber-500/40 hover:border-amber-400 hover:shadow-lg transition-all duration-200 text-xs flex items-center justify-between group/item"
                     >
-                      <div className="flex items-center gap-2 min-w-0">
-                        <span className="text-base group-hover/item:scale-125 transition-transform">{item.ingredientId?.icon || '🥫'}</span>
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <span className="text-lg group-hover/item:scale-125 transition-transform flex-shrink-0">{item.ingredientId?.icon || '🥫'}</span>
                         <div className="min-w-0">
-                          <span className="font-bold text-white block truncate">{item.ingredientId?.name || 'Item'}</span>
-                          <span className="text-[10px] text-amber-300/90 font-medium flex items-center gap-1">
+                          <span className="font-bold text-white block truncate">{item.ingredientId?.name || 'Ingredient'}</span>
+                          <span className="text-[10px] text-amber-300 font-semibold flex items-center gap-1">
                             <Clock className="w-2.5 h-2.5" />
                             {item.alertMessage || (item.daysUntilExpiry ? `Expires in ${item.daysUntilExpiry}d` : 'Expiring')}
                           </span>
@@ -582,140 +622,198 @@ export const HomePage = () => {
                       </div>
                       <button
                         onClick={() => navigate('/matcher', { state: { initialIngredients: [item.ingredientId?.name] } })}
-                        className="text-[10px] btn-primary !py-1 !px-2.5 shadow-none font-bold shrink-0 hover:scale-105 active:scale-95 transition-all"
+                        className="text-[10px] btn-primary !py-1 !px-3 shadow-none font-bold shrink-0 hover:scale-105 active:scale-95 transition-all"
                       >
-                        Cook Now
+                        Cook
                       </button>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="py-4 text-center space-y-1">
-                  <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-1 group-hover:scale-110 transition-transform">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                <div className="py-4 px-3 rounded-2xl bg-emerald-950/20 border border-emerald-500/25 text-center space-y-2 group-hover:border-emerald-500/40 transition-colors">
+                  {/* Glowing Radar Pulse Effect */}
+                  <div className="relative w-12 h-12 mx-auto flex items-center justify-center">
+                    <span className="absolute inset-0 rounded-full bg-emerald-500/20 animate-ping opacity-75" />
+                    <span className="absolute inset-1 rounded-full bg-emerald-500/30 animate-pulse" />
+                    <div className="relative w-9 h-9 rounded-full bg-emerald-500/40 border border-emerald-400 flex items-center justify-center shadow-glow-green">
+                      <CheckCircle2 className="w-5 h-5 text-emerald-200" />
+                    </div>
                   </div>
-                  <p className="text-xs text-text-muted font-medium">All pantry items fresh!</p>
-                  <p className="text-[11px] text-text-muted/70">No ingredients near expiration.</p>
+                  <div>
+                    <p className="text-xs font-bold text-emerald-300">100% Pantry Fresh</p>
+                    <p className="text-[11px] text-text-muted mt-0.5">Zero food waste detected in your digital kitchen.</p>
+                  </div>
                 </div>
               )}
             </div>
 
             <Link
               to="/inventory"
-              className="btn-outline !py-2 text-xs w-full text-center block relative z-10 mt-4 group-hover:border-warm/50 group-hover:text-warm transition-all font-semibold"
+              className="btn-outline !py-2.5 text-xs w-full text-center block relative z-10 mt-5 group-hover:border-warm/60 group-hover:text-warm group-hover:shadow-glow-gold transition-all duration-300 font-bold tracking-wide uppercase"
             >
-              Manage Pantry
+              Manage Pantry →
             </Link>
           </div>
 
           {/* Card 3: 🛒 Weekly Grocery Summary */}
-          <div className="group relative overflow-hidden rounded-2xl p-5 bg-gradient-to-b from-dark-card/90 via-dark-card/75 to-dark-surface/90 backdrop-blur-xl border border-dark-border/80 hover:border-sky-500/50 shadow-xl hover:shadow-2xl hover:shadow-sky-950/40 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between">
-            {/* Ambient hover glow & top accent line */}
-            <div className="absolute -top-20 -right-20 w-40 h-40 bg-sky-500/10 rounded-full blur-3xl group-hover:bg-sky-500/25 group-hover:scale-125 transition-all duration-500 pointer-events-none" />
-            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-sky-400 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="group relative overflow-hidden rounded-3xl p-6 bg-gradient-to-b from-dark-card/95 via-dark-card/85 to-dark-surface/95 backdrop-blur-2xl border border-white/10 hover:border-sky-500/60 shadow-2xl hover:shadow-[0_20px_50px_rgba(56,189,248,0.25)] transition-all duration-500 hover:-translate-y-2 flex flex-col justify-between">
+            {/* Ambient Background Aura & Animated Light Streak */}
+            <div className="absolute -top-24 -right-24 w-48 h-48 bg-sky-500/15 rounded-full blur-3xl group-hover:bg-sky-500/30 group-hover:scale-150 transition-all duration-700 pointer-events-none" />
+            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-sky-400 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-            <div className="space-y-3 relative z-10">
-              <div className="flex items-center justify-between border-b border-dark-border/60 pb-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-sky-500/15 border border-sky-500/30 flex items-center justify-center text-sky-400 group-hover:scale-110 group-hover:bg-sky-500/25 transition-all duration-300 shadow-sm">
-                    <ShoppingCart className="w-4 h-4 text-sky-400" />
+            <div className="space-y-4 relative z-10">
+              {/* Header */}
+              <div className="flex items-center justify-between border-b border-white/10 pb-3.5">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-2xl bg-sky-500/20 border border-sky-500/40 flex items-center justify-center text-sky-300 group-hover:scale-110 group-hover:bg-sky-500/30 transition-all duration-300 shadow-lg">
+                    <ShoppingCart className="w-4 h-4 text-sky-300" />
                   </div>
-                  <span className="text-xs font-bold text-white uppercase tracking-wider">
-                    Grocery Checklist
-                  </span>
+                  <div>
+                    <span className="text-xs font-heading font-black text-white tracking-wider uppercase block">
+                      Grocery Checklist
+                    </span>
+                    <span className="text-[10px] text-sky-400 font-semibold tracking-wide flex items-center gap-1">
+                      <span className="inline-block w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
+                      Smart Ingredient Cart
+                    </span>
+                  </div>
                 </div>
-                <Link to="/grocery" className="text-[11px] font-semibold text-sky-400 hover:text-white inline-flex items-center gap-1 group/link transition-colors">
-                  Full List <ArrowRight className="w-3 h-3 group-hover/link:translate-x-0.5 transition-transform" />
+                <Link
+                  to="/grocery"
+                  className="text-[11px] font-bold text-sky-400 hover:text-white inline-flex items-center gap-1 group/link transition-colors bg-sky-500/10 hover:bg-sky-500/20 px-2.5 py-1 rounded-lg border border-sky-500/20"
+                >
+                  List <ArrowRight className="w-3 h-3 group-hover/link:translate-x-1 transition-transform" />
                 </Link>
               </div>
 
               {grocerySummary.length > 0 ? (
                 <div className="space-y-2">
-                  {grocerySummary.map((item, idx) => (
+                  {grocerySummary.slice(0, 3).map((item, idx) => (
                     <div
                       key={idx}
-                      className="p-2.5 rounded-xl bg-dark-surface/80 border border-dark-border/70 hover:border-sky-500/40 hover:bg-dark-surface transition-all duration-200 text-xs flex items-center justify-between group/groc hover:shadow-md"
+                      className="p-2.5 rounded-2xl bg-dark-surface/80 border border-white/5 hover:border-sky-500/40 hover:bg-dark-surface transition-all duration-200 text-xs flex items-center justify-between group/groc hover:shadow-md"
                     >
-                      <div className="min-w-0 pr-2">
-                        <span className="font-bold text-white block truncate group-hover/groc:text-sky-300 transition-colors">
-                          {item.name}
-                        </span>
-                        <span className="text-[10px] text-text-muted">{item.category}</span>
+                      <div className="flex items-center gap-2 min-w-0 pr-2">
+                        <div className="w-4 h-4 rounded-md border border-sky-400/40 bg-sky-500/10 flex items-center justify-center text-[10px] text-sky-300">
+                          ✓
+                        </div>
+                        <div className="min-w-0">
+                          <span className="font-bold text-white block truncate group-hover/groc:text-sky-300 transition-colors">
+                            {item.name}
+                          </span>
+                          <span className="text-[10px] text-text-muted">{item.category}</span>
+                        </div>
                       </div>
-                      <span className="font-mono text-xs font-bold text-sky-300 bg-sky-500/10 border border-sky-500/20 px-2 py-0.5 rounded-md shrink-0">
+                      <span className="font-mono text-xs font-bold text-sky-300 bg-sky-500/15 border border-sky-500/30 px-2.5 py-0.5 rounded-lg shrink-0 shadow-sm">
                         {item.buyQuantity !== undefined && item.buyQuantity !== null ? item.buyQuantity : (item.quantity || 1)} {item.unit}
                       </span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="py-4 text-center space-y-1">
-                  <ShoppingCart className="w-7 h-7 text-text-muted/60 mx-auto mb-1 group-hover:text-sky-400/80 transition-colors" />
-                  <p className="text-xs text-text-muted">
-                    Grocery list is all set. Plan weekly meals to calculate missing ingredients.
-                  </p>
+                <div className="py-3 px-3 rounded-2xl bg-dark-bg/40 border border-white/5 text-center space-y-1.5 group-hover:border-sky-500/20 transition-colors">
+                  <div className="w-10 h-10 rounded-2xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center mx-auto text-sky-400 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                    <ShoppingCart className="w-4 h-4" />
+                  </div>
+                  <p className="text-xs font-semibold text-white/90">Grocery List In Sync</p>
+                  <p className="text-[11px] text-text-muted leading-relaxed">Ingredients automatically populate as you plan meals.</p>
                 </div>
               )}
             </div>
 
             <Link
               to="/grocery"
-              className="btn-secondary !py-2 text-xs w-full text-center block relative z-10 mt-4 group-hover:border-sky-500/50 transition-all font-semibold"
+              className="btn-secondary !py-2.5 text-xs w-full text-center block relative z-10 mt-5 group-hover:border-sky-500/50 group-hover:shadow-lg transition-all duration-300 font-bold tracking-wide uppercase"
             >
-              View Shopping List
+              View Shopping List →
             </Link>
           </div>
 
           {/* Card 4: 📊 Nutrition Summary */}
-          <div className="group relative overflow-hidden rounded-2xl p-5 bg-gradient-to-b from-dark-card/90 via-dark-card/75 to-dark-surface/90 backdrop-blur-xl border border-dark-border/80 hover:border-emerald-500/50 shadow-xl hover:shadow-2xl hover:shadow-emerald-950/40 transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between">
-            {/* Ambient hover glow & top accent line */}
-            <div className="absolute -top-20 -right-20 w-40 h-40 bg-emerald-500/10 rounded-full blur-3xl group-hover:bg-emerald-500/25 group-hover:scale-125 transition-all duration-500 pointer-events-none" />
-            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="group relative overflow-hidden rounded-3xl p-6 bg-gradient-to-b from-dark-card/95 via-dark-card/85 to-dark-surface/95 backdrop-blur-2xl border border-white/10 hover:border-emerald-500/60 shadow-2xl hover:shadow-[0_20px_50px_rgba(45,106,79,0.3)] transition-all duration-500 hover:-translate-y-2 flex flex-col justify-between">
+            {/* Ambient Background Aura & Animated Light Streak */}
+            <div className="absolute -top-24 -right-24 w-48 h-48 bg-emerald-500/15 rounded-full blur-3xl group-hover:bg-emerald-500/30 group-hover:scale-150 transition-all duration-700 pointer-events-none" />
+            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-            <div className="space-y-3 relative z-10">
-              <div className="flex items-center justify-between border-b border-dark-border/60 pb-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 group-hover:scale-110 group-hover:bg-emerald-500/25 transition-all duration-300 shadow-sm">
-                    <Flame className="w-4 h-4 text-emerald-400" />
+            <div className="space-y-4 relative z-10">
+              {/* Header */}
+              <div className="flex items-center justify-between border-b border-white/10 pb-3.5">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-300 group-hover:scale-110 group-hover:bg-emerald-500/30 transition-all duration-300 shadow-glow-green">
+                    <Flame className="w-4 h-4 text-emerald-300 animate-pulse" />
                   </div>
-                  <span className="text-xs font-bold text-white uppercase tracking-wider">
-                    Nutrition Profile
-                  </span>
+                  <div>
+                    <span className="text-xs font-heading font-black text-white tracking-wider uppercase block">
+                      Nutrition Profile
+                    </span>
+                    <span className="text-[10px] text-emerald-400 font-semibold tracking-wide flex items-center gap-1">
+                      <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                      Macro Balance Target
+                    </span>
+                  </div>
                 </div>
-                <span className="text-[10px] font-semibold text-sage-400 bg-sage-500/10 px-2 py-0.5 rounded-full border border-sage-500/20">
-                  Est. Per Meal
+                <span className="text-[10px] font-bold text-sage-300 bg-sage-500/15 px-2.5 py-1 rounded-lg border border-sage-500/30 shadow-sm">
+                  Per Meal
                 </span>
               </div>
 
-              <div className="grid grid-cols-2 gap-2 text-center text-xs">
-                <div className="p-2.5 rounded-xl bg-dark-surface/80 border border-dark-border/70 hover:border-warm/40 hover:bg-dark-surface hover:-translate-y-0.5 transition-all duration-200 group/stat">
-                  <span className="text-[10px] text-text-muted uppercase font-bold tracking-wider block group-hover/stat:text-warm transition-colors">Calories</span>
-                  <span className="text-sm font-heading font-black text-warm">~420 kcal</span>
+              {/* 4 Interactive Macro Meter Tiles with Animated Percentage Bars */}
+              <div className="grid grid-cols-2 gap-2.5 text-xs">
+                {/* Calories */}
+                <div className="p-3 rounded-2xl bg-dark-bg/60 border border-amber-500/20 hover:border-amber-400/50 hover:bg-dark-surface hover:-translate-y-0.5 transition-all duration-300 group/stat shadow-sm">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[10px] text-text-muted uppercase font-bold tracking-wider group-hover/stat:text-amber-300 transition-colors">Calories</span>
+                    <span className="text-[10px]">🔥</span>
+                  </div>
+                  <span className="text-base font-heading font-black text-amber-300 block">~420 <span className="text-[10px] font-normal text-text-muted">kcal</span></span>
+                  <div className="w-full bg-white/5 h-1.5 rounded-full overflow-hidden mt-1.5">
+                    <div className="bg-gradient-to-r from-amber-500 to-warm h-full rounded-full w-[70%] group-hover/stat:w-[85%] transition-all duration-500" />
+                  </div>
                 </div>
-                <div className="p-2.5 rounded-xl bg-dark-surface/80 border border-dark-border/70 hover:border-emerald-400/40 hover:bg-dark-surface hover:-translate-y-0.5 transition-all duration-200 group/stat">
-                  <span className="text-[10px] text-text-muted uppercase font-bold tracking-wider block group-hover/stat:text-emerald-300 transition-colors">Protein</span>
-                  <span className="text-sm font-heading font-black text-emerald-400">~25g</span>
+
+                {/* Protein */}
+                <div className="p-3 rounded-2xl bg-dark-bg/60 border border-emerald-500/20 hover:border-emerald-400/50 hover:bg-dark-surface hover:-translate-y-0.5 transition-all duration-300 group/stat shadow-sm">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[10px] text-text-muted uppercase font-bold tracking-wider group-hover/stat:text-emerald-300 transition-colors">Protein</span>
+                    <span className="text-[10px]">💪</span>
+                  </div>
+                  <span className="text-base font-heading font-black text-emerald-400 block">~25 <span className="text-[10px] font-normal text-text-muted">g</span></span>
+                  <div className="w-full bg-white/5 h-1.5 rounded-full overflow-hidden mt-1.5">
+                    <div className="bg-gradient-to-r from-emerald-500 to-sage-300 h-full rounded-full w-[60%] group-hover/stat:w-[75%] transition-all duration-500" />
+                  </div>
                 </div>
-                <div className="p-2.5 rounded-xl bg-dark-surface/80 border border-dark-border/70 hover:border-sky-400/40 hover:bg-dark-surface hover:-translate-y-0.5 transition-all duration-200 group/stat">
-                  <span className="text-[10px] text-text-muted uppercase font-bold tracking-wider block group-hover/stat:text-sky-300 transition-colors">Carbs</span>
-                  <span className="text-sm font-heading font-black text-sky-400">~48g</span>
+
+                {/* Carbs */}
+                <div className="p-3 rounded-2xl bg-dark-bg/60 border border-sky-500/20 hover:border-sky-400/50 hover:bg-dark-surface hover:-translate-y-0.5 transition-all duration-300 group/stat shadow-sm">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[10px] text-text-muted uppercase font-bold tracking-wider group-hover/stat:text-sky-300 transition-colors">Carbs</span>
+                    <span className="text-[10px]">🌾</span>
+                  </div>
+                  <span className="text-base font-heading font-black text-sky-400 block">~48 <span className="text-[10px] font-normal text-text-muted">g</span></span>
+                  <div className="w-full bg-white/5 h-1.5 rounded-full overflow-hidden mt-1.5">
+                    <div className="bg-gradient-to-r from-sky-500 to-sky-300 h-full rounded-full w-[80%] group-hover/stat:w-[90%] transition-all duration-500" />
+                  </div>
                 </div>
-                <div className="p-2.5 rounded-xl bg-dark-surface/80 border border-dark-border/70 hover:border-rose-400/40 hover:bg-dark-surface hover:-translate-y-0.5 transition-all duration-200 group/stat">
-                  <span className="text-[10px] text-text-muted uppercase font-bold tracking-wider block group-hover/stat:text-rose-300 transition-colors">Fats</span>
-                  <span className="text-sm font-heading font-black text-rose-400">~15g</span>
+
+                {/* Fats */}
+                <div className="p-3 rounded-2xl bg-dark-bg/60 border border-rose-500/20 hover:border-rose-400/50 hover:bg-dark-surface hover:-translate-y-0.5 transition-all duration-300 group/stat shadow-sm">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[10px] text-text-muted uppercase font-bold tracking-wider group-hover/stat:text-rose-300 transition-colors">Fats</span>
+                    <span className="text-[10px]">🥑</span>
+                  </div>
+                  <span className="text-base font-heading font-black text-rose-400 block">~15 <span className="text-[10px] font-normal text-text-muted">g</span></span>
+                  <div className="w-full bg-white/5 h-1.5 rounded-full overflow-hidden mt-1.5">
+                    <div className="bg-gradient-to-r from-rose-500 to-rose-300 h-full rounded-full w-[45%] group-hover/stat:w-[55%] transition-all duration-500" />
+                  </div>
                 </div>
               </div>
-
-              <p className="text-[10px] text-text-muted italic text-center">
-                Estimated balance per serving across planned recipes.
-              </p>
             </div>
 
             <Link
               to="/profile?tab=preferences"
-              className="btn-outline !py-2 text-xs w-full text-center block relative z-10 mt-4 group-hover:border-emerald-500/50 group-hover:text-emerald-400 transition-all font-semibold"
+              className="btn-outline !py-2.5 text-xs w-full text-center block relative z-10 mt-5 group-hover:border-emerald-500/60 group-hover:text-emerald-300 group-hover:shadow-glow-green transition-all duration-300 font-bold tracking-wide uppercase"
             >
-              Edit Dietary Goals
+              Edit Dietary Goals →
             </Link>
           </div>
         </div>
