@@ -81,13 +81,19 @@ export const RecipeCard = ({
   const defaultImage = 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=800&q=80';
 
   return (
-    <div className="card-hover group flex flex-col overflow-hidden relative bg-dark-card border border-dark-border rounded-2xl">
+    <div className="group relative flex flex-col overflow-hidden rounded-2xl bg-gradient-to-b from-dark-card/95 via-dark-card/85 to-dark-surface/95 backdrop-blur-xl border border-dark-border/80 hover:border-sage-500/50 shadow-xl hover:shadow-2xl hover:shadow-primary-950/50 transition-all duration-300 hover:-translate-y-1.5">
+      {/* Top Accent Glowing Line on Hover */}
+      <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-sage-400 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30" />
+
+      {/* Light Sweep Reflection Effect */}
+      <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/5 to-transparent pointer-events-none z-30" />
+
       {/* Recipe Image with Top Overlays */}
       <Link to={`/recipes/${recipe._id}`} className="relative h-52 sm:h-56 w-full overflow-hidden bg-dark-surface block">
         <img
           src={recipe.imageUrl || defaultImage}
           alt={recipe.title}
-          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
+          className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700 ease-out filter group-hover:brightness-105"
           onError={(e) => {
             e.target.onerror = null;
             e.target.src = defaultImage;
@@ -96,17 +102,17 @@ export const RecipeCard = ({
         />
 
         {/* Soft Vignette Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-dark-card via-black/10 to-black/40" />
+        <div className="absolute inset-0 bg-gradient-to-t from-dark-card via-black/20 to-black/40 group-hover:opacity-80 transition-opacity" />
 
         {/* Top Badges (Cuisine & Meal Type) */}
         <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 items-center z-10">
           {recipe.cuisine && (
-            <span className="px-2.5 py-0.5 rounded-lg bg-dark-bg/80 backdrop-blur-md text-sage-200 border border-white/10 text-[11px] font-semibold tracking-wide uppercase">
+            <span className="px-2.5 py-0.5 rounded-lg bg-dark-bg/85 backdrop-blur-md text-sage-200 border border-sage-500/30 text-[11px] font-semibold tracking-wide uppercase shadow-sm">
               {recipe.cuisine}
             </span>
           )}
           {recipe.mealType && (
-            <span className="px-2 py-0.5 rounded-lg bg-dark-bg/80 backdrop-blur-md text-text-secondary border border-white/10 text-[11px] font-medium">
+            <span className="px-2 py-0.5 rounded-lg bg-dark-bg/85 backdrop-blur-md text-text-secondary border border-white/10 text-[11px] font-medium">
               {recipe.mealType}
             </span>
           )}
@@ -120,7 +126,7 @@ export const RecipeCard = ({
           className={`absolute top-3 right-3 p-2 rounded-xl backdrop-blur-md transition-all duration-200 z-20 ${
             isFav
               ? 'bg-accent text-white shadow-glow-accent scale-105 hover:bg-accent-600'
-              : 'bg-dark-bg/70 text-white/80 hover:text-white hover:bg-dark-bg hover:scale-110 border border-white/10'
+              : 'bg-dark-bg/80 text-white/80 hover:text-white hover:bg-dark-bg hover:scale-110 border border-white/15'
           }`}
         >
           <Heart className={`w-4 h-4 transition-transform active:scale-125 ${isFav ? 'fill-current' : ''}`} />
@@ -130,11 +136,18 @@ export const RecipeCard = ({
         {matchPercent !== null && (
           <div className="absolute bottom-3 right-3 z-10">
             <div className={`flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-black shadow-lg backdrop-blur-md ${matchBadgeClass}`}>
-              <Sparkles className="w-3.5 h-3.5" />
+              <Sparkles className="w-3.5 h-3.5 animate-pulse" />
               <span>{matchPercent}% Match</span>
             </div>
           </div>
         )}
+
+        {/* Quick View Hover Indicator */}
+        <div className="absolute bottom-3 left-3 z-10 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
+          <span className="px-2.5 py-1 rounded-lg bg-sage-500/90 text-white text-[11px] font-bold shadow-lg flex items-center gap-1 backdrop-blur-md">
+            View Dish →
+          </span>
+        </div>
       </Link>
 
       {/* Content Body */}
@@ -155,7 +168,7 @@ export const RecipeCard = ({
 
         {/* Match Breakdown Banner */}
         {showMatchDetails && (
-          <div className="p-2.5 rounded-xl bg-dark-surface border border-dark-border text-xs flex items-center justify-between">
+          <div className="p-2.5 rounded-xl bg-dark-surface/80 border border-dark-border/80 text-xs flex items-center justify-between">
             <span className="text-sage-400 font-medium flex items-center gap-1.5">
               <CheckCircle2 className="w-3.5 h-3.5" />
               {recipe.matchedCount || 0} in kitchen
@@ -174,12 +187,12 @@ export const RecipeCard = ({
         )}
 
         {/* Metadata Footer */}
-        <div className="pt-3 border-t border-dark-border/80 flex items-center justify-between text-xs text-text-secondary">
-          <div className="flex items-center gap-3">
+        <div className="pt-3 border-t border-dark-border/60 flex items-center justify-between text-xs text-text-secondary">
+          <div className="flex items-center gap-2.5">
             {totalTime > 0 && (
               <span className="flex items-center gap-1 hover:text-white transition-colors" title={`Prep: ${prepTime}m, Cook: ${cookTime}m`}>
                 <Clock className="w-3.5 h-3.5 text-sage-400" />
-                <span className="font-medium text-white">{totalTime}m</span>
+                <span className="font-semibold text-white">{totalTime}m</span>
               </span>
             )}
 
@@ -192,17 +205,17 @@ export const RecipeCard = ({
             {calories > 0 && (
               <span className="hidden sm:flex items-center gap-1">
                 <Flame className="w-3.5 h-3.5 text-warm" />
-                <span>{calories} kcal</span>
+                <span className="font-medium text-warm/90">{calories} kcal</span>
               </span>
             )}
           </div>
 
           {/* Rating */}
-          <div className="flex items-center gap-1 font-bold text-white">
+          <div className="flex items-center gap-1 font-bold text-white bg-dark-surface/70 px-2 py-0.5 rounded-lg border border-dark-border/60">
             <Star className="w-3.5 h-3.5 text-warm fill-warm" />
-            <span>{displayRating > 0 ? Number(displayRating).toFixed(1) : 'New'}</span>
+            <span className="text-xs">{displayRating > 0 ? Number(displayRating).toFixed(1) : 'New'}</span>
             {recipe.reviewCount > 0 && (
-              <span className="text-text-muted font-normal text-[11px]">({recipe.reviewCount})</span>
+              <span className="text-text-muted font-normal text-[10px]">({recipe.reviewCount})</span>
             )}
           </div>
         </div>

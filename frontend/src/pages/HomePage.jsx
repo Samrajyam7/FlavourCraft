@@ -195,7 +195,7 @@ export const HomePage = () => {
         />
 
         {/* Increased Visibility Background Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-dark-bg/50 via-dark-bg/20 to-dark-bg/65" />
+        <div className="absolute inset-0 bg-gradient-to-b from-dark-bg/75 via-dark-bg/55 to-dark-bg/85 backdrop-blur-[2px]" />
 
         {/* Large Visible FlavorCraft Watermark (pure seamless watermark text without black box) */}
         <div className="absolute top-[52%] left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none flex flex-col items-center justify-center z-[2] select-none text-center px-4 w-full">
