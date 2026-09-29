@@ -46,30 +46,10 @@
       cursor: ew-resize;
       touch-action: none;
       background:
-        radial-gradient(ellipse 75% 65% at var(--pointer-x) 50%, rgba(45, 106, 79, 0.42), rgba(12, 18, 15, 0.95) 72%),
-        radial-gradient(circle at 18% 78%, rgba(233, 196, 106, 0.08), transparent 42%),
-        radial-gradient(circle at 82% 22%, rgba(116, 198, 157, 0.12), transparent 46%),
-        linear-gradient(90deg, rgba(82, 183, 136, 0.05) 1px, transparent 1px) 50% 0 / 20% 100%,
-        repeating-linear-gradient(
-          0deg,
-          transparent 0,
-          transparent 99px,
-          rgba(82, 183, 136, 0.035) 100px,
-          transparent 101px
-        ),
+        radial-gradient(ellipse 80% 70% at var(--pointer-x) 50%, rgba(45, 106, 79, 0.45), rgba(12, 18, 15, 0.95) 75%),
+        radial-gradient(circle at 18% 80%, rgba(233, 196, 106, 0.09), transparent 45%),
+        radial-gradient(circle at 82% 20%, rgba(116, 198, 157, 0.12), transparent 48%),
         #0c120f;
-    }
-
-    .stage::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      z-index: 5;
-      pointer-events: none;
-      opacity: 0.28;
-      background:
-        repeating-radial-gradient(circle at 14% 16%, rgba(116, 198, 157, 0.2) 0 0.6px, transparent 0.8px 4px),
-        repeating-radial-gradient(circle at 84% 68%, rgba(233, 196, 106, 0.22) 0 0.6px, transparent 0.9px 5px);
     }
 
     .stage::after {
@@ -234,21 +214,8 @@
         background:
           radial-gradient(circle at 50% 50%, rgba(45, 106, 79, 0.45), rgba(12, 18, 15, 0.95) 75%),
           radial-gradient(circle at 20% 80%, rgba(233, 196, 106, 0.08), transparent 45%),
-          linear-gradient(90deg, rgba(82, 183, 136, 0.05) 1px, transparent 1px) 50% 0 / 50% 100%,
-          repeating-linear-gradient(
-            0deg,
-            transparent 0,
-            transparent 87px,
-            rgba(82, 183, 136, 0.035) 88px,
-            transparent 89px
-          ),
           #0c120f;
       }
-
-      .card {
-        width: clamp(142px, 47vw, 180px);
-      }
-    }
 
       .card {
         width: clamp(142px, 47vw, 180px);
